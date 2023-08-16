@@ -1,0 +1,74 @@
+<div id="chats" class="chat-wrap" [class.show]="show">
+  <nz-card [nzActions]="[inputTpl]" [nzBodyStyle]="{ padding: 0 }" [nzExtra]="extraTemplate" [nzTitle]="titleTemplate">
+    <div #scrollMe class="flex chart-content">
+      <span class="text-center sp-12 m-b-5" nz-typography nzType="secondary">2021-7-27</span>
+      <div nz-row>
+        <nz-avatar class="m-r-8" nz-col nzFlex="30px" nzIcon="user" nzSrc="assets/imgs/logo.svg"></nz-avatar>
+        <div class="m-t-0 p-8" nz-col nz-result-content nzFlex="1">
+          请
+          <span nz-typography nzType="danger">一句话</span>
+          描述您的问题，我们来帮您解决。😎
+        </div>
+        <div nz-col nzFlex="30px"></div>
+      </div>
+      <ng-container *ngFor="let item of messageArray; let last = last">
+        <div *ngIf="item.dir === 'left'" class="m-t-20" nz-row>
+          <nz-avatar class="m-r-8" nz-col nzFlex="30px" nzIcon="user" nzSrc="assets/imgs/logo.svg"></nz-avatar>
+          <div class="m-t-0 p-8" nz-col nz-result-content nzFlex="1">
+            {{ item.msg }}
+          </div>
+          <div nz-col nzFlex="30px"></div>
+          {{ last ? scrollToBottom() : '' }}
+        </div>
+
+        <div *ngIf="item.dir === 'right'" class="m-t-20" nz-row>
+          <div nz-col nzFlex="30px"></div>
+          <!--有未读的样式-->
+          <div class="flex flex-coloum" nz-col nzFlex="1">
+            <div class="m-t-0 p-8 text-break" nz-result-content>
+              <span nz-typography>{{ item.msg }}</span>
+              {{ last ? scrollToBottom() : '' }}
+            </div>
+            <span class="sp-12 text-right m-t-5" nz-typography nzType="secondary">{{ item.isReaded ? '已读' : '未读' }}</span>
+          </div>
+
+          <!--没有未读的样式-->
+          <!-- <div class="m-t-0 p-8 text-break" nz-result-content nz-col nzFlex="1">
+             <span nz-typography>{{item}}</span>{{last ? scrollToBottom() : ''}}
+           </div>-->
+
+          <div nz-col nzFlex="8px"></div>
+          <nz-avatar nz-col nzFlex="30px" nzIcon="user" nzSrc="assets/imgs/default_face.png"></nz-avatar>
+        </div>
+      </ng-container>
+    </div>
+  </nz-card>
+  <ng-template #extraTemplate>
+    <ng-template [ngIf]="show" [ngIfElse]="notShow">
+      <i class="hand-model" nz-icon nzTheme="outline" nzType="shrink" (click)="show = !show"></i>
+    </ng-template>
+    <ng-template #notShow>
+      <i class="hand-model" nz-icon nzTheme="outline" nzType="arrows-alt" (click)="show = !show"></i>
+    </ng-template>
+    <i class="hand-model m-l-8" nz-icon nzTheme="outline" nzType="close" (click)="close()"></i>
+  </ng-template>
+  <ng-template #titleTemplate>
+    <span class="sp-14">{{ isSending ? '对方正在输入中...' : '联系管理员' }}</span>
+  </ng-template>
+  <ng-template #inputTpl>
+    <form [formGroup]="validateForm">
+      <textarea
+        #msgInput
+        id="remark"
+        name="question"
+        formControlName="question"
+        nz-input
+        placeholder="反馈些什么"
+        rows="4"
+        style="resize: none"
+        [nzBorderless]="true"
+        (keydown.enter)="sendMessage(msgInput.value, $event)"
+      ></textarea>
+    </form>
+  </ng-template>
+</div>

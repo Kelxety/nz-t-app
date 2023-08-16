@@ -1,0 +1,106 @@
+<nz-card [nzBodyStyle]="{ padding: '10px 24px' }" [nzBordered]="false">
+    <div class="left-start-center">
+      <nz-breadcrumb>
+        <nz-breadcrumb-item>Front Page</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Configuration</nz-breadcrumb-item>
+        <nz-breadcrumb-item>TMS Account</nz-breadcrumb-item>
+      </nz-breadcrumb>
+    </div>
+</nz-card>
+
+<div style="padding:16px;" *ngIf="!isLoading; else loading">
+    <nz-card nzTitle="TMS ACCOUNT" [nzExtra]="options" style="height: calc(100vh - 170px)!important;">
+      <div class="loc-content"  style="height: calc(100vh - 285px)!important; overflow-y: auto;">
+        <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" [trackBy]="trackBy">
+            <!-- <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine class="hoverMe" (contextmenu)="contextMenu($event, menu)"> -->
+            <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine class="hoverMe">
+                <div class="btn-space">{{ node.name }}
+                  <div class="btn-right">
+                    <button nz-button nzType="text" nzSize="small"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Are you sure you want to delete {{node.name}}"
+                    (nzOnConfirm)="delete(node)"
+                    (nzOnCancel)="cancel()"
+                    style="margin-right: 10px;">
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                    </button>
+                    <nz-divider nzType="vertical" style="margin-top: 8px"></nz-divider>
+                    <button nz-button nzType="text" nzSize="small" (click)="action('create', node)">
+                        <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    </button>
+                    <nz-divider nzType="vertical" style="margin-top: 8px"></nz-divider>
+                    <button nz-button nzType="text" nzSize="small">
+                        <span nz-icon nzType="edit" nzTheme="outline" (click)="action('edit', node)"></span>
+                    </button>                    
+                  </div>
+                </div>
+            </nz-tree-node>
+        
+                <nz-tree-node *nzTreeNodeDef="let node; when: hasNoContent" nzTreeNodeIndentLine>
+                <input nz-input placeholder="Input account name" nzSize="small" #inputElement />
+                &nbsp;
+                <input nz-input placeholder="Input account code" nzSize="small" #inputElement2 />
+                &nbsp;
+                <button nz-button nzSize="small" (click)="saveNode(node, inputElement.value, inputElement2.value)">Add</button>
+                &nbsp;
+                <button nz-button nzSize="small" (click)="delete(node)" >Cancel</button>
+                </nz-tree-node>
+        
+            <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" class="hoverMe" nzTreeNodeIndentLine>
+                <nz-tree-node-toggle>
+                    <span nz-icon nzType="caret-down" style="font-size: 12pt; margin-top: 2px;"   nzTreeNodeToggleRotateIcon></span>
+                </nz-tree-node-toggle>
+                <div class="btn-space">{{ node.name }}
+                  <div class="btn-right">
+                    <button nz-button nzType="text" nzSize="small" (click)="action('create', node)">
+                        <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    </button>
+                    <nz-divider nzType="vertical"></nz-divider>
+                    <button nz-button nzType="text" nzSize="small">
+                        <span nz-icon nzType="edit" nzTheme="outline" (click)="action('edit', node)"></span>
+                    </button>                         
+                  </div>
+                </div>
+            </nz-tree-node>
+            <nz-tree-node *nzTreeNodeDef="let node; when: hasNoContent" nzTreeNodeIndentLine>
+                <input nz-input placeholder="Input node name" nzSize="small" #inputElement />
+                &nbsp;
+                <input nz-input placeholder="Input node name" nzSize="small" #inputElement2 />
+                &nbsp;
+                <button nz-button nzSize="small" (click)="saveNode(node, inputElement.value, inputElement2.value)">Add</button>
+                </nz-tree-node>
+        </nz-tree-view>
+      </div>
+    </nz-card>
+</div>
+
+<ng-template #suffixIconSearch>
+    <span nz-icon nzType="search"></span>
+  </ng-template>
+  
+  <ng-template #options>
+    <div nz-space nzAlign="start">
+      <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch">
+        <input type="text" nz-input placeholder="Search..." name="search" [ngModel]="search" (ngModelChange)="filter($event)"/>
+      </nz-input-group>
+      <nz-button-group *nzSpaceItem>
+        <button  class="pointer" nz-button style="padding-left: 8px; padding-right: 8px;" nzTooltipTitle="Add" nzTooltipPlacement="topLeft" nz-tooltip><span nz-icon nzType="plus" nzTheme="outline"></span></button>
+        <button  class="pointer" (click)="loadData()" nz-button style="padding-left: 8px; padding-right: 8px;" nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip><span nz-icon nzType="reload" nzTheme="outline"></span></button>
+      </nz-button-group>
+    </div>
+  </ng-template>
+  
+  <ng-template #loading>
+    <div style="padding: 16px;">
+      <nz-skeleton [nzActive]="true"></nz-skeleton>
+      <nz-skeleton [nzActive]="true"></nz-skeleton>
+    </div>
+  </ng-template>
+  
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item (click)="selectDropdown()">Edit</li>
+      <li nz-menu-item (click)="selectDropdown()">Delete</li>
+      <li nz-menu-item (click)="selectDropdown()">Delete</li>
+    </ul>
+  </nz-dropdown-menu>

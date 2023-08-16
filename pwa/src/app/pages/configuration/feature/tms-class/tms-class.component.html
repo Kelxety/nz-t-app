@@ -1,0 +1,94 @@
+<nz-card [nzBodyStyle]="{ padding: '10px 24px' }" [nzBordered]="false">
+  <div class="left-start-center">
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Front Page</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Configuration</nz-breadcrumb-item>
+      <nz-breadcrumb-item>TMS Classification</nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </div>
+</nz-card>
+
+<div style="padding:16px;">
+  <nz-card nzTitle="CLASSIFICATION" [nzExtra]="options" style="height: calc(100vh - 170px)!important;">
+    <div class="loc-content" *ngIf="!model.loading; else isLoading">
+        <nz-table
+        nzShowSizeChanger
+        #fixedTable
+        [nzData]="model.filteredList"
+        [nzSize]="'small'"
+        [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
+        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+        [nzPageSize]="20">
+        <thead>
+          <tr>
+            <th
+              nzWidth="50px" 
+              [nzSelections]="listOfSelection"
+              [(nzChecked)]="checked"
+              (nzCheckedChange)="onAllChecked($event)"
+            ></th>
+            <th>Code</th>
+            <th>Classification</th>
+            <th>Status</th>
+            <th nzWidth="80px" class="text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of fixedTable.data">
+            <td [nzChecked]="setOfCheckedId.has(data.id)" (nzCheckedChange)="onItemChecked(data.id, $event)"></td>
+            <td nzEllipsis>{{ data.classCode }}</td>
+            <td nzEllipsis>{{ data.className }}</td>
+            <td nzEllipsis>{{ data.className }}</td>
+            <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+              <!-- <nz-button-group>
+                <button nz-button nzType="primary" style="padding-left: 10px; padding-right: 10px;"><i nz-icon nzType="edit"></i></button>
+                <button nz-button nzType="primary" nzDanger style="padding-left: 10px; padding-right: 10px;"><i nz-icon nzType="delete"></i></button>
+              
+              </nz-button-group> -->
+              <!-- <button nz-button nzType="primary" [nzSize]="'default'" nzShape="circle" nzGhost style="margin-right: 6px;"
+              nz-popconfirm nzPopconfirmTitle="Are you sure delete this task?" nzPopconfirmPlacement="bottom" (nzOnConfirm)="confirm()" (nzOnCancel)="cancel()"
+              >
+                <i nz-icon nzType="edit" nzTooltipTitle="Edit data" nzTooltipPlacement="left" nz-tooltip></i>
+              </button>
+              <button nz-button nzType="primary" [nzSize]="'default'" nzShape="circle" nzGhost nzDanger nzTooltipTitle="Delete data" nzTooltipPlacement="left" nz-tooltip>
+                <i nz-icon nzType="delete"></i>
+              </button> -->
+    
+              <span (click)="edit(data.id)" class="pointer" nz-icon nzType="edit" nzTheme="outline"></span>
+              <nz-divider nzType="vertical"></nz-divider>
+              <span  class="pointer" nz-icon nzType="delete" nzTheme="outline" style="color: red"
+              nz-popconfirm
+              nzPopconfirmTitle="Are you sure you want to delete {{data.className}}"
+              (nzOnConfirm)="confirm(data)"
+              (nzOnCancel)="cancel()"
+              ></span>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>   
+    </div>
+  </nz-card>
+</div>
+
+<ng-template #suffixIconSearch>
+  <span nz-icon nzType="search"></span>
+</ng-template>
+
+<ng-template #options>
+  <div nz-space nzAlign="start">
+    <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch">
+      <input type="text" nz-input placeholder="Search..." name="search" [ngModel]="search" (ngModelChange)="filter($event)"/>
+    </nz-input-group>
+    <nz-button-group *nzSpaceItem>
+      <button  (click)="add()" class="pointer" nz-button style="padding-left: 8px; padding-right: 8px;" nzTooltipTitle="Add" nzTooltipPlacement="topLeft" nz-tooltip><span nz-icon nzType="plus" nzTheme="outline"></span></button>
+      <button  (click)="loadData()" class="pointer" nz-button style="padding-left: 8px; padding-right: 8px;" nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip><span nz-icon nzType="reload" nzTheme="outline"></span></button>
+    </nz-button-group>
+  </div>
+</ng-template>
+
+<ng-template #isLoading>
+  <div style="padding: 24px;">
+    <nz-skeleton [nzActive]="true"></nz-skeleton>
+    <nz-skeleton [nzActive]="true"></nz-skeleton>
+  </div>
+</ng-template>

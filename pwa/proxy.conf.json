@@ -1,0 +1,26 @@
+{
+  "/site": {
+    "target": "http://1.117.181.242:8003/",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/site": ""
+    }
+  },
+  "/api": {
+    "target": "https://localhost:8000/",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": "/api"
+    }
+  },
+  "/uploaded": {
+    "target": "https://localhost:8000/",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/uploaded": "/uploaded"
+    }
+  }
+}

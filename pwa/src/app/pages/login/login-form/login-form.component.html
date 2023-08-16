@@ -1,0 +1,38 @@
+<div class="login-form-wrap">
+  <form class="login-form" nz-form [formGroup]="loginForm" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Username：admin">
+        <nz-input-group nzPrefixIcon="user" [nzSize]="'large'">
+          <input type="text" formControlName="username" nz-input placeholder="Username" [placeholder]="'Username：admin'" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Password：123456">
+        <nz-input-group nzPrefixIcon="lock" [nzSize]="'large'">
+          <input type="password" autocomplete="on" formControlName="password" nz-input placeholder="Password" [placeholder]="'Password：123456'" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <div class="login-form-margin" nz-row>
+      <div nz-col [nzSpan]="12">
+        <label formControlName="remember" nz-checkbox>
+          <span>Auto login</span>
+        </label>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <a class="login-form-forgot">Forgot password?</a>
+      </div>
+    </div>
+    <button class="login-form-button login-form-margin" nz-button nzSize="large" [nzType]="'primary'">Login</button>
+    <!-- <div class="other-way">
+      <div class="other-login">
+        <span>Log in by other</span>
+        <i nz-icon nzTheme="fill" nzType="alipay-circle"></i>
+        <i nz-icon nzTheme="fill" nzType="taobao-circle"></i>
+        <i nz-icon nzTheme="fill" nzType="weibo-circle"></i>
+      </div>
+      <a routerLink="/login/register-form">Registered user</a>
+    </div> -->
+  </form>
+</div>

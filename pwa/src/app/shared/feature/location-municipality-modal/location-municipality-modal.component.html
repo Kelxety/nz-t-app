@@ -1,0 +1,73 @@
+<form nz-form [formGroup]="validateForm">
+    <div *ngIf="actionType === 'create' || actionType === 'edit'; else justView">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>Municipality Code</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="codeErrorTpl">
+          <input nz-input formControlName="municipalityCode" placeholder="Enter here..." />
+          <ng-template #codeErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>Municipality Name</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="nameErrorTpl">
+          <input nz-input formControlName="municipalityName" placeholder="Enter here..." />
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>Zipcode</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="nameErrorTpl">
+          <input nz-input formControlName="zipcode" placeholder="Enter here..." />
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>District</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="nameErrorTpl">
+          <!-- <input nz-input formControlName="district" placeholder="Enter here..." /> -->
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a person" formControlName="district">
+            <nz-option nzLabel="(1) First" nzValue="1st"></nz-option>
+            <nz-option nzLabel="(2) Second" nzValue="2nd"></nz-option>
+            <nz-option nzLabel="(3) Third" nzValue="3rd"></nz-option>
+          </nz-select>
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+          <nz-form-label [nzSpan]="7" nzRequired>Is-active</nz-form-label>
+          <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="emailErrorTpl">
+              <nz-switch formControlName="state" nzCheckedChildren="Yes" nzUnCheckedChildren="No"></nz-switch>
+            <!-- <input nz-input formControlName="state" placeholder="Status" /> -->
+            <ng-template #emailErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+            </ng-template>
+          </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <ng-template #justView>
+      
+    </ng-template>
+
+    <div *nzModalFooter>
+        <nz-form-control>
+            <button *ngIf="actionType === 'create'" nz-button nzType="primary" type="submit" [disabled]="!validateForm.valid" (click)="submitCreate()">Save </button>
+            <button *ngIf="actionType === 'edit'" nz-button nzType="primary" type="submit" [disabled]="!validateForm.valid" (click)="submitEdit()">Save changes</button>
+            <button *ngIf="actionType === 'delete'" nz-button nzType="primary" nzDanger type="submit" [disabled]="!validateForm.valid" (click)="submitDelete()">Confirm delete</button>
+            <button *ngIf="actionType === 'create'" nz-button (click)="resetForm()">Reset</button>
+            <button nz-button (click)="closeMe() ">Close</button>
+        </nz-form-control>
+    </div>
+  </form>

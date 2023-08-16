@@ -1,0 +1,190 @@
+<form nz-form [formGroup]="validateForm">
+    <div *ngIf="actionType === 'create' || actionType === 'edit'; else justView">
+      <!-- <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Barangay</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="barangayErrorTpl">
+          <input nz-input formControlName="barangay" placeholder="Enter here..." />
+          <ng-template #barangayErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item> -->
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Barangay</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="barangayErrorTpl">
+          <nz-tree-select
+            [nzNodes]="nodes"
+            nzShowSearch
+            nzPlaceHolder="Please select"
+            nzVirtualHeight="500px"
+            nzHideUnMatched="true"
+            formControlName="barangay">
+          </nz-tree-select>
+          <ng-template #barangayErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">PIN</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="rptPinErrorTpl">
+          <input nz-input formControlName="rptPin" placeholder="Enter here..." />
+          <ng-template #rptPinErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">TDN</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="tdnErrorTpl">
+          <input nz-input formControlName="tdn" placeholder="Enter here..." />
+          <ng-template #tdnErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Title No.</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="titlenoErrorTpl">
+          <input nz-input formControlName="titleno" placeholder="Enter here..." />
+          <ng-template #titlenoErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Cadastral Lot No.</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="cadastrallotnoErrorTpl">
+          <input nz-input formControlName="cadastrallotno" placeholder="Enter here..." />
+          <ng-template #cadastrallotnoErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Total Area/Ha</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="totalareahaErrorTpl">
+          <input nz-input formControlName="totalareaha" placeholder="Enter here..." />
+          <ng-template #totalareahaErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Classification</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="classificationErrorTpl">
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select type" formControlName="classification">
+            <nz-option nzLabel="{{data.className}}" *ngFor="let data of classModel.list" nzValue="{{data['@id']}}"></nz-option>
+          </nz-select>
+          <ng-template #classificationErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Txn Type</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="txntypeErrorTpl">
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select transaction type" formControlName="txntype">
+            <nz-option nzLabel="{{row.name}}" nzValue="{{row.value}}"  *ngFor="let row of txntypeList"></nz-option>
+          </nz-select>
+          <ng-template #txntypeErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">RPU Type</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="rputypeErrorTpl">
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select RPU Type" formControlName="rputype">
+            <nz-option nzLabel="{{row.name}}" nzValue="{{row.value}}"  *ngFor="let row of rpuTypeList"></nz-option>
+          </nz-select>
+          <ng-template #rputypeErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Total AV</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="totalavErrorTpl">
+          <input nz-input type="number" formControlName="totalav" placeholder="Enter here..." />
+          <ng-template #totalavErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Total MV</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="totalmvErrorTpl">
+          <input nz-input type="number" formControlName="totalmv" placeholder="Enter here..." />
+          <ng-template #totalmvErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Taxable</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="taxableErrorTpl">
+            <nz-switch formControlName="taxable" nzCheckedChildren="Yes" nzUnCheckedChildren="No"></nz-switch>
+          <ng-template #taxableErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+    </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Owner Name</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="ownerNameErrorTpl">
+          <input nz-input formControlName="ownerName" placeholder="Enter here..." />
+          <ng-template #ownerNameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+          <nz-form-label  nzRequired nzSpan="7" class="text-left">Is-active</nz-form-label>
+          <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="emailErrorTpl">
+            <nz-switch formControlName="state" nzCheckedChildren="Yes" nzUnCheckedChildren="No"></nz-switch>
+            <ng-template #emailErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+            </ng-template>
+          </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSpan="7" class="text-left">Remarks</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="remarksErrorTpl">
+          <textarea formControlName="remarks" nz-input rows="2" placeholder="Write any thing"></textarea>
+          <ng-template #remarksErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <ng-template #justView>
+      
+    </ng-template>
+
+    <div *nzModalFooter>
+        <nz-form-control>
+            <button *ngIf="actionType === 'create'" nz-button nzType="primary" type="submit" [disabled]="!validateForm.valid" (click)="submitCreate()">Save </button>
+            <button *ngIf="actionType === 'edit'" nz-button nzType="primary" type="submit" [disabled]="!validateForm.valid" (click)="submitEdit()">Save changes</button>
+            <button *ngIf="actionType === 'delete'" nz-button nzType="primary" nzDanger type="submit" [disabled]="!validateForm.valid" (click)="submitDelete()">Confirm delete</button>
+            <button *ngIf="actionType === 'create'" nz-button (click)="resetForm()">Reset</button>
+            <button nz-button (click)="closeMe() ">Close</button>
+        </nz-form-control>
+    </div>
+  </form>

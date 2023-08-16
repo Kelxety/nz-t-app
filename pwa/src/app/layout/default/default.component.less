@@ -1,0 +1,27 @@
+@import "base";
+
+.trigger {
+  z-index: 10;
+  padding: 0 24px;
+  font-size: 18px;
+  line-height: 64px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+
+.fixed {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 999;
+}
+
+.mix-sider-height {
+  height: calc(100vh - @layout-header-height - @layout-trigger-height);
+}

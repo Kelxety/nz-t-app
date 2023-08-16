@@ -1,0 +1,343 @@
+
+    <div [nzGutter]="4" nz-row *ngIf="actionType === 'create' || actionType === 'edit'; else justView">
+      <!-- <nz-form-item>
+        <nz-form-label  nzRequired nzSpan="7" class="text-left">Barangay</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="barangayErrorTpl">
+          <input nz-input formControlName="barangay" placeholder="Enter here..." />
+          <ng-template #barangayErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item> -->
+        <div nz-col nzSpan="8">
+          <form nz-form [formGroup]="validateForm">
+          <nz-card nzTitle="O.R. INFORMATION" [nzExtra]="optionsOR">
+            <div style="padding: 24px;">
+              <nz-form-item>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">Barangay</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="barangayErrorTpl">
+                  <nz-tree-select
+                    [nzNodes]="nodes"
+                    nzShowSearch
+                    nzPlaceHolder="Please select"
+                    nzVirtualHeight="500px"
+                    nzHideUnMatched="true"
+                    formControlName="barangay">
+                  </nz-tree-select>
+                  <ng-template #barangayErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">OR No.</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="orNoErrorTpl">
+                  <input nz-input formControlName="orNo" placeholder="Enter here..." onfocus="this.select()" />
+                  <ng-template #orNoErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">OR Date</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="orDateErrorTpl">
+                  <nz-date-picker formControlName="orDate" nzFormat="dd-MMM-yyy" onfocus="this.select()"></nz-date-picker>
+                  <ng-template #orDateErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">Payor</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="orPayorErrorTpl">
+                  <input nz-input formControlName="orPayor" placeholder="Enter here..." onfocus="this.select()" />
+                  <ng-template #orPayorErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">Type</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="orTypeErrorTpl">
+                  <!-- <input nz-input formControlName="orType" placeholder="Enter here..." /> -->
+                  <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select type" formControlName="orType">
+                    <nz-option nzLabel="Cash" nzValue="CSH"></nz-option>
+                    <nz-option nzLabel="Check" nzValue="CHK"></nz-option>
+                    <nz-option nzLabel="Cash and Check" nzValue="CCK"></nz-option>
+                  </nz-select>
+                  <ng-template #orTypeErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">Total amount</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="totalAmountErrorTpl">
+                  <input nz-input type="number" formControlName="totalAmount" placeholder="Enter here..." />
+                  <ng-template #totalAmountErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <div nz-row>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">Yr/Qtr From</nz-form-label>
+                <div nz-col nzSpan="17">
+                  <div nz-row [nzGutter]="2">
+                    <div nz-col nzSpan="12">
+                      <nz-form-item>
+                        <nz-form-control nzHasFeedback [nzErrorTip]="yearFromErrorTpl">
+                          <!-- <input nz-input type="number" formControlName="yearFrom" placeholder="Enter here..." /> -->
+                          <nz-date-picker nzMode="year" formControlName="yearFrom" onfocus="this.select()"></nz-date-picker>
+                          <ng-template #yearFromErrorTpl let-control>
+                            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                          </ng-template>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                    <div nz-col nzSpan="12">
+                      <nz-form-item>
+                        <nz-form-control nzHasFeedback [nzErrorTip]="qtrFromErrorTpl">
+                          <!-- <input nz-input type="number" formControlName="qtrFrom" placeholder="Enter here..." /> -->
+                          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select type" formControlName="qtrFrom">
+                            <nz-option nzLabel="1st Quarter" nzValue=1></nz-option>
+                            <nz-option nzLabel="2nd Quarter" nzValue=2></nz-option>
+                            <nz-option nzLabel="3rd Quarter" nzValue=3></nz-option>
+                            <nz-option nzLabel="4th Quarter" nzValue=4></nz-option>
+                          </nz-select>
+                          <ng-template #qtrFromErrorTpl let-control>
+                            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                          </ng-template>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+              <div nz-row>
+                <nz-form-label  nzRequired nzSpan="7" class="text-left">Yr/Qtr To</nz-form-label>
+                <div nz-col nzSpan="17">
+                  <div nz-row [nzGutter]="2">
+                    <div nz-col nzSpan="12">
+                      <nz-form-item>
+                        <nz-form-control nzHasFeedback [nzErrorTip]="yearToErrorTpl">
+                          <nz-date-picker nzMode="year" formControlName="yearTo"></nz-date-picker>
+                          <ng-template #yearToErrorTpl let-control>
+                            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                          </ng-template>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                    <div nz-col nzSpan="12">
+                      <nz-form-item>
+                        <nz-form-control nzHasFeedback [nzErrorTip]="qtrToErrorTpl">
+                          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select type" formControlName="qtrTo">
+                            <nz-option nzLabel="1st Quarter" nzValue=1></nz-option>
+                            <nz-option nzLabel="2nd Quarter" nzValue=2></nz-option>
+                            <nz-option nzLabel="3rd Quarter" nzValue=3></nz-option>
+                            <nz-option nzLabel="4th Quarter" nzValue=4></nz-option>
+                          </nz-select>
+                          <ng-template #qtrToErrorTpl let-control>
+                            <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                          </ng-template>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+              <nz-form-item>
+                  <nz-form-label  nzRequired nzSpan="7" class="text-left">Is-active</nz-form-label>
+                  <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="emailErrorTpl">
+                      <nz-switch formControlName="state" nzCheckedChildren="Yes" nzUnCheckedChildren="No"></nz-switch>
+                    <!-- <input nz-input formControlName="state" placeholder="Status" /> -->
+                    <ng-template #emailErrorTpl let-control>
+                      <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                    </ng-template>
+                  </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label nzSpan="7" class="text-left">Remarks</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="remarksErrorTpl">
+                  <textarea formControlName="remarks" nz-input rows="2" placeholder="Write any thing"></textarea>
+                  <ng-template #remarksErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label nzSpan="7" class="text-left">Is-posted</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="isPostedErrorTpl">
+                    <nz-switch formControlName="isPosted" nzCheckedChildren="Yes" nzUnCheckedChildren="No"></nz-switch>
+                  <!-- <input nz-input formControlName="state" placeholder="Status" /> -->
+                  <ng-template #isPostedErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label nzSpan="7" class="text-left">Posted by</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="postedByErrorTpl">
+                  <input nz-input formControlName="postedBy" placeholder="Enter here..." onfocus="this.select()" />
+                  <ng-template #postedByErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        
+              <nz-form-item>
+                <nz-form-label nzSpan="7" class="text-left">Posted at</nz-form-label>
+                <nz-form-control [nzSpan]="17" nzHasFeedback [nzErrorTip]="postedAtErrorTpl">
+                  <nz-date-picker formControlName="postedAt" nzFormat="dd-MMM-yyy" onfocus="this.select()" ></nz-date-picker>
+                  <ng-template #postedAtErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">This is required!</ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </nz-card>
+          </form>
+        </div>
+        <div nz-col nzSpan="16">
+          <nz-card nzTitle="DETAILS ({{mainModel.totalAmount | currency: '₱ '}})" [nzExtra]="options" *ngIf="actionType === 'edit'; else noHeader">
+            <div *ngIf="!mainModel.loading; else isLoading">
+                <nz-table
+                nzShowSizeChanger
+                #fixedTable
+                [nzData]="mainModel.filteredList"
+                [nzSize]="'small'"
+                [nzScroll]="{ x: 'auto', y: 'auto' }"
+                (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+                [nzPageSize]=20>
+                <thead>
+                  <tr>
+                    <th nzLeft
+                      nzWidth="50px" 
+                      [nzSelections]="listOfSelection"
+                      [(nzChecked)]="checked"
+                      (nzCheckedChange)="onAllChecked($event)"
+                    ></th>
+                    <th nzLeft>Account</th>
+                    <th nzRight nzWidth="140px" class="text-right">Amount</th>
+                    <th nzRight nzWidth="75px" class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let data of fixedTable.data">
+                    <td nzLeft [nzChecked]="setOfCheckedId.has(data.id)" (nzCheckedChange)="onItemChecked(data.id, $event)"></td>
+                    <td nzLeft nzEllipsis>{{ data.account.accountTitle }}</td>
+                    <td nzRight nzEllipsis class="text-right color-red">{{data.amount | currency: '₱ '}}</td>
+                    <td nzRight class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+                      <span  class="pointer" nz-icon nzType="delete" nzTheme="outline" style="color: red"
+                      nz-popconfirm
+                      nzPopconfirmTitle="Are you sure you want to delete '{{data.account.accountTitle}}'"
+                      (nzOnConfirm)="confirm(data)"
+                      (nzOnCancel)="cancel()"
+                      ></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td nzLeft>
+                    </td>
+                    <td nzLeft>
+                      <nz-form-item style="margin: 0px;">
+                        <nz-form-control [nzSpan]="24" nzHasFeedback>
+                          <!-- <nz-tree-select
+                            [nzNodes]="nodes"
+                            nzShowSearch
+                            nzPlaceHolder="Please select account"
+                            nzVirtualHeight="500px"
+                            name="account" id="account" [(ngModel)]="detailModel.account" [ngModelOptions]="{standalone: true}">
+                          </nz-tree-select> -->
+                          <!-- <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select type" [(ngModel)]="detailModel.account" [ngModelOptions]="{standalone: true}">
+                            <nz-option nzLabel="{{data.title}}" *ngFor="let data of accountModel.list" nzValue="{{data.key}}"></nz-option>
+                          </nz-select> -->
+                              <nz-tree-select
+                                [nzNodes]="treeData"
+                                nzShowSearch
+                                nzPlaceHolder="Please select"
+                                nzVirtualHeight="500px"
+                                nzHideUnMatched="true"
+                                [(ngModel)]="detailModel.account" [ngModelOptions]="{standalone: true}">
+                              </nz-tree-select>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </td>
+                    <td nzRight nzWidth="140px">
+                      <nz-form-item style="margin: 0px;">
+                        <nz-form-control [nzSpan]="24" nzHasFeedback>
+                          <input nz-input  class="text-right" type="number" name="amount" id="account" [(ngModel)]="detailModel.amount" [ngModelOptions]="{standalone: true}" placeholder="Enter here..." onfocus="this.select()" />
+                        </nz-form-control>
+                      </nz-form-item>
+                    </td>
+                    <td nzRight  class="text-right">
+                      <button  nz-button nzType="primary" type="button"  (click)="submitDetail()">Save </button>
+                    </td>
+                  </tr>
+                </tbody>
+                </nz-table>   
+            </div>
+          </nz-card>
+        </div>
+    </div>
+
+    <ng-template #justView>
+      
+    </ng-template>
+
+    <div *nzModalFooter>
+        <nz-form-control>
+            <button *ngIf="actionType === 'create'" nz-button nzType="primary" type="submit" [disabled]="!validateForm.valid" (click)="submitCreate()">Save </button>
+            <button *ngIf="actionType === 'edit'" nz-button nzType="primary" type="submit" [disabled]="!validateForm.valid" (click)="submitEdit()">Save changes</button>
+            <button *ngIf="actionType === 'delete'" nz-button nzType="primary" nzDanger type="submit" [disabled]="!validateForm.valid" (click)="submitDelete()">Confirm delete</button>
+            <button *ngIf="actionType === 'create'" nz-button (click)="resetForm()">Reset</button>
+            <button nz-button (click)="closeMe() ">Close</button>
+        </nz-form-control>
+    </div>
+
+<ng-template #optionsOR>
+  <div nz-space nzAlign="start">
+    <nz-button-group *nzSpaceItem>
+      <button  (click)="getData()" class="pointer" nz-button nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip><span nz-icon nzType="reload" nzTheme="outline"></span></button>
+    </nz-button-group>
+  </div>
+</ng-template>
+
+<ng-template #suffixIconSearch>
+  <span nz-icon nzType="search"></span>
+</ng-template>
+  
+<ng-template #options>
+  <div nz-space nzAlign="start">
+    <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch">
+      <input type="text" nz-input placeholder="Search..." name="search" [(ngModel)]="search" (ngModelChange)="filter($event)"/>
+    </nz-input-group>
+    <nz-button-group *nzSpaceItem>
+      <button  (click)="loadData()" class="pointer" nz-button nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip><span nz-icon nzType="reload" nzTheme="outline"></span></button>
+    </nz-button-group>
+  </div>
+</ng-template>
+  
+<ng-template #isLoading>
+    <div style="padding: 24px;">
+        <nz-skeleton [nzActive]="true"></nz-skeleton>
+        <nz-skeleton [nzActive]="true"></nz-skeleton>
+    </div>
+</ng-template>
+
+<ng-template #noHeader>
+<div class="no-header">
+  Save O.R. Information for account detail!
+</div>
+</ng-template>
+  

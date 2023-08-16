@@ -1,0 +1,29 @@
+.hoverMe {
+    width: 100%;
+    height: 26px;
+    padding-right: 10px;
+    transition: 0.5s;
+    border: 1px dashed transparent;
+}
+
+.btn-space {
+    width: 100%;
+}
+
+.btn-right {
+    float: right;
+}
+
+
+@import "mixin";
+.themeMixin({
+  :host {
+
+    .hoverMe:hover {
+        // background-color: #bcdfff;
+        border: 1px dashed @primary-color!important;
+        border-radius: 5px;
+    }
+    
+  }
+});
