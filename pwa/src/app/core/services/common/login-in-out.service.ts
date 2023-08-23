@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { finalize, map, takeUntil } from 'rxjs/operators';
 
+import { AccountService, UserService } from '@app/shared/data-access/api';
 import { ActionCode } from '@config/actionCode';
 import { TokenKey, TokenPre } from '@config/constant';
 import { SimpleReuseStrategy } from '@core/services/common/reuse-strategy';
@@ -14,8 +15,9 @@ import { MenuStoreService } from '@store/common-store/menu-store.service';
 import { UserInfo, UserInfoService } from '@store/common-store/userInfo.service';
 import { getDeepReuseStrategyKeyFn } from '@utils/tools';
 import { fnFlatDataHasParentToTree } from '@utils/treeTableTools';
-import { AccountService, UserService } from '@app/shared/data-access/api';
 import { NzMessageService } from 'ng-zorro-antd/message';
+
+import { AuthService } from '../http/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +35,7 @@ export class LoginInOutService {
     private userInfoService: UserInfoService,
     private menuService: MenuStoreService,
     private windowServe: WindowService,
-
+    private authService: AuthService
   ) {}
 
   getMenuByUserId(userId: number): Observable<Menu[]> {
@@ -42,27 +44,23 @@ export class LoginInOutService {
 
   loginIn(token: string): Promise<void> {
     return new Promise(resolve => {
-     
       this.windowServe.setSessionStorage(TokenKey, TokenPre + token);
 
       const data$ = this.getMe();
       const acctList$ = this.getClass();
 
       data$.pipe().subscribe({
-        next: (o:any) => {
+        next: (o: any) => {
           console.log('USER', o);
           let id = parseInt(o.id);
           let auth: any[] = [];
           this.userInfoService.setUserName(o.accountName);
           this.userInfoService.setUserPhotoUrl(o.photoUrl);
-  
-          for (const rolePermission of o.rolePermissions) {
-            for (const permission of rolePermission.permission) {
-              auth.push(permission);
-            }
-            auth.push(rolePermission.role);
+
+          for (const rolePermission of o.role) {
+            auth.push(rolePermission.name);
           }
-          const userInfo: UserInfo = { userId: id, authCode: auth};
+          const userInfo: UserInfo = { userId: id, authCode: auth };
           userInfo.authCode.push('default:dashboard');
           userInfo.authCode.push('default:dashboard:analysis');
           console.log('USER STORED', userInfo);
@@ -70,45 +68,45 @@ export class LoginInOutService {
           // this.cd.detectChanges();
           // resolve();
           this.getMenuByUserId(userInfo.userId)
-          .pipe(
-            finalize(() => {
+            .pipe(
+              finalize(() => {
+                resolve();
+              })
+            )
+            .subscribe(menus => {
+              menus = menus.filter(item => {
+                item.selected = false;
+                item.open = false;
+                return item.menuType === 'C';
+              });
+              const temp = fnFlatDataHasParentToTree(menus);
+              this.menuService.setMenuArrayStore(temp);
               resolve();
-            })
-          )
-          .subscribe(menus => {
-            menus = menus.filter(item => {
-              item.selected = false;
-              item.open = false;
-              return item.menuType === 'C';
             });
-            const temp = fnFlatDataHasParentToTree(menus);
-            this.menuService.setMenuArrayStore(temp);
-            resolve();
-          });
-        resolve();
+          resolve();
         },
-        error: () => {
+        error: err => {
+          console.log(err);
+          this.msg.error('Something wrong w/ the login.');
           this.loginOut();
-          this.msg.error('Something wrong w/ the login.')
         },
         complete: () => {
           // this.loading = false;
         }
-      })
+      });
 
-      acctList$.pipe().subscribe({
-        next: (o:any) => {
-          this.acctService.dataList = o['hydra:member'];
-          
-          console.log('accnt', this.acctService.dataList );
-        },
-        error: () => {
-          this.loginOut();
-          this.msg.error('Something wrong w/ the login.')
-        },
-        complete: () => {
-        }
-      })
+      // acctList$.pipe().subscribe({
+      //   next: (o: any) => {
+      //     this.acctService.dataList = o['hydra:member'];
+
+      //     console.log('accnt', this.acctService.dataList);
+      //   },
+      //   error: () => {
+      //     this.loginOut();
+      //     this.msg.error('Something wrong w/ the login.');
+      //   },
+      //   complete: () => {}
+      // });
 
       // const userInfo: UserInfo = this.userInfoService.parsToken(TokenPre + token);
       // console.log('USER_INFO', userInfo);
@@ -124,7 +122,7 @@ export class LoginInOutService {
       // ]};
       // // userInfo.authCode.push(ActionCode.TabsDetail);
       // // userInfo.authCode.push(ActionCode.SearchTableDetail);
-      
+
       // this.userInfoService.setUserInfo(userInfo);
 
       // this.getMenuByUserId(userInfo.userId)
@@ -148,26 +146,30 @@ export class LoginInOutService {
   }
 
   getMe() {
-    return this.apiUser.me()
-      .pipe(
-        map((res:any) => {
-          return res;
-        })
-      );
+    return this.apiUser.me().pipe(
+      map((res: any) => {
+        return res;
+      })
+    );
   }
 
   getClass() {
-    return this.acctService.list({pagination: false})
-      .pipe(
-        map((res:any) => {
-          return res;
-        })
-      );
+    return this.acctService.list({ pagination: false }).pipe(
+      map((res: any) => {
+        return res;
+      })
+    );
   }
 
-  clearTabCash(): Promise<void> {
+  getRefreshToken(): Observable<any> {
+    // const data = this.authService.refresh();
+    // console.log(data);
+    return of();
+  }
+
+  clearTabCash(): Promise<any> {
     return SimpleReuseStrategy.deleteAllRouteSnapshot(this.activatedRoute.snapshot).then(() => {
-      return new Promise(resolve => {
+      return new Promise<void>(resolve => {
         // 清空tab
         this.tabService.clearTabs();
         resolve();

@@ -17,8 +17,10 @@ export class SubLockedStatusService {
     // 判断是否有缓存
     const hasCash = this.windowSer.getSessionStorage(LockedKey);
     if (hasCash) {
+      console.log(hasCash);
       this.lockScreenStoreService.setLockScreenStore(fnDecrypt(hasCash, salt));
     } else {
+      console.log('hasCash');
       this.lockScreenStoreService
         .getLockScreenStore()
         .pipe(first())

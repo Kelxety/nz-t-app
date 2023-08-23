@@ -5,12 +5,13 @@ import { LoginInOutService } from '@core/services/common/login-in-out.service';
 import { UserInfoService } from '@store/common-store/userInfo.service';
 
 import { WindowService } from '../services/common/window.service';
+import { AuthService } from '../services/http/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StartupService {
-  constructor(private userInfoService: UserInfoService, private loginInOutService: LoginInOutService, private windowSer: WindowService) {}
+  constructor(private userInfoService: UserInfoService, private loginInOutService: LoginInOutService, private windowSer: WindowService, private authService: AuthService) {}
 
   load(): Promise<void> {
     const token = this.windowSer.getSessionStorage(TokenKey)?.replace(TokenPre, '');

@@ -3,14 +3,12 @@ import { Observable, of } from 'rxjs';
 import { ApiService } from '@app/shared';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class UserService {
   private baseUrl = '/api/users';
 
-  constructor(
-      private apiService: ApiService,
-  ) { }
+  constructor(private apiService: ApiService) {}
 
   me(): Observable<any> {
     const url = `${this.baseUrl}/me`;

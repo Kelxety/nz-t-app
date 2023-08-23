@@ -1,30 +1,26 @@
+import { HttpClient, HttpParams, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import { Observable, of, throwError  } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, retry } from 'rxjs/operators';
 
 // tslint:disable:no-console
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ApiService {
-
-  constructor(
-    private http: HttpClient,
-  ) { }
+  constructor(private http: HttpClient) {}
 
   get(path: string, params: HttpParams = new HttpParams()): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/ld+json',
-      'Accept': 'application/ld+json'
+      Accept: 'application/ld+json'
     });
 
-    return this.http.get<any>(path , { params, headers })
-      .pipe(
-        tap(data => console.log('fetched data')),
-        catchError(this.handleError('error', [])),
-      );
+    return this.http.get<any>(path, { params, headers }).pipe(
+      tap(data => console.log('fetched data')),
+      catchError(this.handleError('error', []))
+    );
   }
 
   post(path: string, params: object = {}): Observable<any> {
@@ -35,9 +31,9 @@ export class ApiService {
       headers = headers.append('Accept', 'application/ld+json');
     }
 
-    return this.http.post<any>(path, params,{ headers }).pipe(
+    return this.http.post<any>(path, params, { headers }).pipe(
       tap((data: any) => console.log(`added`)),
-      catchError(this.handleError<any>('error')),
+      catchError(this.handleError<any>('error'))
     );
   }
 
@@ -51,24 +47,23 @@ export class ApiService {
 
     return this.http.put<any>(path, params, { headers }).pipe(
       tap((data: any) => console.log(`updated`)),
-      catchError(this.handleError<any>('error')),
+      catchError(this.handleError<any>('error'))
     );
   }
 
   delete(path: string): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/ld+json',
-      'Accept': 'application/ld+json'
+      Accept: 'application/ld+json'
     });
     return this.http.delete<any>(path, { headers }).pipe(
       tap((data: any) => console.log(`deleted`)),
-      catchError(this.handleError<any>('error')),
+      catchError(this.handleError<any>('error'))
     );
   }
 
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-
       // TODO: send the error to remote logging infrastructure
       console.error(error);
 

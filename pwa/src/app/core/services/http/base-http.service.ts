@@ -78,7 +78,7 @@ export class BaseHttpService {
         // filter(item => {
         //   return this.handleFilter(item, !!config.needSuccessInfo);
         // }),
-        map(item => {
+        map((item: any) => {
           // if (item.code !== 0) {
           //   throw new Error(item.msg);
           // }
