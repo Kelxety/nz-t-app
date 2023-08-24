@@ -32,7 +32,7 @@ Backend Side:
 Generate Routes in Backend
 
 ```bash
-  npx nest generate route_name
+  npx nest generate resource route_name
 ```
 
 ## Environment Variables
