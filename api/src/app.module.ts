@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
 import { UnitModule } from './unit/unit.module';
+import { ItemCategoryModule } from './item-category/item-category.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UnitModule } from './unit/unit.module';
     RoleModule,
     WarehouseModule,
     UnitModule,
+    ItemCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
