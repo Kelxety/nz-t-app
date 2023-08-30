@@ -8,7 +8,7 @@ import { NzSafeAny } from 'ng-zorro-antd/core/types';
 
 // 动态组件
 export class DynamicComponent {
-  constructor(public component: Type<NzSafeAny>, public data: NzSafeAny) {}
+  constructor(public component: Type<NzSafeAny>, public data: NzSafeAny) { }
 }
 
 // select下拉
@@ -76,4 +76,5 @@ export interface Menu {
   children?: Menu[];
   code?: string; // 权限码
   newLinkFlag?: 0 | 1; // 是否是新页
+  data?: any;
 }

@@ -1,10 +1,12 @@
 @import "./minireset.less";
 @import "../../../node_modules/ng-zorro-antd/resizable/style/entry.less";
+@import "./style.scss";
 
 @layout-header-height: 48px;
 @layout-header-padding: 0;
 @menu-collapsed-width: 48px;
 @layout-trigger-height: 40px;
+
 // 如果存在所有主题通用的样式变量,基本样式文件并在每个主题样式定制文件中引入它：
 * {
   box-sizing: border-box;
@@ -28,7 +30,8 @@ p {
 }
 
 
-audio, video {
+audio,
+video {
   outline: none;
 }
 
@@ -40,7 +43,12 @@ input:focus {
   text-decoration: none;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-bottom: 0;
 }
 
@@ -92,7 +100,7 @@ h1, h2, h3, h4, h5, h6 {
   content: '.';
 }
 
-.grey-theme{
+.grey-theme {
   filter: grayscale(100%);
 }
 
@@ -107,7 +115,8 @@ h1, h2, h3, h4, h5, h6 {
 
 
 .text-left {
-  text-align: left !important;;
+  text-align: left !important;
+  ;
 }
 
 .text-center {
@@ -115,7 +124,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-right {
-  text-align: right !important;;
+  text-align: right !important;
+  ;
 }
 
 .pull-left {
@@ -506,7 +516,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
 }
 
-.center-fn(@col:center,@row:center) {
+.center-fn(@col: center, @row: center) {
   display: flex;
   align-items: @row;
   justify-content: @col;
@@ -637,7 +647,9 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-.ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left {
+.ant-menu-inline,
+.ant-menu-vertical,
+.ant-menu-vertical-left {
   border: none;
 }
 

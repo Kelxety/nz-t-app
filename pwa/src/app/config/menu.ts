@@ -69,6 +69,7 @@ const menuNav: Menu[] = [
         "icon": "setting",
         "selected": false,
         "open": false,
+
         "children": [
             {
                 "id": 121,
