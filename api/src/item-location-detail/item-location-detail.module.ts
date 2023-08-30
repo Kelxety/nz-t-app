@@ -7,12 +7,12 @@ import { TransformInterceptor } from '../lib/interceptor/transform.interceptor';
 import { PrismaModule } from '../lib/prisma/prisma.module';
 import { RoleService } from '../role/role.service';
 import { UsersModule } from '../users/users.module';
-import { ItemCategoryController } from './item-category.controller';
-import { ItemCategoryService } from './item-category.service';
+import { ItemLocationDetailController } from './item-location-detail.controller';
+import { ItemLocationDetailService } from './item-location-detail.service';
 
 @Module({
-  controllers: [ItemCategoryController],
-  providers: [ItemCategoryService,
+  controllers: [ItemLocationDetailController],
+  providers: [ItemLocationDetailService,
     JwtStrategy,
     RefreshTokenStrategy,
     TransformInterceptor,
@@ -25,6 +25,6 @@ import { ItemCategoryService } from './item-category.service';
       signOptions: { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION },
     }),
     UsersModule,
-  ],
+  ]
 })
-export class ItemCategoryModule { }
+export class ItemLocationDetailModule { }

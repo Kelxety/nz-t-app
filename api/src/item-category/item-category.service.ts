@@ -8,9 +8,9 @@ import { UpdateItemCategoryDto } from './dto/update-item-category.dto';
 
 @Injectable()
 export class ItemCategoryService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
-  
- async create(createItemCategoryDto: CreateItemCategoryDto, token: string) {
+  constructor(private prisma: PrismaService, private role: RoleService) { }
+
+  async create(createItemCategoryDto: CreateItemCategoryDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Error in token');
     return await this.prisma.scmItemCategory.create({
@@ -42,19 +42,19 @@ export class ItemCategoryService {
     });
   }
 
- async findOne(id: string) { 
+  async findOne(id: string) {
     const data = await this.prisma.scmItemCategory.findUnique({ where: { id } });
-  if (!data) {
-    throw new NotFoundException(`Warehouse with id ${id} does not exist.`);
-  }
-  return data;
+    if (!data) {
+      throw new NotFoundException(`${id} does not exist.`);
+    }
+    return data;
   }
 
- async update(id: string, updateItemCategoryDto: UpdateItemCategoryDto, token: string) {
+  async update(id: string, updateItemCategoryDto: UpdateItemCategoryDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
-    const data = await this.prisma.scmWarehouse.findUnique({ where: { id } });
+    const data = await this.prisma.scmItemCategory.findUnique({ where: { id } });
     if (!data) {
-      throw new NotFoundException(`Warehouse with id ${id} does not exist.`);
+      throw new NotFoundException(`${id} does not exist.`);
     }
     const warehouse = await this.prisma.scmItemCategory.update({
       where: { id },
@@ -71,6 +71,6 @@ export class ItemCategoryService {
   }
 
   async count() {
-    return this.prisma.scmWarehouse.count();
+    return this.prisma.scmItemCategory.count();
   }
 }

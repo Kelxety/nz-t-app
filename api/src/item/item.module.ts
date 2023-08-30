@@ -7,16 +7,16 @@ import { TransformInterceptor } from '../lib/interceptor/transform.interceptor';
 import { PrismaModule } from '../lib/prisma/prisma.module';
 import { RoleService } from '../role/role.service';
 import { UsersModule } from '../users/users.module';
-import { ItemCategoryController } from './item-category.controller';
-import { ItemCategoryService } from './item-category.service';
+import { ItemController } from './item.controller';
+import { ItemService } from './item.service';
 
 @Module({
-  controllers: [ItemCategoryController],
-  providers: [ItemCategoryService,
+  controllers: [ItemController],
+  providers: [ItemService,
     JwtStrategy,
     RefreshTokenStrategy,
     TransformInterceptor,
-    RoleService],
+    RoleService,],
   imports: [
     PrismaModule,
     PassportModule,
@@ -27,4 +27,4 @@ import { ItemCategoryService } from './item-category.service';
     UsersModule,
   ],
 })
-export class ItemCategoryModule { }
+export class ItemModule { }

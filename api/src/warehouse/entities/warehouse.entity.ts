@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ScmWarehouse } from '@prisma/client';
 
 export class WarehouseEntity implements ScmWarehouse {
+  constructor(partial: Partial<WarehouseEntity>) {
+    Object.assign(this, partial);
+  }
   @ApiProperty()
   id: string;
 

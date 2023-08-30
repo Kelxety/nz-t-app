@@ -10,7 +10,7 @@ import { ItemCategoryEntity } from './entities/item-category.entity';
 import { ItemCategoryService } from './item-category.service';
 
 @Controller('item-category')
-@ApiTags('smc_item_category')
+@ApiTags('scm_item_category')
 export class ItemCategoryController {
   constructor(private readonly itemCategoryService: ItemCategoryService) { }
 
@@ -22,7 +22,7 @@ export class ItemCategoryController {
       request?.headers?.authorization.split('Bearer ')[1],
     );
     return {
-      message: `Warehouse successfully created`,
+      message: `Successfully created`,
       data: data,
     };
   }
@@ -38,7 +38,7 @@ export class ItemCategoryController {
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
     return {
-      message: `List of all warehouse fetch Successfully`,
+      message: `List of Data`,
       data: data,
       total: data.length,
     };
@@ -49,7 +49,7 @@ export class ItemCategoryController {
   async findOne(@Param('id') id: string) {
     const data = await this.itemCategoryService.findOne(id);
     return {
-      message: `Warehouse with id of ${id} detail fetched Succesfully`,
+      message: `${id} fetched Succesfully`,
       data: data,
       total: 1,
     };
@@ -77,7 +77,7 @@ export class ItemCategoryController {
   async remove(@Param('id') id: string) {
     const data = await this.itemCategoryService.remove(id);
     return {
-      message: `Warehouse with id of ${id} detail deleted Succesfully`,
+      message: `${id} detail deleted Succesfully`,
       data: data,
       total: 1,
     };
