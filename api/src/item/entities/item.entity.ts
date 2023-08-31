@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ScmItem } from "@prisma/client";
+import { Exclude } from "class-transformer";
 import { ItemDetailEntity } from "../../item-detail/entities/item-detail.entity";
 
 export class ItemEntity implements ScmItem {
@@ -19,6 +20,7 @@ export class ItemEntity implements ScmItem {
     itemDescription: string;
 
     @ApiProperty()
+    @Exclude()
     itemcategoryId: string;
 
     @ApiProperty()

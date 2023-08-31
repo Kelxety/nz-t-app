@@ -35,7 +35,14 @@ export class ItemService {
       return this.prisma.scmItem.findMany({
         where: data,
         include: {
-          scmItemDtl: true
+          scmItemCategory: true,
+          scmItemDtl: {
+            where: {
+              balanceQty: {
+                gt: 0
+              }
+            }
+          }
         },
         orderBy: order,
       });
@@ -43,7 +50,14 @@ export class ItemService {
     return this.prisma.scmItem.findMany({
       where: data,
       include: {
-        scmItemDtl: true
+        scmItemCategory: true,
+        scmItemDtl: {
+          where: {
+            balanceQty: {
+              gt: 0
+            }
+          }
+        }
       },
       take: pageSize || 10,
       skip: (page - 1) * pageSize || 0,

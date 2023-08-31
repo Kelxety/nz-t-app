@@ -15,6 +15,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
@@ -83,6 +84,7 @@ const MODULES: any[] = [
   NzTreeSelectModule,
   NzPageHeaderModule,
   NzDescriptionsModule,
+  NzLayoutModule
   // NgxMaskModule.forRoot()
 ];
 
