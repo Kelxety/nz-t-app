@@ -53,7 +53,7 @@ export class HttpInterceptorService implements HttpInterceptor {
     return this.authService.refresh(token).pipe(
       switchMap((newToken: string) => {
         if (newToken) {
-          this.windowServe.clearSessionStorage();
+          this.windowServe.removeSessionStorage(token);
           const updatedRequest = this.attachTokenToRequest(request, newToken);
           return next.handle(updatedRequest);
         } else {
