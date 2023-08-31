@@ -316,7 +316,7 @@ model ScmItem {
   updatedAt           DateTime             @updatedAt @map("updated_at") @db.DateTime(0)
   scmItemCategory     ScmItemCategory?     @relation(fields: [itemcategoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_item_ibfk_1")
   scmUnit             ScmUnit?             @relation(fields: [unitId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_item_ibfk_2")
-  scmItemDtls         ScmItemDtl[]
+  scmItemDtl          ScmItemDtl[]
   scmItemLocationDtls ScmItemLocationDtl[]
 
   @@index([itemcategoryId], map: "itemcategory_id")
