@@ -13,6 +13,7 @@ import { UsersModule } from './users/users.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
 import { ItemLocationModule } from './item-location/item-location.module';
 import { ItemLocationDetailModule } from './item-location-detail/item-location-detail.module';
+import { HospitalPatientModule } from './hospital-patient/hospital-patient.module';
 
 @Module({
   imports: [
@@ -28,8 +29,9 @@ import { ItemLocationDetailModule } from './item-location-detail/item-location-d
     ItemDetailModule,
     ItemLocationModule,
     ItemLocationDetailModule,
+    HospitalPatientModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

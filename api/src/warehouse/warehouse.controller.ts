@@ -6,27 +6,19 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Query,
   Request,
 } from '@nestjs/common';
 import { WarehouseService } from './warehouse.service';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
-import {
-  ApiBearerAuth,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { RoleGuard } from 'src/auth/role/role.guard';
-import { Roles } from 'src/auth/roles/roles.decorator';
+import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
 import { toBoolean } from 'src/lib/helper/cast.helper';
 import { WarehouseEntity } from './entities/warehouse.entity';
 import { Request as Req } from 'express';
 import { QueryT, ResponseT } from 'src/lib/interface';
+import { Prisma } from '@prisma/client';
+import { CustomGlobalDecorator } from 'src/lib/decorators/global.decorators';
 
 @Controller('warehouse')
 @ApiTags('smc_warehouse')
@@ -34,10 +26,7 @@ export class WarehouseController {
   constructor(private readonly warehouseService: WarehouseService) {}
 
   @Post()
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @ApiOkResponse({ type: WarehouseEntity })
-  @Roles('SUPERADMIN')
+  @CustomGlobalDecorator(null, false, WarehouseEntity)
   async create(
     @Request() request: Req,
     @Body() createWarehouseDto: CreateWarehouseDto,
@@ -53,10 +42,11 @@ export class WarehouseController {
   }
 
   @Get()
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @ApiOkResponse({ type: WarehouseEntity, isArray: true })
-  @Roles('SUPERADMIN')
+  @CustomGlobalDecorator(
+    Prisma.ScmWarehouseScalarFieldEnum,
+    true,
+    WarehouseEntity,
+  )
   async findAll(
     @Query()
     query: QueryT,
@@ -76,23 +66,11 @@ export class WarehouseController {
   }
 
   @Get(':id')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @ApiOkResponse({ type: WarehouseEntity })
+  @CustomGlobalDecorator(null, false, WarehouseEntity)
   @ApiNotFoundResponse({
     status: 404,
-    description: 'NotFoundException. User was not found',
+    description: 'NotFoundException. Data was not found',
   })
-  @ApiUnauthorizedResponse({
-    schema: {
-      type: 'object',
-      example: {
-        message: 'string',
-      },
-    },
-    description: '401. UnauthorizedException.',
-  })
-  @Roles('SUPERADMIN')
   async findOne(@Param('id') id: string) {
     const data = await this.warehouseService.findOne(id);
     return {
@@ -103,10 +81,7 @@ export class WarehouseController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @ApiOkResponse({ type: WarehouseEntity })
-  @Roles('SUPERADMIN')
+  @CustomGlobalDecorator(null, false, WarehouseEntity)
   async update(
     @Request() request: Req,
     @Param('id') id: string,
@@ -125,10 +100,7 @@ export class WarehouseController {
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @ApiOkResponse({ type: WarehouseEntity })
-  @Roles('SUPERADMIN')
+  @CustomGlobalDecorator(null, false, WarehouseEntity)
   async remove(@Param('id') id: string) {
     const data = await this.warehouseService.remove(id);
     return {

@@ -3,6 +3,8 @@ import { PrismaService } from 'src/lib/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { PaginateOptions } from 'src/lib/interface';
+import { Prisma, User } from '@prisma/client';
 
 export const roundsOfHashing = 10;
 
@@ -20,22 +22,54 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
+  async findAll({
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.UserWhereInput,
+    Prisma.UserOrderByWithAggregationInput
+  >): Promise<User[]> {
+    if (!pagination) {
+      return this.prisma.user.findMany({
+        include: {
+          refresh_token: true,
+          role: true,
+        },
+        where: data,
+        orderBy: order,
+      });
+    }
+    const users = await this.prisma.user.findMany({
+      where: data,
+      take: pageSize || 10,
+      skip: (page - 1) * pageSize || 0,
+      orderBy: order,
+      include: {
+        refresh_token: true,
+        role: true,
+      },
+    });
+
+    return users;
   }
 
   async findOne(id: string) {
-    return await this.prisma.user.findUnique({
+    const data = await this.prisma.user.findUnique({
       include: {
         refresh_token: true,
         role: true,
       },
       where: { id: id },
     });
+    if (!data) throw new NotFoundException('User not Found!');
+    return data;
   }
 
   findByUsername(username: string) {
-    return this.prisma.user.findUnique({
+    const data = this.prisma.user.findUnique({
       include: {
         refresh_token: true,
         role: true,
@@ -44,6 +78,8 @@ export class UsersService {
         username: username,
       },
     });
+    if (!data) throw new NotFoundException('User not Found!');
+    return data;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -68,8 +104,13 @@ export class UsersService {
     });
   }
 
-  remove(id: string) {
-    return this.prisma.user.delete({ where: { id } });
+  async remove(id: string) {
+    const user = await this.findOne(id);
+    if (!user)
+      throw new NotFoundException(`User with id ${id} does not exist.`);
+
+    const data = await this.prisma.user.delete({ where: { id } });
+    return data;
   }
 
   async findLength(): Promise<number> {

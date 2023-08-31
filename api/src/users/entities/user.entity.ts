@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { $Enums, Role, User } from '@prisma/client';
+import { $Enums, User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
+import { IsArray } from 'class-validator';
+import { RefreshTokenEntity } from 'src/auth/entity/refreshToken.entity';
+import { RoleEntity } from 'src/role/entities/role.entity';
 export class UserEntity implements User {
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);
@@ -29,8 +32,8 @@ export class UserEntity implements User {
   @ApiProperty()
   status: string;
 
-  @ApiProperty()
-  role: Role[];
+  @ApiProperty({ type: RoleEntity, isArray: true })
+  role: RoleEntity[];
 
   @ApiProperty()
   accountName: string;
@@ -53,6 +56,11 @@ export class UserEntity implements User {
   @ApiProperty()
   description: string;
 
+  @ApiProperty()
+  @IsArray()
   @Exclude()
-  refreshToken: string;
+  refreshToken: RefreshTokenEntity[];
+
+  // @Exclude()
+  // refreshToken: string;
 }

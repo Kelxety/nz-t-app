@@ -11,7 +11,7 @@ export class WarehouseService {
   constructor(private prisma: PrismaService, private role: RoleService) {}
   async create(createWarehouseDto: CreateWarehouseDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
-    if (!creatorName) throw new Error('Error in token');
+    if (!creatorName) throw new Error('Unathorized');
     return await this.prisma.scmWarehouse.create({
       data: { ...createWarehouseDto, createdBy: creatorName.accountName },
     });

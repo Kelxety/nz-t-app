@@ -9,6 +9,7 @@ import {
   NotFoundException,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -24,6 +25,8 @@ import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/role/role.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
+import { QueryT, ResponseT } from 'src/lib/interface';
+import { toBoolean } from 'src/lib/helper/cast.helper';
 
 @Controller('users')
 @ApiTags('system_users')
@@ -45,9 +48,23 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOkResponse({ type: UserEntity, isArray: true })
-  async findAll() {
-    const users = await this.usersService.findAll();
-    return users.map((user) => new UserEntity(user));
+  async findAll(
+    @Query()
+    query: QueryT,
+  ): Promise<ResponseT<UserEntity[]>> {
+    const users = await this.usersService.findAll({
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const returnUsers = users.map((use) => new UserEntity(use));
+    return {
+      message: `List of all users fetch Successfully`,
+      data: returnUsers,
+      total: users.length,
+    };
   }
 
   @Get('me')
@@ -56,7 +73,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity })
   async findMe(@Request() request): Promise<Partial<UserEntity>> {
     const userFind = await this.usersService.findOne(request.user.id);
-    return userFind;
+    return new UserEntity(userFind);
   }
 
   @Get(':id')
@@ -70,7 +87,11 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist.`);
     }
-    return new UserEntity(user);
+    return {
+      message: `Fetch user Successfully`,
+      data: new UserEntity(user),
+      total: 1,
+    };
   }
 
   @Patch(':id')
@@ -88,6 +109,6 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   async remove(@Param('id') id: string) {
-    return new UserEntity(await this.usersService.remove(id));
+    return await this.usersService.remove(id);
   }
 }

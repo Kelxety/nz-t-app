@@ -7,7 +7,6 @@ import { ExcludeNullInterceptor } from './lib/interceptor/null.interceptor';
 import { TransformInterceptor } from './lib/interceptor/transform.interceptor';
 import { PrismaClientExceptionFilter } from './lib/prisma-client-exception/prisma-client-exception.filter';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
