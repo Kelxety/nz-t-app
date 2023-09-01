@@ -1,4 +1,4 @@
-export interface ResponseType<T> {
+export interface ResType<T> {
   statusCode: number;
   message: string;
   data: T;
