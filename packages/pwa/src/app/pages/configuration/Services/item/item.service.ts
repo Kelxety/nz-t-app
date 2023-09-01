@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import { ApiService, HttpParamsService } from '@app/shared';
 import { ScmItem } from '@prisma/client';
+import { ResponseType } from '@utils/types/return-types';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class ItemServices {
 
   constructor(private apiService: ApiService, private httpParams: HttpParamsService) {}
 
-  list(params: object = {}): Observable<ScmItem[]> {
+  list(params: object = {}): Observable<ResponseType<ScmItem[]>> {
     const parameters = this.httpParams.convert(params);
     return this.apiService.get(this.baseUrl, parameters);
   }
