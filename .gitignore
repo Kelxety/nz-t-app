@@ -1,3 +1,9 @@
 
 .nx/installation
 .nx/cache
+
+# ENV
+.env
+
+# Node Module
+node_modules

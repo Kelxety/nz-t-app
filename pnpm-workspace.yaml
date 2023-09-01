@@ -1,0 +1,7 @@
+packages:
+  - "api/*"
+  - "pwa/*"
+  - "packages/*"
+
+api:
+  workspace: true

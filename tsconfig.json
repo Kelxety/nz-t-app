@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@api/*": ["./packages/api/src/*"],
+      "@pwa/*": ["./packages/pwa/*"],
+      "@prisma/*": ["./prisma/*"],
+      "@app/*": ["./packages/pwa/src/app/*"],
+      "@app": ["./packages/pwa/src/app"],
+      "@store/*": ["./packages/pwa/src/app/core/services/store/*"],
+      "@config/*": ["./packages/pwa/src/app/config/*"],
+      "@core/*": ["./packages/pwa/src/app/core/*"],
+      "@services/*": ["./packages/pwa/src/app/core/services/http/*"],
+      "@utils/*": ["./packages/pwa/src/app/utils/*"],
+      "@widget/*": ["./packages/pwa/src/app/widget/*"],
+      "@env/*": ["./packages/pwa/src/environments/*"],
+      "@shared/*": ["./packages/pwa/src/app/shared/*"],
+      "@assets/*": ["./packages/pwa/src/assets/*"]
+    }
+  }
+}

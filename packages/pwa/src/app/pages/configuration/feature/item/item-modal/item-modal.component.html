@@ -1,0 +1,110 @@
+<!-- <nz-layout>
+    <nz-content>
+        
+    </nz-content>
+</nz-layout> -->
+
+<nz-card [nzBordered]="false" class="-p-1">
+  <nz-breadcrumb [nzAutoGenerate]="true" class="-m-2">
+    <nz-breadcrumb-item>
+      <a>Home</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <a>Configuration</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <a>Item</a>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+</nz-card>
+
+<div class="m-4 h-screen">
+  <nz-card nzTitle="Add Items" [nzExtra]="options">
+    <form nz-form [formGroup]="validateForm">
+      <div class="flex flex-row gap-2">
+        <nz-card [nzHoverable]="true" class="w-[40%] transition">
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Item Code</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input formControlName="barcode" id="barcode" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input formControlName="barcode" id="barcode" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemName">Item Name</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input formControlName="itemName" id="itemName" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemName">Item Category</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <nz-tree-select [nzNodes]="treeData" nzShowSearch nzPlaceHolder="Please select" nzVirtualHeight="500px" nzHideUnMatched="true"></nz-tree-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemDescription">Item Description</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <!-- <input nz-input formControlName="barcode" id="barcode" multiple /> -->
+              <textarea rows="4" nz-input formControlName="itemDescription" id="itemDescription"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
+            <nz-select [(ngModel)]="selectedValue" [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
+          </nz-form-item>
+          <div class="float-right px-4">
+            <button nz-button nzType="primary" type="button" nzShape="round">
+              <span nz-icon nzType="save" nzTheme="outline"></span>
+              Save
+            </button>
+          </div>
+        </nz-card>
+
+        <nz-card [nzHoverable]="true" class="w-full"></nz-card>
+        <!-- <div class="flex flex-row flex-wrap">
+                  <nz-form-item>
+                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Item Code</nz-form-label>
+                      <nz-form-control [nzSm]="14" [nzXs]="24">
+                          <input nz-input formControlName="barcode" id="barcode" />
+                      </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
+                      <nz-form-control [nzSm]="14" [nzXs]="24">
+                          <input nz-input formControlName="barcode" id="barcode" />
+                      </nz-form-control>
+                  </nz-form-item>
+              </div> -->
+        <!-- <div class="flex flex-row flex-wrap">
+                  <nz-form-item>
+                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Item Code</nz-form-label>
+                      <nz-form-control [nzSm]="14" [nzXs]="24">
+                          <input nz-input formControlName="barcode" id="barcode" />
+                      </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
+                      <nz-form-control [nzSm]="14" [nzXs]="24">
+                          <input nz-input formControlName="barcode" id="barcode" />
+                      </nz-form-control>
+                  </nz-form-item>
+              </div> -->
+      </div>
+    </form>
+  </nz-card>
+</div>
+
+<ng-template #options>
+  <div nz-space nzAlign="start">
+    <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" nzTooltipTitle="Close" (click)="onCancel()" nzTooltipPlacement="topLeft" nz-tooltip>
+      <span nz-icon nzType="close-square" nzTheme="twotone"></span>
+    </button>
+  </div>
+</ng-template>
