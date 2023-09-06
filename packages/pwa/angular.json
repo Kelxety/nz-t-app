@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "../../node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -42,9 +42,7 @@
             "outputPath": "dist/ng-ant-admin",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "less",
             "assets": [
@@ -52,12 +50,12 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "input": "../../node_modules/@ant-design/icons-angular/src/inline-svg/",
                 "output": "/assets/"
               }
             ],
             "styles": [
-              "node_modules/ng-zorro-antd/ng-zorro-antd.css",
+              "../../node_modules/ng-zorro-antd/ng-zorro-antd.css",
               {
                 "input": "src/styles/default.less",
                 "bundleName": "default",
@@ -70,13 +68,9 @@
               }
             ],
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/styles/themes"
-              ]
+              "includePaths": ["src/styles/themes"]
             },
-            "scripts": [
-              "node_modules/driver.js/dist/driver.min.js"
-            ],
+            "scripts": ["../../node_modules/driver.js/dist/driver.min.js"],
             "allowedCommonJsDependencies": [
               "crypto-js",
               "qs",
@@ -162,19 +156,11 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "less",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.less"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.less"],
             "scripts": []
           }
         }
