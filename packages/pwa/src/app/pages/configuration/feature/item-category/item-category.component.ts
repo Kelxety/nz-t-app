@@ -1,6 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ScmItemCategory } from '@prisma/client';
 import { NzContextMenuService, NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -9,6 +10,7 @@ import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
 import { Subject, takeUntil } from 'rxjs';
 import { SharedModule } from '../../../../shared';
 import { TmsAccountModalComponent } from '../../../../shared/feature/tms-account-modal/tms-account-modal.component';
+import { ResType } from '../../../../utils/types/return-types';
 import { ItemCatergoryServices } from '../../Services/item-category/item-category.service';
 interface TreeNode {
   name: string;
@@ -130,12 +132,12 @@ export class ItemCategoryComponent {
     }];
 
     this.itemCatergoryServices.list({ order: order, pagination: false }).subscribe({
-      next: (res: any) => {
+      next: (res: ResType<ScmItemCategory[]>) => {
         console.log('list', res);
         const list = res.data
 
         this.database = [];
-        list.map((x: any) => {
+        list.map((x: ScmItemCategory) => {
           let tempParent: string | null = null;
           if (x.parentId) { tempParent = x.parentId }
 

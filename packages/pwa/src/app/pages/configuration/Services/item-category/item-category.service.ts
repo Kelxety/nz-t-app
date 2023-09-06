@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService, HttpParamsService } from '@app/shared';
+import { ScmItemCategory } from '@prisma/client';
+import { ResType } from '@utils/types/return-types';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -13,7 +15,7 @@ export class ItemCatergoryServices {
         private httpParams: HttpParamsService
     ) { }
 
-    list(params: object = {}): Observable<any[]> {
+    list(params: object = {}): Observable<ResType<ScmItemCategory[]>> {
         const parameters = this.httpParams.convert(params);
         return this.apiService.get(this.baseUrl, parameters);
     }
