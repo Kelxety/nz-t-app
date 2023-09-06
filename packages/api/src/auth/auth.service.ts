@@ -39,12 +39,10 @@ export class AuthService {
       );
     }
 
-    const isPasswordValid = bcrypt.compare(
-      createAuthDto.password || '',
+    const isPasswordValid = await bcrypt.compare(
+      createAuthDto.password,
       user.password,
     );
-
-    console.log(user);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect!');
