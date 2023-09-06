@@ -1,9 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ScmItemDtl } from "@prisma/client";
+import { UnitEntity } from "../../unit/entities/unit.entity";
 
 export class ItemDetailEntity implements ScmItemDtl {
-    constructor(partial: Partial<ItemDetailEntity>) {
-        Object.assign(this, partial);
+    constructor(
+        { unitIds, ...data }: Partial<ItemDetailEntity>) {
+        Object.assign(this, data);
     }
 
     @ApiProperty()
@@ -77,4 +79,9 @@ export class ItemDetailEntity implements ScmItemDtl {
 
     @ApiProperty()
     updatedAt: Date;
+
+    @ApiProperty({ required: false, type: UnitEntity })
+    unitIds?: UnitEntity;
+
+
 }

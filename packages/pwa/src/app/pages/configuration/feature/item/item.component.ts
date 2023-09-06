@@ -61,7 +61,7 @@ export class ItemComponent {
     private itemServices: ItemServices,
     private modalService: NzModalService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -69,10 +69,10 @@ export class ItemComponent {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.tableHeight = (this._tableContainer.nativeElement as HTMLImageElement).clientHeight - 500; // X depend of your page display
-      console.log('TABLE H', this.tableHeight);
-    });
+    // setTimeout(() => {
+    //   this.tableHeight = (this._tableContainer.nativeElement as HTMLImageElement).clientHeight - 500; // X depend of your page display
+    //   console.log('TABLE H', this.tableHeight);
+    // });
   }
 
   ngOnDestroy() {
@@ -90,10 +90,10 @@ export class ItemComponent {
     this.listOfSelection = [];
     let opt: any = [];
     if (this.setOfCheckedId.size === 1) {
-      opt.push({ text: 'Edit selected', onSelect: () => {} });
+      opt.push({ text: 'Edit selected', onSelect: () => { } });
     }
     if (this.setOfCheckedId.size >= 1) {
-      opt.push({ text: 'Delete selected', onSelect: () => {} });
+      opt.push({ text: 'Delete selected', onSelect: () => { } });
     }
 
     this.listOfSelection = opt;
@@ -194,7 +194,7 @@ export class ItemComponent {
           this.msg.warning(err.message);
           this.msg.remove(load);
         },
-        complete: () => {}
+        complete: () => { }
       });
   }
 

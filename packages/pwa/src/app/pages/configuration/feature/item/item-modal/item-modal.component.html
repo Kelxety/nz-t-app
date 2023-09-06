@@ -1,10 +1,4 @@
-<!-- <nz-layout>
-    <nz-content>
-        
-    </nz-content>
-</nz-layout> -->
-
-<nz-card [nzBordered]="false" class="-p-1">
+<!-- <nz-card [nzBordered]="false" class="-p-1">
   <nz-breadcrumb [nzAutoGenerate]="true" class="-m-2">
     <nz-breadcrumb-item>
       <a>Home</a>
@@ -16,95 +10,247 @@
       <a>Item</a>
     </nz-breadcrumb-item>
   </nz-breadcrumb>
-</nz-card>
+</nz-card> -->
 
-<div class="m-4 h-screen">
-  <nz-card nzTitle="Add Items" [nzExtra]="options">
+
+<nz-layout>
+  <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" nzWidth="450px" nzTheme="light"
+    nzBreakpoint="sm" [nzCollapsedWidth]="50">
+
+    <nz-header>
+      <span class="trigger float-right items-center p-4 text-xl" nz-icon
+        [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" (click)="isCollapsed = !isCollapsed"></span>
+    </nz-header>
+
     <form nz-form [formGroup]="validateForm">
-      <div class="flex flex-row gap-2">
-        <nz-card [nzHoverable]="true" class="w-[40%] transition">
-          <nz-form-item>
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Item Code</nz-form-label>
-            <nz-form-control [nzSm]="14" [nzXs]="24">
-              <input nz-input formControlName="barcode" id="barcode" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
-            <nz-form-control [nzSm]="14" [nzXs]="24">
-              <input nz-input formControlName="barcode" id="barcode" />
-            </nz-form-control>
-          </nz-form-item>
+      <nz-card [hidden]="isCollapsed">
 
-          <nz-form-item>
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemName">Item Name</nz-form-label>
-            <nz-form-control [nzSm]="14" [nzXs]="24">
-              <input nz-input formControlName="itemName" id="itemName" />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemName">Item Category</nz-form-label>
-            <nz-form-control [nzSm]="14" [nzXs]="24">
-              <nz-tree-select [nzNodes]="treeData" nzShowSearch nzPlaceHolder="Please select" nzVirtualHeight="500px" nzHideUnMatched="true"></nz-tree-select>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemDescription">Item Description</nz-form-label>
-            <nz-form-control [nzSm]="14" [nzXs]="24">
-              <!-- <input nz-input formControlName="barcode" id="barcode" multiple /> -->
-              <textarea rows="4" nz-input formControlName="itemDescription" id="itemDescription"></textarea>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
-            <nz-select [(ngModel)]="selectedValue" [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
-          </nz-form-item>
-          <div class="float-right px-4">
-            <button nz-button nzType="primary" type="button" nzShape="round">
-              <span nz-icon nzType="save" nzTheme="outline"></span>
-              Save
-            </button>
-          </div>
-        </nz-card>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemCode">Item Code</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input type="text" formControlName="itemCode" id="itemCode" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input type="text" nz-input formControlName="barcode" id="barcode" />
+          </nz-form-control>
+        </nz-form-item>
 
-        <nz-card [nzHoverable]="true" class="w-full"></nz-card>
-        <!-- <div class="flex flex-row flex-wrap">
-                  <nz-form-item>
-                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Item Code</nz-form-label>
-                      <nz-form-control [nzSm]="14" [nzXs]="24">
-                          <input nz-input formControlName="barcode" id="barcode" />
-                      </nz-form-control>
-                  </nz-form-item>
-                  <nz-form-item>
-                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
-                      <nz-form-control [nzSm]="14" [nzXs]="24">
-                          <input nz-input formControlName="barcode" id="barcode" />
-                      </nz-form-control>
-                  </nz-form-item>
-              </div> -->
-        <!-- <div class="flex flex-row flex-wrap">
-                  <nz-form-item>
-                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Item Code</nz-form-label>
-                      <nz-form-control [nzSm]="14" [nzXs]="24">
-                          <input nz-input formControlName="barcode" id="barcode" />
-                      </nz-form-control>
-                  </nz-form-item>
-                  <nz-form-item>
-                      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
-                      <nz-form-control [nzSm]="14" [nzXs]="24">
-                          <input nz-input formControlName="barcode" id="barcode" />
-                      </nz-form-control>
-                  </nz-form-item>
-              </div> -->
-      </div>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="itemName">Item Name</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input nz-input formControlName="itemName" id="itemName" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="itemName">Item Category</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-tree-select [nzNodes]="treeData" formControlName="itemCategory" nzShowSearch
+              nzPlaceHolder="Please select" nzVirtualHeight="300px" nzHideUnMatched="true"></nz-tree-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemDescription">Description</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <textarea rows="4" nz-input formControlName="itemDescription" id="itemDescription"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
+          <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
+        </nz-form-item>
+        <div class="float-right px-4">
+          <button nz-button nzType="primary" type="button" (click)="onCreateItem()">
+            <span nz-icon nzType="save" nzTheme="outline"></span>
+            Save
+          </button>
+        </div>
+      </nz-card>
+
+
+      <!-- <nz-card [nzHoverable]="true" class="w-[37%] transition" [nzExtra]="collapse"> -->
+
+
     </form>
-  </nz-card>
-</div>
+    <!-- </nz-card> -->
+  </nz-sider>
+  <nz-layout>
 
-<ng-template #options>
-  <div nz-space nzAlign="start">
-    <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" nzTooltipTitle="Close" (click)="onCancel()" nzTooltipPlacement="topLeft" nz-tooltip>
-      <span nz-icon nzType="close-square" nzTheme="twotone"></span>
-    </button>
-  </div>
-</ng-template>
+    <div class="m-2 h-auto">
+      <nz-card nzTitle="Add Items" class="w-full" [nzExtra]="options" [nzHoverable]="true">
+        <form nz-form [formGroup]="validateFormDetail">
+          <div class="flex flex-row gap-2">
+            <div class="w-[50%]">
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="itemName" nzLabelWrap>Entry
+                  Date</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <nz-date-picker formControlName="entryDate"></nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="itemName"
+                  nzLabelWrap>Expiration
+                  Date</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <nz-date-picker formControlName="expirationDate"></nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="subitemCode" nzLabelWrap>SubItem
+                  Code</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <input nz-input formControlName="subitemCode" id="subitemCode" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="subitemName"
+                  nzLabelWrap>SubItem
+                  Name</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <input nz-input formControlName="subitemName" id="subitemName" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <input nz-input formControlName="barcode" id="barcode" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="unitId">Unit</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <input nz-input formControlName="unitId" id="unitId" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="brandName" nzLabelWrap>Brand
+                  Name</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <input nz-input formControlName="brandName" id="brandName" />
+                </nz-form-control>
+              </nz-form-item>
+              <div class="grid grid-cols-2 -gap-y-6 gap-x-2">
+                <nz-form-item>
+                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="lotNo" nzLabelWrap>Lot
+                    no.</nz-form-label>
+                  <nz-form-control [nzXs]="24">
+                    <input nz-input formControlName="lotNo" id="lotNo" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="barcode" nzLabelWrap>Batch
+                    no.</nz-form-label>
+                  <nz-form-control [nzXs]="24">
+                    <input nz-input formControlName="batchNo" id="batchNo" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label nzLabelAlign="left" nzRequired [nzXs]="24" nzFor="const">Cost</nz-form-label>
+                  <nz-form-control [nzXs]="24">
+                    <nz-space nzDirection="vertical" class="w-full">
+                      <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
+                        <nz-input-number formControlName="cost" id="cost" [nzStep]="1"></nz-input-number>
+                      </nz-input-number-group>
+                    </nz-space>
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label nzLabelAlign="left" nzRequired [nzXs]="24" nzFor="balanceQty">Quantity</nz-form-label>
+                  <nz-form-control [nzXs]="24">
+                    <input nz-input formControlName="balanceQty" type="number" id="balanceQty" />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="markup">Markup</nz-form-label>
+                  <nz-form-control [nzXs]="24">
+                    <input nz-input formControlName="markup" type="number" id="markup" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label nzLabelAlign="left" nzRequired [nzXs]="24" nzFor="price">Price</nz-form-label>
+                  <nz-form-control [nzXs]="24">
+                    <nz-space nzDirection="vertical" class="w-full">
+                      <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
+                        <nz-input-number formControlName="price" id="price" [nzStep]="1"></nz-input-number>
+                      </nz-input-number-group>
+                    </nz-space>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+
+              <nz-form-item>
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
+                <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
+              </nz-form-item>
+              <div class=" float-right px-4">
+                <button nz-button nzType="primary" type="button">
+                  <span nz-icon nzType="save" nzTheme="outline"></span>
+                  Add
+                </button>
+              </div>
+            </div>
+            <nz-card class="w-full h-auto" nzTitle="Item list">
+              <div class="loc-content" *ngIf="!model.loading; else isLoading">
+                <nz-table nzShowSizeChanger #fixedTable [nzSize]="'default'"
+                  [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }" \ [nzPageSize]="20">
+                  <thead>
+                    <tr>
+                      <th>Expiration Date</th>
+                      <th>Item code</th>
+                      <th>Item Name</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th nzWidth="90px">Status</th>
+                      <th nzWidth="80px" class="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of fixedTable.data">
+                      <td nzEllipsis>{{ data.itemCode }}</td>
+                      <td nzEllipsis>{{ data.itemName }}</td>
+                      <td nzEllipsis>{{ data.scmItemCategory.catName }}</td>
+                      <td nzEllipsis>{{ data.description }}</td>
+                      <td nzEllipsis><nz-badge nzColor="green" [nzText]="data.state"></nz-badge></td>
+                      <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+                        <span class="pointer" nz-icon nzType="edit" nzTheme="outline"></span>
+                        <nz-divider nzType="vertical"></nz-divider>
+                        <span class="pointer" nz-icon nzType="delete" nzTheme="outline" style="color: red" nz-popconfirm
+                          nzPopconfirmTitle="Are you sure you want to delete {{ data.className }}"></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </nz-table>
+              </div>
+            </nz-card>
+          </div>
+        </form>
+      </nz-card>
+    </div>
+
+    <ng-template #options>
+      <div nz-space nzAlign="start">
+        <nz-button-group *nzSpaceItem>
+          <button class="pointer" nz-button nzType="text" class="text-xl items-center" nzTooltipTitle="Clear All"
+            (click)="onCancel()" nzTooltipPlacement="topLeft" nz-tooltip>
+            <span nz-icon nzType="clear" nzTheme="outline"></span>
+          </button>
+          <button class="pointer" nz-button nzType="text" class="text-xl items-center" nzTooltipTitle="Close"
+            (click)="onCancel()" nzTooltipPlacement="topLeft" nz-tooltip>
+            <span nz-icon nzType="close-square" nzTheme="twotone"></span>
+          </button>
+
+        </nz-button-group>
+      </div>
+    </ng-template>
+
+    <ng-template #isLoading>
+      <div style="padding: 24px">
+        <nz-skeleton [nzActive]="true"></nz-skeleton>
+        <nz-skeleton [nzActive]="true"></nz-skeleton>
+      </div>
+    </ng-template>
