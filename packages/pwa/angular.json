@@ -57,7 +57,7 @@
               }
             ],
             "styles": [
-              "node_modules/ng-zorro-antd/ng-zorro-antd.css",
+              "node_modules/ng-zorro-antd/ng-zorro-antd.less",
               {
                 "input": "src/styles/default.less",
                 "bundleName": "default",

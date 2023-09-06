@@ -31,11 +31,17 @@ export class ItemDetailService {
     if (!pagination) {
       return this.prisma.scmItemDtl.findMany({
         where: data,
+        include: {
+          scmUnit: true,
+        },
         orderBy: order,
       });
     }
     return this.prisma.scmItemDtl.findMany({
       where: data,
+      include: {
+        scmUnit: true,
+      },
       take: pageSize || 10,
       skip: (page - 1) * pageSize || 0,
       orderBy: order,

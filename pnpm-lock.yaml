@@ -259,6 +259,7 @@ importers:
       date-fns: ^2.30.0
       icons: link:@ant-design/icons-angular/icons
       lodash: ^4.17.21
+      ng-zorro-antd: ^16.1.0
       qs: ^6.11.2
     dependencies:
       '@angular/cdk': 16.2.2
@@ -267,6 +268,7 @@ importers:
       date-fns: 2.30.0
       icons: link:@ant-design/icons-angular/icons
       lodash: 4.17.21
+      ng-zorro-antd: 16.1.0
       qs: 6.11.2
     devDependencies:
       '@types/qs': 6.9.8
@@ -11379,6 +11381,24 @@ packages:
   /new-github-issue-url/0.2.1:
     resolution: {integrity: sha512-md4cGoxuT4T4d/HDOXbrUHkTKrp/vp+m3aOA7XXVYwNsUNMK49g3SQicTSeV5GIz/5QVGAeYRAOlyp9OvlgsYA==}
     engines: {node: '>=10'}
+    dev: false
+
+  /ng-zorro-antd/16.1.0:
+    resolution: {integrity: sha512-+KjXoA0+v/liTtVIHswmOAzB9UaGADrO1tL9AOZsTLq5sZM8+DmhtixGRoSMD8HkkhpMFhsgEIxoHlkxtn1SXg==}
+    peerDependencies:
+      '@angular/animations': ^16.0.0
+      '@angular/common': ^16.0.0
+      '@angular/core': ^16.0.0
+      '@angular/forms': ^16.0.0
+      '@angular/platform-browser': ^16.0.0
+      '@angular/router': ^16.0.0
+    dependencies:
+      '@angular/cdk': 16.2.2
+      '@ant-design/icons-angular': 16.0.0
+      date-fns: 2.30.0
+      tslib: 2.6.2
+    transitivePeerDependencies:
+      - rxjs
     dev: false
 
   /ng-zorro-antd/16.1.0_eghusvvrt7bbzp4teizr2ciir4:

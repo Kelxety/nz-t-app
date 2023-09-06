@@ -20,6 +20,7 @@
     "date-fns": "^2.30.0",
     "icons": "link:@ant-design/icons-angular/icons",
     "lodash": "^4.17.21",
+    "ng-zorro-antd": "^16.1.0",
     "qs": "^6.11.2"
   },
   "devDependencies": {
