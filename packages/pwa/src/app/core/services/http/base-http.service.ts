@@ -55,6 +55,12 @@ export class BaseHttpService {
     return this.http.put<ActionResult<T>>(reqPath, param).pipe(this.resultHandle<T>(config));
   }
 
+  patch<T>(path: string, param?: NzSafeAny, config?: HttpCustomConfig): Observable<T> {
+    config = config || { needSuccessInfo: false };
+    let reqPath = this.getUrl(path, config);
+    return this.http.patch<ActionResult<T>>(reqPath, param).pipe(this.resultHandle<T>(config));
+  }
+
   downLoadWithBlob(path: string, param?: NzSafeAny, config?: HttpCustomConfig): Observable<NzSafeAny> {
     config = config || { needSuccessInfo: false };
     let reqPath = this.getUrl(path, config);

@@ -1,5 +1,6 @@
 import { NgTemplateOutlet, NgIf } from '@angular/common';
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { LoginInOutService } from '@core/services/common/login-in-out.service';
@@ -47,6 +48,12 @@ import { HomeNoticeComponent } from '../home-notice/home-notice.component';
 export class LayoutHeadRightMenuComponent implements OnInit {
   user!: UserPsd;
 
+  changePassForm = this.fb.group({
+    id: [null, [Validators.required]],
+    oldPassword: [null, [Validators.required]],
+    newPassword: [null, [Validators.required]]
+  });
+
   constructor(
     private router: Router,
     private changePasswordModalService: ChangePasswordService,
@@ -58,7 +65,8 @@ export class LayoutHeadRightMenuComponent implements OnInit {
     private searchRouteService: SearchRouteService,
     public message: NzMessageService,
     public userInfoService: UserInfoService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private fb: FormBuilder
   ) {}
 
   // 锁定屏幕
@@ -80,16 +88,23 @@ export class LayoutHeadRightMenuComponent implements OnInit {
       if (status === ModalBtnStatus.Cancel) {
         return;
       }
-      this.userInfoService.getUserInfo().subscribe(res => {
+      this.loginOutService.getMe().subscribe(res => {
         this.user = {
-          id: res.userId,
+          id: res.id,
           oldPassword: modalValue.oldPassword,
           newPassword: modalValue.newPassword
         };
-      });
-      this.accountService.editAccountPsd(this.user).subscribe(() => {
-        this.loginOutService.loginOut().then();
-        this.message.success('Modified successfully, please log in again');
+
+        this.changePassForm.setValue({
+          id: res.id,
+          oldPassword: modalValue.oldPassword,
+          newPassword: modalValue.newPassword
+        });
+        this.accountService.editAccountPsd(this.changePassForm.getRawValue()).subscribe((res: any) => {
+          console.log(res);
+          this.loginOutService.loginOut().then();
+          this.message.success('Modified successfully, please log in again');
+        });
       });
     });
   }

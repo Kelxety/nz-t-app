@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -28,6 +28,7 @@ import { Roles } from '@api/auth/roles/roles.decorator';
 import { QueryT, ResponseT } from '@api/lib/interface';
 import { toBoolean } from '@api/lib/helper/cast.helper';
 import { Request as Req } from 'express';
+import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
 
 @Controller('users')
 @ApiTags('system_users')
@@ -72,7 +73,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
-  async findMe(@Request() request): Promise<Partial<UserEntity>> {
+  async findMe(@Request() request: Req): Promise<Partial<UserEntity>> {
     const userFind = await this.usersService.findOne(request?.user?.id);
     return new UserEntity(userFind);
   }
@@ -101,7 +102,22 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    console.log(updateUserDto);
     return new UserEntity(await this.usersService.update(id, updateUserDto));
+  }
+
+  @Patch('changepass/:id')
+  @CustomGlobalDecorator(null, false, UserEntity)
+  @ApiOkResponse({ type: UserEntity })
+  async changePassword(
+    @Param('id') id: string,
+    @Body()
+    changepass: ChangePasswordDto,
+  ) {
+    console.log('wala talaga', changepass.newPassword, id);
+    return new UserEntity(
+      await this.usersService.changePassword(id, changepass),
+    );
   }
 
   @Delete(':id')

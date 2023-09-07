@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '@api/lib/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { PaginateOptions } from '@api/lib/interface';
 import { Prisma, User } from '@prisma/client';
@@ -87,6 +91,15 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist.`);
     }
+    const isPasswordValid = await bcrypt.compare(
+      updateUserDto.password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Password is incorrect!');
+    }
+
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(
         updateUserDto.password,
@@ -96,10 +109,40 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: {
+        password: updateUserDto.password,
         ...updateUserDto,
         role: {
           create: updateUserDto.role,
         },
+      },
+    });
+  }
+
+  async changePassword(id: string, updatePassword: ChangePasswordDto) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} does not exist.`);
+    }
+    const isPasswordValid = await bcrypt.compare(
+      updatePassword.oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Password is incorrect!');
+    }
+
+    if (updatePassword.newPassword) {
+      updatePassword.newPassword = await bcrypt.hash(
+        updatePassword.newPassword,
+        roundsOfHashing,
+      );
+    }
+    console.log(updatePassword.newPassword);
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        password: updatePassword.newPassword,
       },
     });
   }
