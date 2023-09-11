@@ -1,18 +1,15 @@
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmItemCategory, ScmItemDtl } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
-import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { SpinService } from '../../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../../shared';
 import { ResType } from '../../../../../utils/types/return-types';
 import { ItemCatergoryServices } from '../../../Services/item-category/item-category.service';
 import { ItemDetailServices } from '../../../Services/item-detail/item-detail.service';
 import { ItemServices } from '../../../Services/item/item.service';
-import { UnitServices } from '../../../Services/unit/unit.service';
 
 interface dataModel {
   list: any;
@@ -40,32 +37,26 @@ interface data {
   updatedAt: Date;
 
 }
+
 @Component({
-  selector: 'app-item-modal',
-  templateUrl: './item-modal.component.html',
-  styleUrls: ['./item-modal.component.less'],
+  selector: 'app-item-edit-modal',
+  templateUrl: './item-edit-modal.component.html',
+  styleUrls: ['./item-edit-modal.component.less'],
   standalone: true,
   imports: [SharedModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ItemModalComponent {
+export class ItemEditModalComponent {
+
   private ngUnsubscribe = new Subject();
   public tableHeight!: number;
   isCollapsed = false;
   itemDisable = true;
-  btnDisable = false
-  dtlBtn = true
   validateForm!: UntypedFormGroup;
   validateFormDetail!: UntypedFormGroup;
   data: ScmItem
   selectedValue = 'Active';
   dataModel: any = {};
-
-  randomUserUrl = 'https://api.randomuser.me/?results=5';
-  searchChange$ = new BehaviorSubject('');
-  optionList: string[] = [];
-  selectedUser?: string;
-  isLoading = false;
 
   listOfOption = [
     { label: 'Active', value: 'Active' },
@@ -99,8 +90,6 @@ export class ItemModalComponent {
     loading: true
   }
 
-
-
   @ViewChild('tableContainer') private readonly _tableContainer!: ElementRef;
 
   constructor(
@@ -111,10 +100,8 @@ export class ItemModalComponent {
     private msg: NzMessageService,
     private itemCatergoryServices: ItemCatergoryServices,
     private itemServices: ItemServices,
-    private unitServices: UnitServices,
     private route: ActivatedRoute,
     private itemDetailServices: ItemDetailServices,
-    private http: HttpClient,
     private cd: ChangeDetectorRef,) {
     this.validateForm = this.fb.group({
       itemCode: [null],
@@ -126,7 +113,7 @@ export class ItemModalComponent {
     });
     this.validateFormDetail = this.fb.group({
       entryDate: [new Date()],
-      expirationDate: [null],
+      expirationDate: [new Date(), [Validators.required]],
       itemId: [null],
       subitemCode: [null],
       subitemName: [null, [Validators.min(4), Validators.required]],
@@ -134,98 +121,28 @@ export class ItemModalComponent {
       unitId: [null],
       brandName: [null],
       lotNo: [null],
-      batchNo: [null],
-      markup: [0],
+      batchNo: [],
+      markup: [0, [Validators.required]],
       balanceQty: [0, [Validators.required]],
       price: [0, [Validators.required]],
       cost: [0, [Validators.required]],
       state: ['Active'],
     });
 
-    this.setupFormChangeListeners();
+    if (this.route.snapshot.params) {
 
+      this.id = this.route.snapshot?.params;
+
+    }
   }
 
   ngOnInit(): void {
 
     this.loadAccount()
     this.spinService.setCurrentGlobalSpinStore(false);
-    // this.validateFormDetail.disable()
-
-    const getRandomNameList = (name: string): Observable<any> =>
-      this.http
-        .get(`${this.randomUserUrl}`)
-        .pipe(
-          catchError(() => of({ results: [] })),
-          map((res: any) => res.results)
-        )
-        .pipe(map((list: any) => list.map((item: any) => `${item.name.first} ${name}`)));
-    const optionList$: Observable<string[]> = this.searchChange$
-      .asObservable()
-      .pipe(debounceTime(500))
-      .pipe(switchMap(getRandomNameList));
-    optionList$.subscribe(data => {
-      this.optionList = data;
-      this.isLoading = false;
-    });
-
-
-  }
-
-  onSearch(value: string): void {
-    this.isLoading = true;
-    this.searchChange$.next(value);
-  }
-
-  private setupFormChangeListeners() {
-    // this.validateFormDetail.get('cost').valueChanges.subscribe(() => {
-    //   this.computePriceOrMarkup();
-    // });
-
-    this.validateFormDetail.get('markup').valueChanges.subscribe(() => {
-      this.computePriceFromMarkup();
-    });
-
-    this.validateFormDetail.get('price').valueChanges.subscribe(() => {
-      this.computeMarkupFromPrice();
-    });
-  }
-
-  private computePriceOrMarkup() {
-    const cost = this.validateFormDetail.get('cost').value;
-    const markup = this.validateFormDetail.get('markup').value;
-    const price = this.validateFormDetail.get('price').value;
-
-    if (cost !== null && markup !== null) {
-      this.validateFormDetail.patchValue({
-        price: cost + cost * (markup / 100),
-      });
-    } else if (cost !== null && price !== null) {
-      this.validateFormDetail.patchValue({
-        markup: ((price - cost) / cost) * 100,
-      });
-    }
-  }
-
-  private computePriceFromMarkup() {
-    const cost = this.validateFormDetail.get('cost').value;
-    const markup = this.validateFormDetail.get('markup').value;
-
-    if (cost !== null && markup !== null) {
-      this.validateFormDetail.patchValue({
-        price: cost + cost * (markup / 100)
-      });
-    }
-  }
-
-  private computeMarkupFromPrice() {
-    const cost = this.validateFormDetail.get('cost').value;
-    const price = this.validateFormDetail.get('price').value;
-
-    if (cost !== null && price !== null) {
-      this.validateFormDetail.patchValue({
-        markup: ((price - cost) / cost) * 100,
-      });
+    if (this.id) {
+      this.dataLabel = 'Edit'
+      this.loadData()
     }
   }
 
@@ -233,68 +150,76 @@ export class ItemModalComponent {
     let model: any = this.model;
     model.loading = true;
 
-    let order: any = [
-      {
-        sortColumn: 'itemCode',
-        sortDirection: 'asc'
-      }
-    ];
-    this.itemDetailServices.list({ order: order, pagination: false }).subscribe({
-      next: (res: ResType<ScmItemDtl[]>) => {
-        const list = res.data;
-
-        model.list = list;
-        model.filteredList = list;
+    console.log(this.data)
+    this.itemServices.get(this.id?.id).subscribe({
+      next: (res: ResType<any>) => {
+        this.validateForm.patchValue({
+          itemCode: res?.data?.itemCode,
+          itemName: res?.data?.itemName,
+          itemDescription: res?.data?.itemDescription,
+          state: res?.data?.state,
+          itemcategoryId: res?.data?.scmItemCategory?.id,
+        })
       },
       error: (err: any) => {
-        console.log(err);
+
       },
       complete: () => {
         model.loading = false;
-        this.cd.detectChanges();
+        // this.cd.detectChanges();
       }
-    });
+    })
+    // this.itemServices.list({ order: order, pagination: false }).subscribe({
+    //   next: (res: ResType<ScmItemDtl[]>) => {
+    //     const list = res.data;
+
+    //     model.list = list;
+    //     model.filteredList = list;
+    //   },
+    //   error: (err: any) => {
+    //     console.log(err);
+    //   },
+    //   complete: () => {
+    //     model.loading = false;
+    //     this.cd.detectChanges();
+    //   }
+    // });
   }
 
+
   onCreateItem() {
+    let form: any = Object.assign({}, this.validateForm.value);
 
-    if (this.validateForm.valid) {
-      const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-      this.btnDisable = true
-      this.itemServices.create(this.validateForm.getRawValue()).subscribe({
-        next: (res: any) => {
-          this.msg.remove(id)
-          this.msg.success('Item saved successfully!');
-
-          this.data = res.data
-          //  this.statusData.emit({status: 200, data: res})
-        },
-        error: (error: any) => {
-
-          if (error.code === 400) {
-            this.btnDisable = false
-            this.msg.error('Unsuccessfully saved')
-          }
-        },
-        complete: () => {
-          this.btnDisable = false
-          this.dtlBtn = false
-          this.validateFormDetail.enable()
-          this.isCollapsed = true
-          this.resetForm();
+    console.log(this.validateForm.getRawValue())
+    this.itemServices.create(this.validateForm.getRawValue()).subscribe({
+      next: (res: any) => {
+        this.resetForm();
+        this.msg.success('Item saved successfully!');
+        this.isCollapsed = true
+        this.data = res.data
+        //  this.statusData.emit({status: 200, data: res})
+      },
+      error: (error: any) => {
+        if (typeof error.error.violations !== 'undefined') {
+          error.error.violations.map((violation: any) => {
+            const prop = violation.propertyPath;
+            const formControl = this.validateForm.get(prop);
+            if (formControl) {
+              if (formControl.errors !== null && formControl.errors['other']) {
+                formControl.errors['other'].push(violation.message);
+              } else {
+                formControl.setErrors({
+                  other: [violation.message],
+                });
+              }
+            }
+          });
         }
-      });
-    } else {
-      Object.values(this.validateForm.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-          this.btnDisable = false
-        }
-      });
+      },
+      complete: () => {
 
-    }
-
+      }
+    });
   }
 
   onUpdateItem() {
@@ -317,43 +242,40 @@ export class ItemModalComponent {
   }
 
   onAddItem() {
-    if (this.validateFormDetail.valid) {
-      this.validateFormDetail.get('itemId').setValue(this.data.id)
-      const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-      this.dtlBtn = true
-      this.itemDetailServices.create(this.validateFormDetail.getRawValue()).subscribe({
-        next: (res: ResType<ScmItemDtl[]>) => {
-          this.msg.success('Item saved successfully!');
-          //  this.statusData.emit({status: 200, data: res})
-        },
-        error: (error: any) => {
-          if (error.code === 400) {
-            this.dtlBtn = false
-            this.msg.error('Unsuccessfully saved')
-          }
-        },
-        complete: () => {
-          this.loadData()
-          this.dtlBtn = false
-          this.resetForm2()
-        }
-      });
-    } else {
-      Object.values(this.validateFormDetail.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-          this.dtlBtn = false
-        }
-      });
+    let form: any = Object.assign({}, this.validateForm.value);
 
-    }
+    console.log(JSON.stringify(form))
+    this.itemDetailServices.create(form).subscribe({
+      next: (res: ResType<ScmItemDtl[]>) => {
+        this.resetForm();
+        this.msg.success('Item saved successfully!');
+        //  this.statusData.emit({status: 200, data: res})
+      },
+      error: (error: any) => {
+        if (typeof error.error.violations !== 'undefined') {
+          error.error.violations.map((violation: any) => {
+            const prop = violation.propertyPath;
+            const formControl = this.validateForm.get(prop);
+            if (formControl) {
+              if (formControl.errors !== null && formControl.errors['other']) {
+                formControl.errors['other'].push(violation.message);
+              } else {
+                formControl.setErrors({
+                  other: [violation.message],
+                });
+              }
+            }
+          });
+        }
+      },
+      complete: () => {
+
+      }
+    });
   }
 
   onCancel(): void {
     this.router.navigate(['/default/configuration/item']);
-    this.validateFormDetail.disable()
-    this.isCollapsed = false
   }
 
   loadAccount() {
@@ -457,19 +379,5 @@ export class ItemModalComponent {
     }
   }
 
-  resetForm2(): void {
-    // e.preventDefault();
-    this.validateFormDetail.reset();
-    this.validateFormDetail.patchValue({
-      state: 'Active'
-    })
-
-    for (const key in this.validateFormDetail.controls) {
-      if (this.validateFormDetail.controls.hasOwnProperty(key)) {
-        this.validateFormDetail.controls[key].markAsPristine();
-        this.validateFormDetail.controls[key].updateValueAndValidity();
-      }
-    }
-  }
-
 }
+

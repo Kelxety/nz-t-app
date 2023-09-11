@@ -1,18 +1,3 @@
-<!-- <nz-card [nzBordered]="false" class="-p-1">
-  <nz-breadcrumb [nzAutoGenerate]="true" class="-m-2">
-    <nz-breadcrumb-item>
-      <a>Home</a>
-    </nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <a>Configuration</a>
-    </nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <a>Item</a>
-    </nz-breadcrumb-item>
-  </nz-breadcrumb>
-</nz-card> -->
-
-
 <nz-layout>
   <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" nzWidth="450px" nzTheme="light"
     nzBreakpoint="sm" [nzCollapsedWidth]="50">
@@ -22,94 +7,83 @@
         [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" (click)="isCollapsed = !isCollapsed"></span>
     </nz-header>
 
-    <form nz-form [formGroup]="validateForm">
+    <form nz-form [formGroup]="validateForm" id="validateForm">
       <nz-card [hidden]="isCollapsed">
 
         <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemCode">Item Code</nz-form-label>
+          <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="itemCode" nzLabelWrap>Item
+            Code</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24">
             <input nz-input type="text" formControlName="itemCode" id="itemCode" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <input type="text" nz-input formControlName="barcode" id="barcode" />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="itemName">Item Name</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <input nz-input formControlName="itemName" id="itemName" />
+          <nz-form-label [nzSpan]="6" nzLabelAlign="left" nzRequired>Item Name</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzHasFeedback nzErrorTip="Please input your Item name!">
+            <input nz-input formControlName="itemName" placeholder="Item Name" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="itemName">Item Category</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <nz-tree-select [nzNodes]="treeData" formControlName="itemCategory" nzShowSearch
+          <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzRequired nzFor="itemcategoryId" nzLabelWrap>Item
+            Category</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback nzErrorTip="Please input your Item Category!">
+            <nz-tree-select [nzNodes]="treeData" formControlName="itemcategoryId" id="itemcategoryId" nzShowSearch
               nzPlaceHolder="Please select" nzVirtualHeight="300px" nzHideUnMatched="true"></nz-tree-select>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="itemDescription">Description</nz-form-label>
+          <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="itemDescription">Description</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24">
             <textarea rows="4" nz-input formControlName="itemDescription" id="itemDescription"></textarea>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
+          <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
           <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
         </nz-form-item>
         <div class="float-right px-4">
-          <button nz-button nzType="primary" type="button" (click)="onCreateItem()">
+          <button nz-button nzType="primary" [disabled]="this.btnDisable" type="submit" (click)="onCreateItem()">
             <span nz-icon nzType="save" nzTheme="outline"></span>
             Save
           </button>
         </div>
       </nz-card>
-
-
-      <!-- <nz-card [nzHoverable]="true" class="w-[37%] transition" [nzExtra]="collapse"> -->
-
-
     </form>
-    <!-- </nz-card> -->
   </nz-sider>
-  <nz-layout>
 
+  <nz-layout>
     <div class="m-2 h-auto">
-      <nz-card nzTitle="Add Items" class="w-full" [nzExtra]="options" [nzHoverable]="true">
-        <form nz-form [formGroup]="validateFormDetail">
+      <nz-card nzTitle=" Add Items" class="w-full" [nzExtra]="options" [nzHoverable]="true">
+        <form nz-form [formGroup]="validateFormDetail" id="validateFormDetail">
           <div class="flex flex-row gap-2">
             <div class="w-[50%]">
               <nz-form-item>
-                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="itemName" nzLabelWrap>Entry
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="entryDate" nzLabelWrap>Entry
                   Date</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
                   <nz-date-picker formControlName="entryDate"></nz-date-picker>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="itemName"
-                  nzLabelWrap>Expiration
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="expirationDate" nzLabelWrap>Expiration
                   Date</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
                   <nz-date-picker formControlName="expirationDate"></nz-date-picker>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="subitemCode" nzLabelWrap>SubItem
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzHasFeedback [nzXs]="24" nzFor="subitemCode"
+                  nzLabelWrap>SubItem
                   Code</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
                   <input nz-input formControlName="subitemCode" id="subitemCode" />
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="subitemName"
-                  nzLabelWrap>SubItem
+                <nz-form-label nzErrorTip="Please input your SubItem Name!" nzLabelAlign="left" [nzSm]="6" nzRequired
+                  [nzXs]="24" nzFor="subitemName" nzLabelWrap>SubItem
                   Name</nz-form-label>
-                <nz-form-control [nzSm]="14" [nzXs]="24">
+                <nz-form-control [nzSm]="14" nzHasFeedback [nzXs]="24">
                   <input nz-input formControlName="subitemName" id="subitemName" />
                 </nz-form-control>
               </nz-form-item>
@@ -120,13 +94,24 @@
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="unitId">Unit</nz-form-label>
-                <nz-form-control [nzSm]="14" [nzXs]="24">
-                  <input nz-input formControlName="unitId" id="unitId" />
+                <nz-form-label nzErrorTip="Please input your Unit!" nzLabelAlign="left" [nzSm]="6" nzRequired
+                  [nzXs]="24" nzFor="unitId">Unit</nz-form-label>
+                <nz-form-control [nzSm]="14" nzHasFeedback [nzXs]="24">
+                  <!-- <input nz-input formControlName="unitId" id="unitId" /> -->
+                  <nz-select nzMode="multiple" nzPlaceHolder="Select users" nzAllowClear nzShowSearch nzServerSearch
+                    formControlName="unitId" [(ngModel)]="selectedUser" (nzOnSearch)="onSearch($event)">
+                    <ng-container *ngFor="let o of optionList">
+                      <nz-option *ngIf="!isLoading" [nzValue]="o" [nzLabel]="o"></nz-option>
+                    </ng-container>
+                    <nz-option *ngIf="isLoading" nzDisabled nzCustomContent>
+                      <span nz-icon nzType="loading" class="loading-icon"></span>
+                      Loading Data...
+                    </nz-option>
+                  </nz-select>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzLabelAlign="left" [nzSm]="6" nzRequired [nzXs]="24" nzFor="brandName" nzLabelWrap>Brand
+                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="brandName" nzLabelWrap>Brand
                   Name</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
                   <input nz-input formControlName="brandName" id="brandName" />
@@ -141,15 +126,16 @@
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="barcode" nzLabelWrap>Batch
+                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="batchNo" nzLabelWrap>Batch
                     no.</nz-form-label>
                   <nz-form-control [nzXs]="24">
                     <input nz-input formControlName="batchNo" id="batchNo" />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                  <nz-form-label nzLabelAlign="left" nzRequired [nzXs]="24" nzFor="const">Cost</nz-form-label>
-                  <nz-form-control [nzXs]="24">
+                  <nz-form-label nzLabelAlign="left" nzErrorTip="Please input Cost!" nzRequired [nzXs]="24" nzFor="cost"
+                    onchange="onComputeCost">Cost</nz-form-label>
+                  <nz-form-control [nzXs]="24" nzHasFeedback>
                     <nz-space nzDirection="vertical" class="w-full">
                       <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
                         <nz-input-number formControlName="cost" id="cost" [nzStep]="1"></nz-input-number>
@@ -158,21 +144,24 @@
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                  <nz-form-label nzLabelAlign="left" nzRequired [nzXs]="24" nzFor="balanceQty">Quantity</nz-form-label>
-                  <nz-form-control [nzXs]="24">
+                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="balanceQty" nzHasFeedback
+                    nzErrorTip="Please input Quantity!">Quantity</nz-form-label>
+                  <nz-form-control [nzXs]="24" nzHasFeedback>
                     <input nz-input formControlName="balanceQty" type="number" id="balanceQty" />
                   </nz-form-control>
                 </nz-form-item>
 
                 <nz-form-item>
-                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="markup">Markup</nz-form-label>
+                  <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="markup"
+                    onchange="onComputeMarkup">Markup</nz-form-label>
                   <nz-form-control [nzXs]="24">
                     <input nz-input formControlName="markup" type="number" id="markup" />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                  <nz-form-label nzLabelAlign="left" nzRequired [nzXs]="24" nzFor="price">Price</nz-form-label>
-                  <nz-form-control [nzXs]="24">
+                  <nz-form-label nzLabelAlign="left" nzRequired [nzXs]="24" nzFor="price"
+                    nzErrorTip="Please input Price!">Price</nz-form-label>
+                  <nz-form-control [nzXs]="24" nzHasFeedback>
                     <nz-space nzDirection="vertical" class="w-full">
                       <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
                         <nz-input-number formControlName="price" id="price" [nzStep]="1"></nz-input-number>
@@ -181,23 +170,23 @@
                   </nz-form-control>
                 </nz-form-item>
               </div>
-
-
               <nz-form-item>
                 <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
                 <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
               </nz-form-item>
               <div class=" float-right px-4">
-                <button nz-button nzType="primary" type="button">
-                  <span nz-icon nzType="save" nzTheme="outline"></span>
-                  Add
-                </button>
+                <nz-form-control>
+                  <button [disabled]="this.dtlBtn" nz-button nzType="primary" type="submit" (click)="onAddItem()">
+                    <span nz-icon nzType="save" nzTheme="outline"></span>
+                    Add
+                  </button>
+                </nz-form-control>
               </div>
             </div>
             <nz-card class="w-full h-auto" nzTitle="Item list">
               <div class="loc-content" *ngIf="!model.loading; else isLoading">
                 <nz-table nzShowSizeChanger #fixedTable [nzSize]="'default'"
-                  [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }" \ [nzPageSize]="20">
+                  [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }" \ [nzPageSize]="10">
                   <thead>
                     <tr>
                       <th>Expiration Date</th>

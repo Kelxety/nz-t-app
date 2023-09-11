@@ -103,6 +103,17 @@ const menuNav: Menu[] = [
         icon: 'menu',
         selected: false,
         open: false
+      },
+      {
+        id: 3,
+        menuName: 'Unit',
+        // "code": "manage_tms_class",
+        fatherId: 113,
+        path: '/default/configuration/unit',
+        menuType: 'C',
+        icon: 'menu',
+        selected: false,
+        open: false
       }
     ]
   },

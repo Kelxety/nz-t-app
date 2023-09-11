@@ -1,7 +1,7 @@
-import { HttpClient, HttpParams, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, tap, retry } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 // tslint:disable:no-console
 
@@ -9,7 +9,7 @@ import { catchError, tap, retry } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get(path: string, params: HttpParams = new HttpParams()): Observable<any> {
     const headers = new HttpHeaders({
@@ -26,7 +26,7 @@ export class ApiService {
   post(path: string, params: object = {}): Observable<any> {
     let headers = new HttpHeaders();
 
-    if (!(params instanceof FormData)) {
+    if (params instanceof FormData) {
       headers = headers.append('Content-Type', 'application/ld+json');
       headers = headers.append('Accept', 'application/ld+json');
     }
@@ -46,6 +46,20 @@ export class ApiService {
     }
 
     return this.http.put<any>(path, params, { headers }).pipe(
+      tap((data: any) => console.log(`updated`)),
+      catchError(this.handleError<any>('error'))
+    );
+  }
+
+  patch(path: string, params: object = {}): Observable<any> {
+    let headers = new HttpHeaders();
+
+    if (params instanceof FormData) {
+      headers = headers.append('Content-Type', 'application/ld+json');
+      headers = headers.append('Accept', 'application/ld+json');
+    }
+
+    return this.http.patch<any>(path, params, { headers }).pipe(
       tap((data: any) => console.log(`updated`)),
       catchError(this.handleError<any>('error'))
     );

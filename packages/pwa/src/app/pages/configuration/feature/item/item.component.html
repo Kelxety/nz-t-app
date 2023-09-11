@@ -14,26 +14,28 @@
       <div class="loc-content" *ngIf="!model.loading; else isLoading">
         <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzSize]="'default'"
           [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
-          (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="20">
+          (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
           <thead>
             <tr>
               <th>Code</th>
               <th>Name</th>
               <th>Category</th>
               <th>Description</th>
-              <th nzWidth="90px">Status</th>
+              <th nzWidth="110px">Status</th>
               <th nzWidth="80px" class="text-right">Action</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let data of fixedTable.data">
-              <td nzEllipsis>{{ data.itemCode }}</td>
-              <td nzEllipsis>{{ data.itemName }}</td>
+              <td nzEllipsis>{{ data?.itemCode }}</td>
+              <td nzEllipsis>{{ data?.itemName }}</td>
               <td nzEllipsis>{{ data?.scmItemCategory?.catName }}</td>
-              <td nzEllipsis>{{ data.description }}</td>
-              <td nzEllipsis><nz-badge nzColor="green" [nzText]="data.state"></nz-badge></td>
+              <td nzEllipsis>{{ data?.itemDescription }}</td>
+              <td nzEllipsis><nz-badge [nzColor]="data.state === 'Active' ? 'green' : 'red'"
+                  [nzText]="data?.state"></nz-badge>
+              </td>
               <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
-                <span (click)="edit(data.id)" class="pointer" nz-icon nzType="edit" nzTheme="outline"></span>
+                <span (click)="onEdit(data.id)" class="pointer" nz-icon nzType="edit" nzTheme="outline"></span>
                 <nz-divider nzType="vertical"></nz-divider>
                 <span class="pointer" nz-icon nzType="delete" nzTheme="outline" style="color: red" nz-popconfirm
                   nzPopconfirmTitle="Are you sure you want to delete {{ data.className }}" (nzOnConfirm)="confirm(data)"

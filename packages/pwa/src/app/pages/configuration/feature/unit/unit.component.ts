@@ -1,34 +1,34 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
 
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-
+import { Subject, takeUntil } from 'rxjs';
 import { SpinService } from '../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../shared';
-import { TmsRptClassModalComponent } from '../../../../shared/feature/tms-rpt-class-modal/tms-rpt-class-modal.component';
-import { ItemServices } from '../../Services/item/item.service';
+import { UnitServices } from '../../Services/unit/unit.service';
+import { CreateEditModalComponent } from './create-edit-modal/create-edit-modal.component';
 
-interface ItemData {
+interface UnitData {
   id: string;
-  itemCode: string;
-  itemName: string;
-  itemDescription: string;
-  scmItemCategory: string[];
-  scmItemDtl: string[];
+  unitName: string;
+  unitAcro: string;
   state: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedBy: string;
+  updatedAt: Date;
+
 }
 
 @Component({
-  selector: 'app-item',
-  templateUrl: './item.component.html',
-  styleUrls: ['./item.component.less'],
+  selector: 'app-unit',
+  templateUrl: './unit.component.html',
+  styleUrls: ['./unit.component.less'],
   standalone: true,
   imports: [SharedModule]
 })
-export class ItemComponent {
+export class UnitComponent {
   search: string = '';
   private ngUnsubscribe = new Subject();
 
@@ -40,8 +40,8 @@ export class ItemComponent {
 
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly ItemData[] = [];
-  listOfData: readonly ItemData[] = [];
+  listOfCurrentPageData: readonly UnitData[] = [];
+  listOfData: readonly UnitData[] = [];
   setOfCheckedId = new Set<string>();
 
   model: any = {
@@ -58,11 +58,10 @@ export class ItemComponent {
     private spinService: SpinService,
     private fb: FormBuilder,
     private msg: NzMessageService,
-    private itemServices: ItemServices,
+    private unitServices: UnitServices,
     private modalService: NzModalService,
-    private router: Router,
-    private routers: ActivatedRoute
   ) { }
+
 
   ngOnInit(): void {
     this.loadData();
@@ -72,6 +71,44 @@ export class ItemComponent {
   ngOnDestroy() {
     this.ngUnsubscribe.next({});
     this.ngUnsubscribe.complete();
+  }
+
+  add() {
+    const dialogRef = this.modalService.create({
+      nzTitle: 'Add Unit',
+      nzContent: CreateEditModalComponent,
+      nzData: {
+        actionType: 'Create'
+      },
+    });
+
+    dialogRef.componentInstance?.statusData.subscribe(
+      ($e) => {
+        // console.log('Added:', $e);
+        // this.model.list.push($e);
+        // this.filter(this.search);
+        this.loadData();
+        this.cd.detectChanges();
+      },
+    );
+  }
+
+  edit(data: any) {
+    const dialogRef = this.modalService.create({
+      nzTitle: 'Edit Unit',
+      nzContent: CreateEditModalComponent,
+      nzData: {
+        id: data,
+        actionType: 'Edit'
+      },
+    });
+
+    dialogRef.componentInstance?.statusData.subscribe(
+      ($e) => {
+        this.loadData();
+        this.cd.detectChanges();
+      },
+    );
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -103,7 +140,7 @@ export class ItemComponent {
     this.refreshCheckedStatus();
   }
 
-  onCurrentPageDataChange($event: readonly ItemData[]): void {
+  onCurrentPageDataChange($event: readonly UnitData[]): void {
     this.listOfCurrentPageData = $event;
     this.refreshCheckedStatus();
   }
@@ -123,7 +160,7 @@ export class ItemComponent {
         sortDirection: 'asc'
       }
     ];
-    this.itemServices.list({ order: order, pagination: false }).subscribe({
+    this.unitServices.list({ order: order, pagination: false }).subscribe({
       next: (res: any) => {
         const list = signal(res.data)
         list.mutate(res => {
@@ -141,14 +178,6 @@ export class ItemComponent {
         this.cd.detectChanges();
       }
     });
-  }
-
-  onAdd() {
-    this.router.navigate(['/default/configuration/item-modal']);
-  }
-
-  onEdit(data: any): void {
-    this.router.navigate(['/default/configuration/item-edit-modal', data]);
   }
 
   handleOk(): void {
@@ -177,7 +206,7 @@ export class ItemComponent {
     const id = data.id;
     const load = this.msg.loading('Removing in progress..', { nzDuration: 0 }).messageId;
 
-    this.itemServices
+    this.unitServices
       .delete(id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
@@ -198,50 +227,8 @@ export class ItemComponent {
         complete: () => { }
       });
   }
-
-  add() {
-    const dialogRef = this.modalService.create({
-      nzTitle: 'Add RPT Classification',
-      nzContent: TmsRptClassModalComponent,
-      nzData: {
-        actionType: 'create'
-      }
-    });
-
-    dialogRef.componentInstance?.statusData.subscribe($e => {
-      console.log('Added:', $e);
-      this.model.list.push($e);
-      this.filter(this.search);
-      this.cd.detectChanges();
-    });
+  filter(search: string) {
+    throw new Error('Method not implemented.');
   }
 
-  edit(code: string) {
-    const dialogRef = this.modalService.create({
-      nzTitle: 'Edit RPT Classification',
-      nzContent: TmsRptClassModalComponent,
-      nzData: {
-        id: code,
-        actionType: 'edit'
-      }
-    });
-
-    dialogRef.componentInstance?.statusData.subscribe($e => {
-      if ($e.data.state === 'Active') {
-        $e.data.state = true;
-      } else {
-        $e.data.state = false;
-      }
-      const data: any = { name: $e.data.regionName, value: $e.data['@id'], active: true };
-      this.loadData();
-      this.cd.detectChanges();
-    });
-  }
-
-  filter(f: string) {
-    this.search = f;
-    this.model.filteredList = this.model.list.filter((d: any) => d.className.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
-    console.log('S', this.search);
-    this.cd.detectChanges();
-  }
 }
