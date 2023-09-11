@@ -114,7 +114,6 @@ export class UsersController {
     @Body()
     changepass: ChangePasswordDto,
   ) {
-    console.log('wala talaga', changepass.newPassword, id);
     return new UserEntity(
       await this.usersService.changePassword(id, changepass),
     );

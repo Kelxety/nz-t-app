@@ -207,7 +207,7 @@ model ScmBadOrderDtl {
 
 model ScmChargeslip {
   id                  String              @id @default(uuid())
-  fyCode              Int                 @map("fy_code")
+  fyCode              Int?                @map("fy_code")
   csRefno             String              @map("cs_refno") @db.VarChar(50)
   csDate              DateTime            @map("cs_date") @db.Date
   csName              String              @map("cs_name") @db.VarChar(255)
