@@ -8,8 +8,8 @@ import { ResType } from '@utils/types/return-types';
 @Injectable({
     providedIn: 'root'
 })
-export class ItemDetailServices {
-    public baseUrl = '/api/item-detail';
+export class UnitServices {
+    public baseUrl = '/api/unit';
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
@@ -23,7 +23,7 @@ export class ItemDetailServices {
         return this.apiService.get(url);
     }
 
-    create(data: object): Observable<ResType<ScmItemDtl[]>> {
+    create(data: object): Observable<ResType<ScmItemDtl>> {
         return this.apiService.post(this.baseUrl, data);
     }
 

@@ -13,7 +13,17 @@ export default [
   { path: 'item', data: { title: 'Item', key: 'item', breadcrumb: 'Item' }, loadComponent: () => import('./feature/item/item.component').then(c => c.ItemComponent) },
   {
     path: 'item-modal',
-    data: { title: 'Item Modal', key: 'itemModal', breadcrumb: 'Add Item' },
+    data: { title: 'Add Item', key: 'itemAddModal', breadcrumb: 'Add Item' },
     loadComponent: () => import('./feature/item/item-modal/item-modal.component').then(c => c.ItemModalComponent)
+  },
+  {
+    path: 'item-edit-modal/:id',
+    data: { title: 'Edit Item', key: 'itemEditModal', breadcrumb: 'Edit Item' },
+    loadComponent: () => import('./feature/item/item-edit-modal/item-edit-modal.component').then(c => c.ItemEditModalComponent)
+  },
+  {
+    path: 'unit',
+    data: { title: 'Unit', key: 'unit', breadcrumb: 'Unit' },
+    loadComponent: () => import('./feature/unit/unit.component').then(c => c.UnitComponent)
   }
 ] as Route[];
