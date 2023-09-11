@@ -1,4 +1,4 @@
-import { applyDecorators, UseGuards } from '@nestjs/common';
+import { applyDecorators, UseGuards, UseInterceptors } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -8,6 +8,7 @@ import {
 import { JwtAuthGuard } from '@api/auth/guard/jwt-auth.guard';
 import { RoleGuard } from '@api/auth/role/role.guard';
 import { Roles } from '@api/auth/roles/roles.decorator';
+import { NoFilesInterceptor } from '@nestjs/platform-express';
 
 export const CustomGlobalDecorator = (
   T: any,
@@ -57,6 +58,7 @@ export const CustomGlobalDecorator = (
     UseGuards(JwtAuthGuard, RoleGuard),
     Roles('SUPERADMIN'),
     ApiOkResponse({ type: entity, isArray: isArray }),
+    UseInterceptors(NoFilesInterceptor()),
     ApiUnauthorizedResponse({
       schema: {
         type: 'object',
