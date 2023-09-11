@@ -54,6 +54,7 @@ export class WarehouseService {
     updateWarehouseDto: UpdateWarehouseDto,
     token: string,
   ) {
+    await this.findOne(id);
     const creatorName = await this.role.getRequesterName(token);
     const data = await this.prisma.scmWarehouse.findUnique({ where: { id } });
     if (!data) {
