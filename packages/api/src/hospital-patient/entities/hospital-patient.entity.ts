@@ -1,9 +1,13 @@
+import { ChargeSlipEntity } from '@api/charge-slip/entities/charge-slip.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { HospitalPatient } from '@prisma/client';
 
 export class HospitalPatientEntity implements HospitalPatient {
-  constructor(partial: Partial<HospitalPatientEntity>) {
+  constructor({ scmChargeslips, ...partial }: Partial<HospitalPatientEntity>) {
     Object.assign(this, partial);
+    if (scmChargeslips) {
+      this.scmChargeslips = scmChargeslips.map((i) => new ChargeSlipEntity(i));
+    }
   }
   @ApiProperty()
   id: string;
@@ -46,6 +50,9 @@ export class HospitalPatientEntity implements HospitalPatient {
 
   @ApiProperty()
   state: string;
+
+  @ApiProperty({ type: ChargeSlipEntity, isArray: true })
+  scmChargeslips: ChargeSlipEntity[];
 
   @ApiProperty()
   remarks: string;

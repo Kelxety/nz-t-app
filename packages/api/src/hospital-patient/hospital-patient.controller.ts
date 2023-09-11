@@ -64,9 +64,13 @@ export class HospitalPatientController {
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
 
+    const newData = data.map((entity) => {
+      return new HospitalPatientEntity(entity);
+    });
+
     return {
       message: `List of all patient fetch Successfully`,
-      data: data,
+      data: newData,
       total: data.length,
     };
   }
@@ -74,7 +78,12 @@ export class HospitalPatientController {
   @Get(':id')
   @CustomGlobalDecorator(null, false, HospitalPatientEntity)
   async findOne(@Param('id') id: string) {
-    return await this.hospitalPatientService.findOne(id);
+    const data = await this.hospitalPatientService.findOne(id);
+    return {
+      message: `Get with id of ${id} fetch Successfully`,
+      data: data,
+      total: 1,
+    };
   }
 
   @Patch(':id')
@@ -83,14 +92,25 @@ export class HospitalPatientController {
     @Param('id') id: string,
     @Body() updateHospitalPatientDto: UpdateHospitalPatientDto,
   ) {
-    return new HospitalPatientEntity(
-      await this.hospitalPatientService.update(id, updateHospitalPatientDto),
+    const data = await this.hospitalPatientService.update(
+      id,
+      updateHospitalPatientDto,
     );
+    return {
+      message: `List of all patient fetch Successfully`,
+      data: new HospitalPatientEntity(data),
+      total: 1,
+    };
   }
 
   @Delete(':id')
   @CustomGlobalDecorator(null, false, HospitalPatientEntity)
   async remove(@Param('id') id: string) {
-    return await this.hospitalPatientService.remove(id);
+    const deleted = await this.hospitalPatientService.remove(id);
+    return {
+      message: 'Successfully deleted!',
+      data: deleted,
+      total: 1,
+    };
   }
 }
