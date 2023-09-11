@@ -4,10 +4,11 @@ import { PaginateOptions } from '@api/lib/interface';
 import { PrismaService } from '@api/lib/prisma/prisma.service';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UpdateUnitDto } from './dto/update-unit.dto';
+import { RoleService } from '@api/role/role.service';
 
 @Injectable()
 export class UnitService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) {}
   async create(createUnitDto: CreateUnitDto) {
     return await this.prisma.scmUnit.create({ data: createUnitDto });
   }
@@ -44,17 +45,18 @@ export class UnitService {
     return data;
   }
 
-  async update(id: string, updateUnitDto: UpdateUnitDto) {
-    const data = await this.findOne(id);
-    if (!data) throw new NotFoundException();
+  async update(id: string, updateUnitDto: UpdateUnitDto, token: string) {
+    await this.findOne(id);
+    const creator = await this.role.getRequesterName(token);
     const updatedUnit = await this.prisma.scmUnit.update({
       where: { id },
-      data: updateUnitDto,
+      data: { ...updateUnitDto, updatedBy: creator.accountName },
     });
     return updatedUnit;
   }
 
   async remove(id: string) {
+    await this.findOne(id);
     const data = await this.prisma.scmUnit.delete({ where: { id } });
     return data;
   }

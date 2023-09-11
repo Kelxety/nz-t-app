@@ -8,6 +8,7 @@ import { PrismaModule } from '@api/lib/prisma/prisma.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '@api/users/users.module';
+import { RoleService } from '@api/role/role.service';
 
 @Module({
   controllers: [UnitController],
@@ -16,6 +17,7 @@ import { UsersModule } from '@api/users/users.module';
     JwtStrategy,
     RefreshTokenStrategy,
     TransformInterceptor,
+    RoleService,
   ],
   imports: [
     PrismaModule,
