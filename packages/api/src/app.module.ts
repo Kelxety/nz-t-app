@@ -14,6 +14,12 @@ import { WarehouseModule } from './warehouse/warehouse.module';
 import { ItemLocationModule } from './item-location/item-location.module';
 import { ItemLocationDetailModule } from './item-location-detail/item-location-detail.module';
 import { HospitalPatientModule } from './hospital-patient/hospital-patient.module';
+import { ChargeSlipModule } from './charge-slip/charge-slip.module';
+import { HospitalPatientTypeModule } from './hospital-patient-type/hospital-patient-type.module';
+import { HospitalPhysicianModule } from './hospital-physician/hospital-physician.module';
+import { ChargeSlipDetailsModule } from './charge-slip-details/charge-slip-details.module';
+import { ReturnsModule } from './returns/returns.module';
+import { ReturnDetailModule } from './return-detail/return-detail.module';
 
 @Module({
   imports: [
@@ -30,6 +36,12 @@ import { HospitalPatientModule } from './hospital-patient/hospital-patient.modul
     ItemLocationModule,
     ItemLocationDetailModule,
     HospitalPatientModule,
+    ChargeSlipModule,
+    HospitalPatientTypeModule,
+    HospitalPhysicianModule,
+    ChargeSlipDetailsModule,
+    ReturnsModule,
+    ReturnDetailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
