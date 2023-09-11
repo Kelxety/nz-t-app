@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "@nestjs/mapped-types": "*",
-    "body-parser": "^1.20.2"
+    "@prisma/client": "5.2.0",
+    "body-parser": "^1.20.2",
+    "prisma": "^5.2.0"
   },
   "name": "nestjs-api",
   "version": "0.0.1",

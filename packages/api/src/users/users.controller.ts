@@ -25,10 +25,11 @@ import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from '@api/auth/guard/jwt-auth.guard';
 import { RoleGuard } from '@api/auth/role/role.guard';
 import { Roles } from '@api/auth/roles/roles.decorator';
-import { QueryT, ResponseT } from '@api/lib/interface';
+import { CustomRequest, QueryT, ResponseT } from '@api/lib/interface';
 import { toBoolean } from '@api/lib/helper/cast.helper';
 import { Request as Req } from 'express';
 import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { User } from '@prisma/client';
 
 @Controller('users')
 @ApiTags('system_users')
@@ -73,7 +74,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
-  async findMe(@Request() request: Req): Promise<Partial<UserEntity>> {
+  async findMe(
+    @Request() request: CustomRequest,
+  ): Promise<Partial<UserEntity>> {
+    console.log(request?.user);
     const userFind = await this.usersService.findOne(request?.user?.id);
     return new UserEntity(userFind);
   }

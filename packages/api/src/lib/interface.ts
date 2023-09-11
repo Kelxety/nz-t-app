@@ -1,3 +1,6 @@
+import { User } from '@prisma/client';
+import { Request } from 'express';
+
 export interface Order {
   sortColumn: string;
   sortDirection: 'asc' | 'desc';
@@ -23,4 +26,8 @@ export interface ResponseT<T> {
   message: string;
   data: T;
   total: number;
+}
+
+export interface CustomRequest extends Request {
+  user: User;
 }

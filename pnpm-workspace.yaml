@@ -1,6 +1,7 @@
 packages:
   - "api/*"
   - "pwa/*"
+  - "prisma/*"
   - "packages/*"
 
 api:

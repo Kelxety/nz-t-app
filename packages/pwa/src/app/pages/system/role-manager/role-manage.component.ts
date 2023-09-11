@@ -82,7 +82,7 @@ export class RoleManageComponent implements OnInit {
     this.getDataList();
   }
 
-  getDataList(e?: NzTableQueryParams): void {
+  getDataList(e?: any): void {
     this.tableConfig.loading = true;
     const params: SearchCommonVO<any> = {
       pageSize: this.tableConfig.pageSize!,
