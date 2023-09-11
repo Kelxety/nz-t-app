@@ -11,6 +11,7 @@ export class ItemEntity implements ScmItem {
   itemCode: string;
 
   @ApiProperty()
+  @Exclude()
   barcode: string;
 
   @ApiProperty()
@@ -47,7 +48,7 @@ export class ItemEntity implements ScmItem {
   @ApiProperty({ required: false, type: ItemDetailEntity })
   itemDtls?: ItemDetailEntity;
 
-  constructor({ itemDtls, ...data }: Partial<ItemEntity>) {
+  constructor({ itemDtls, ...data }: Partial<ItemEntity>,) {
     Object.assign(this, data);
 
     if (itemDtls) {

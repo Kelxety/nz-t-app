@@ -3,10 +3,12 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class CreateItemDto {
   @ApiProperty()
+  @IsString()
   itemCode: string;
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   barcode: string;
 
   @ApiProperty()

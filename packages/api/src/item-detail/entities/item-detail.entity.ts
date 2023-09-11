@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ScmItemDtl } from "@prisma/client";
+import { Exclude } from "class-transformer";
 import { UnitEntity } from "../../unit/entities/unit.entity";
 
 export class ItemDetailEntity implements ScmItemDtl {
@@ -33,6 +34,7 @@ export class ItemDetailEntity implements ScmItemDtl {
     barcode: string;
 
     @ApiProperty()
+    @Exclude()
     unitId: string;
 
     @ApiProperty()
