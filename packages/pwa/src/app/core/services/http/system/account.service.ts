@@ -1,31 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { User } from '@prisma/client';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
+
 import { PageInfo, SearchCommonVO } from '../../types';
 import { BaseHttpService } from '../base-http.service';
 
-/*
- * 用户管理
- * */
-export interface User {
-  id: number;
-  password: string;
-  userName?: string;
-  available?: boolean;
-  roleName?: string[];
-  sex?: 1 | 0;
-  telephone?: string;
-  mobile?: string | number;
-  email?: string;
-  lastLoginTime?: Date;
-  oldPassword?: string;
-  departmentId?: number;
-  departmentName?: string;
-}
-
-/*
- * 用户修改密码
- * */
 export interface UserPsd {
   id: string;
   oldPassword: string;
@@ -42,7 +23,11 @@ export class AccountService {
     return this.http.post('/api/users/', param);
   }
 
-  public getAccountDetail(id: number): Observable<User> {
+  public getAccountList(param: SearchCommonVO<User>): Observable<User[]> {
+    return this.http.get('/api/users/', param);
+  }
+
+  public getAccountDetail(id: string): Observable<User> {
     return this.http.get(`/api/users/${id}/`);
   }
 
@@ -50,7 +35,7 @@ export class AccountService {
     return this.http.post('/api/users/', param);
   }
 
-  public delAccount(ids: number[]): Observable<void> {
+  public delAccount(ids: string[]): Observable<void> {
     return this.http.post('/api/users/del/', { ids });
   }
 
@@ -59,7 +44,7 @@ export class AccountService {
   }
 
   public editAccountPsd(params: UserPsd): Observable<string> {
-    console.log(params);
-    return this.http.patch(`/api/users/changepass/${params.id}`, params);
+    const data: Observable<string> = this.http.patch(`/api/users/changepass/${params.id}`, params);
+    return data;
   }
 }

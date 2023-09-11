@@ -104,9 +104,9 @@ export class DeptComponent implements OnInit {
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
     const params: SearchCommonVO<any> = {
-      pageSize: 0,
-      pageNum: 0,
-      filters: this.searchParam
+      pageSize: 0
+      // pageNum: 0,
+      // filters: this.searchParam
     };
     this.dataService
       .getDepts(params)

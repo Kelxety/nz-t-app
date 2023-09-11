@@ -34,7 +34,7 @@ export class HttpInterceptorService implements HttpInterceptor {
     return next.handle(copyReq).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error instanceof HttpErrorResponse) {
-          if (error.status === 401) {
+          if (error.status === 401 && error.error.message !== 'Password is incorrect!') {
             return this.handleHttpResponseError(copyReq, next);
           }
         }
@@ -102,7 +102,7 @@ export class HttpInterceptorService implements HttpInterceptor {
       errMsg = `An error occurred on the client side, it may be that the sent data is wrong, the status code is ${status}`;
       if (status === 401) {
         errMsg = `Invalid credential`;
-        this.loginOutService.loginOut().then();
+        // this.loginOutService.loginOut().then();
       }
     }
     if (status >= 500) {

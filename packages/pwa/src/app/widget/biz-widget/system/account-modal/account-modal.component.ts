@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 
 import { OptionsInterface } from '@core/services/types';
 import { ValidatorsService } from '@core/services/validators/validators.service';
-import { User } from '@services/system/account.service';
+import { User } from '@prisma/client';
 import { DeptService } from '@services/system/dept.service';
 import { RoleService } from '@services/system/role.service';
 import { fnCheckForm } from '@utils/tools';
@@ -53,7 +53,7 @@ export class AccountModalComponent implements OnInit {
 
   getRoleList(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.roleService.getRoles({ pageNum: 0, pageSize: 0 }).subscribe(({ list }) => {
+      this.roleService.getRoles({ page: 0, pageSize: 0 }).subscribe(({ list }) => {
         this.roleOptions = [];
         list.forEach(({ id, roleName }) => {
           const obj: OptionsInterface = {
@@ -67,22 +67,22 @@ export class AccountModalComponent implements OnInit {
     });
   }
 
-  getDeptList(): Promise<void> {
-    return new Promise<void>(resolve => {
-      this.deptService.getDepts({ pageNum: 0, pageSize: 0 }).subscribe(({ list }) => {
-        list.forEach(item => {
-          // @ts-ignore
-          item.title = item.departmentName;
-          // @ts-ignore
-          item.key = item.id;
-        });
+  // getDeptList(): Promise<void> {
+  //   return new Promise<void>(resolve => {
+  //     this.deptService.getDepts({ page: 0, pageSize: 0 }).subscribe(({ list }) => {
+  //       list.forEach(item => {
+  //         // @ts-ignore
+  //         item.title = item.departmentName;
+  //         // @ts-ignore
+  //         item.key = item.id;
+  //       });
 
-        const target = fnAddTreeDataGradeAndLeaf(fnFlatDataHasParentToTree(list));
-        this.deptNodes = target;
-        resolve();
-      });
-    });
-  }
+  //       const target = fnAddTreeDataGradeAndLeaf(fnFlatDataHasParentToTree(list));
+  //       this.deptNodes = target;
+  //       resolve();
+  //     });
+  //   });
+  // }
 
   initForm(): void {
     this.addEditForm = this.fb.group({
@@ -102,7 +102,7 @@ export class AccountModalComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.initForm();
     this.isEdit = !!this.nzModalData;
-    await Promise.all([this.getRoleList(), this.getDeptList()]);
+    // await Promise.all([this.getRoleList(), this.getDeptList()]);
     if (this.isEdit) {
       this.addEditForm.patchValue(this.nzModalData);
       this.addEditForm.controls['password'].disable();

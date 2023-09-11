@@ -72,7 +72,7 @@ export class DeptTreeService {
   initDate(): void {
     const params: SearchCommonVO<any> = {
       pageSize: 0,
-      pageNum: 0
+      page: 0
     };
     this.dataService
       .getDepts(params)

@@ -63,6 +63,11 @@ export class LoginInOutService {
           const userInfo: UserInfo = { userId: id, authCode: auth };
           userInfo.authCode.push('default:dashboard');
           userInfo.authCode.push('default:dashboard:analysis');
+          userInfo.authCode.push('default:system');
+          userInfo.authCode.push('default:system:account');
+          userInfo.authCode.push('default:system:role-manager');
+          userInfo.authCode.push('default:system:menu');
+          userInfo.authCode.push('default:system:dept');
           console.log('USER STORED', userInfo);
           this.userInfoService.setUserInfo(userInfo);
           // this.cd.detectChanges();

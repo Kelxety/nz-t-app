@@ -86,8 +86,7 @@ export class RoleManageComponent implements OnInit {
     this.tableConfig.loading = true;
     const params: SearchCommonVO<any> = {
       pageSize: this.tableConfig.pageSize!,
-      pageNum: e?.pageIndex || this.tableConfig.pageIndex!,
-      filters: this.searchParam
+      page: e?.page || this.tableConfig.pageIndex!
     };
     this.dataService
       .getRoles(params)

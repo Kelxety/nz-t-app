@@ -112,9 +112,9 @@ export class MenuComponent implements OnInit {
     this.tableConfig.loading = true;
     this.tableConfig.loading = true;
     const params: SearchCommonVO<any> = {
-      pageSize: 0,
-      pageNum: 0,
-      filters: this.searchParam
+      pageSize: 0
+      // pageNum: 0,
+      // filters: this.searchParam
     };
     this.dataService
       .getMenuList(params)

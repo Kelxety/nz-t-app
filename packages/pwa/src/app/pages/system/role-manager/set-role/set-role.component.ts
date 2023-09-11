@@ -74,7 +74,7 @@ export class SetRoleComponent implements OnInit {
         concatMap(authCodeArr => {
           this.authCodeArr = authCodeArr;
           // 获取所有菜单
-          return this.menusService.getMenuList({ pageNum: 0, pageSize: 0 });
+          return this.menusService.getMenuList({ page: 0, pageSize: 0 });
         }),
         takeUntilDestroyed(this.destroyRef)
       )

@@ -8,7 +8,10 @@ import { finalize } from 'rxjs/operators';
 import { ActionCode } from '@app/config/actionCode';
 import { MessageService } from '@core/services/common/message.service';
 import { OptionsInterface, SearchCommonVO } from '@core/services/types';
-import { AccountService, User } from '@services/system/account.service';
+// import { User as UserType } from '@prisma/client';
+import { User as UserType } from '@prisma/client';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
+import { AccountService } from '@services/system/account.service';
 import { AntTableConfig, AntTableComponent } from '@shared/components/ant-table/ant-table.component';
 import { CardTableWrapComponent } from '@shared/components/card-table-wrap/card-table-wrap.component';
 import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -32,19 +35,13 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 
 import { DeptTreeComponent } from './dept-tree/dept-tree.component';
 
-interface SearchParam {
-  userName: string;
-  departmentId: number;
-  mobile: number;
-  available: boolean;
-}
-
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
+    CardTableWrapComponent,
     PageHeaderComponent,
     NzGridModule,
     DeptTreeComponent,
@@ -58,7 +55,6 @@ interface SearchParam {
     NzButtonModule,
     NzWaveModule,
     NzIconModule,
-    CardTableWrapComponent,
     AntTableComponent,
     AuthDirective,
     NzSwitchModule
@@ -67,14 +63,14 @@ interface SearchParam {
 export class AccountComponent implements OnInit {
   @ViewChild('operationTpl', { static: true }) operationTpl!: TemplateRef<any>;
   @ViewChild('availableFlag', { static: true }) availableFlag!: TemplateRef<NzSafeAny>;
-  searchParam: Partial<SearchParam> = {};
+  searchParam: Partial<UserType> = {};
   tableConfig!: AntTableConfig;
   pageHeaderInfo: Partial<PageHeaderType> = {
-    title: '账号管理(数据库每10分钟从备份恢复一次)',
-    breadcrumb: ['Front page', '用户管理', '账号管理']
+    title: 'Account management (database is restored from backup every 10 minutes)',
+    breadcrumb: ['Front page', 'User Management', 'Account Management']
   };
-  dataList: User[] = [];
-  checkedCashArray: User[] = [];
+  dataList: UserType[] = [];
+  checkedCashArray: UserType[] = [];
   ActionCode = ActionCode;
   isCollapse = true;
   availableOptions: OptionsInterface[] = [];
@@ -90,7 +86,7 @@ export class AccountComponent implements OnInit {
     public message: NzMessageService
   ) {}
 
-  selectedChecked(e: User[]): void {
+  selectedChecked(e: UserType[]): void {
     this.checkedCashArray = [...e];
   }
 
@@ -103,35 +99,37 @@ export class AccountComponent implements OnInit {
     this.tableConfig.loading = true;
     const params: SearchCommonVO<any> = {
       pageSize: this.tableConfig.pageSize!,
-      pageNum: e?.pageIndex || this.tableConfig.pageIndex!,
-      filters: this.searchParam
+      page: e?.page || this.tableConfig.pageIndex!,
+      filteredObject: this.searchParam,
+      orderBy: null,
+      pagination: e.pagination!
     };
     this.dataService
-      .getAccount(params)
+      .getAccountList(params)
       .pipe(
         finalize(() => {
           this.tableLoading(false);
         }),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(data => {
-        const { list, total, pageNum } = data;
-        this.dataList = [...list];
-        this.tableConfig.total = total!;
-        this.tableConfig.pageIndex = pageNum!;
-        this.tableLoading(false);
-        this.checkedCashArray = [...this.checkedCashArray];
+      .subscribe(res => {
+        console.log(res);
+        // if (res.statusCode === 200) {
+        //   this.dataList = res.data;
+        //   this.tableConfig.total = res.total!;
+        //   this.tableConfig.pageIndex = 1;
+        //   this.tableLoading(false);
+        //   this.checkedCashArray = [...this.checkedCashArray];
+        // }
+        return res;
       });
   }
 
-  // 设置权限
-  setRole(id: number): void {
+  setRole(id: string): void {
     this.router.navigate(['/default/system/role-manager/set-role'], { queryParams: { id: id } });
   }
 
-  // 触发表格变更检测
   tableChangeDectction(): void {
-    // 改变引用触发变更检测。
     this.dataList = [...this.dataList];
     this.cdr.detectChanges();
   }
@@ -143,7 +141,7 @@ export class AccountComponent implements OnInit {
 
   add(): void {
     this.modalService
-      .show({ nzTitle: '新增' })
+      .show({ nzTitle: 'New' })
       .pipe(
         finalize(() => {
           this.tableLoading(false);
@@ -160,18 +158,17 @@ export class AccountComponent implements OnInit {
   }
 
   reloadTable(): void {
-    this.message.info('刷新成功');
+    this.message.info('Refresh Successfully');
     this.getDataList();
   }
 
-  // 修改
-  edit(id: number): void {
+  edit(id: string): void {
     this.dataService
       .getAccountDetail(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
         this.modalService
-          .show({ nzTitle: '编辑' }, res)
+          .show({ nzTitle: 'Edit' }, res)
           .pipe(
             finalize(() => {
               this.tableLoading(false);
@@ -189,7 +186,7 @@ export class AccountComponent implements OnInit {
       });
   }
 
-  addEditData(param: User, methodName: 'editAccount' | 'addAccount'): void {
+  addEditData(param: UserType, methodName: 'editAccount' | 'addAccount'): void {
     this.dataService[methodName](param)
       .pipe(
         finalize(() => {
@@ -202,14 +199,14 @@ export class AccountComponent implements OnInit {
       });
   }
 
-  changeStatus(e: boolean, id: number): void {
+  changeStatus(e: boolean, id: string): void {
     this.tableConfig.loading = true;
-    const people: Partial<User> = {
+    const people: Partial<UserType> = {
       id,
-      available: !e
+      status: '!e'
     };
     this.dataService
-      .editAccount(people as User)
+      .editAccount(people as UserType)
       .pipe(
         finalize(() => {
           this.tableLoading(false);
@@ -223,10 +220,10 @@ export class AccountComponent implements OnInit {
 
   allDel(): void {
     if (this.checkedCashArray.length > 0) {
-      const tempArrays: number[] = [];
+      const tempArrays: string[] = [];
       this.modalSrv.confirm({
-        nzTitle: '确定要删除吗？',
-        nzContent: '删除后不可恢复',
+        nzTitle: 'You sure you want to delete it？',
+        nzContent: 'Unrecoverable after deletion',
         nzOnOk: () => {
           this.checkedCashArray.forEach(item => {
             tempArrays.push(item.id);
@@ -250,16 +247,16 @@ export class AccountComponent implements OnInit {
         }
       });
     } else {
-      this.message.error('请勾选数据');
+      this.message.error('Please check the data');
       return;
     }
   }
 
-  del(id: number): void {
-    const ids: number[] = [id];
+  del(id: string): void {
+    const ids: string[] = [id];
     this.modalSrv.confirm({
-      nzTitle: '确定要删除吗？',
-      nzContent: '删除后不可恢复',
+      nzTitle: 'You sure you want to delete it?',
+      nzContent: 'Unrecoverable after deletion',
       nzOnOk: () => {
         this.tableLoading(true);
         this.dataService
@@ -280,17 +277,16 @@ export class AccountComponent implements OnInit {
     });
   }
 
-  // 修改一页几条
   changePageSize(e: number): void {
     this.tableConfig.pageSize = e;
   }
 
   searchDeptIdUser(departmentId: number): void {
-    this.searchParam.departmentId = departmentId;
-    this.getDataList();
+    console.log(departmentId);
+    // this.searchParam.id = departmentId;
+    // this.getDataList();
   }
 
-  /*展开*/
   toggleCollapse(): void {
     this.isCollapse = !this.isCollapse;
   }
@@ -305,56 +301,75 @@ export class AccountComponent implements OnInit {
       showCheckbox: true,
       headers: [
         {
-          title: '用户名称',
-          field: 'userName',
+          title: 'Username',
+          field: 'username',
           width: 100
         },
         {
-          title: '是否可用',
+          title: 'Status',
           width: 100,
-          field: 'available',
+          field: 'status',
           tdTemplate: this.availableFlag
         },
         {
-          title: '性别',
+          title: 'Name',
+          field: 'name',
+          width: 100
+        },
+        {
+          title: 'Account Name',
+          field: 'accountName',
+          width: 100
+        },
+        {
+          title: 'First Name',
+          field: 'FirstName',
+          width: 100
+        },
+        {
+          title: 'Middle Name',
+          field: 'middleName',
+          width: 100
+        },
+        {
+          title: 'Last Name',
+          field: 'lastName',
+          width: 100
+        },
+        {
+          title: 'Gender',
           width: 70,
-          field: 'sex',
+          field: 'gender',
           pipe: 'sex'
         },
         {
-          title: '手机',
+          title: 'Description',
           width: 100,
-          field: 'mobile'
+          field: 'description'
         },
         {
-          title: '邮箱',
+          title: 'Image',
           width: 100,
-          field: 'email'
+          field: 'image'
         },
         {
-          title: '最后登录时间',
-          width: 120,
-          field: 'lastLoginTime',
+          title: 'Create Time',
+          width: 100,
+          field: 'createdAt',
           pipe: 'date:yyyy-MM-dd HH:mm'
         },
         {
-          title: '创建时间',
+          title: 'Updated Date',
           width: 100,
-          field: 'createTime',
-          pipe: 'date:yyyy-MM-dd HH:mm'
+          field: 'updatedAt'
         },
         {
-          title: '电话',
-          width: 100,
-          field: 'telephone'
-        },
-        {
-          title: '所属部门',
+          title: 'Department Name',
           width: 100,
           field: 'departmentName'
         },
         {
-          title: '操作',
+          title: 'Config',
           tdTemplate: this.operationTpl,
           width: 150,
           fixed: true

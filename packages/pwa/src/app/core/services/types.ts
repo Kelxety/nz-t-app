@@ -8,7 +8,7 @@ import { NzSafeAny } from 'ng-zorro-antd/core/types';
 
 // 动态组件
 export class DynamicComponent {
-  constructor(public component: Type<NzSafeAny>, public data: NzSafeAny) { }
+  constructor(public component: Type<NzSafeAny>, public data: NzSafeAny) {}
 }
 
 // select下拉
@@ -19,9 +19,11 @@ export interface OptionsInterface {
 
 // 列表搜索
 export interface SearchCommonVO<T> {
-  pageNum: number;
+  page?: number;
   pageSize: number;
-  filters?: T;
+  pagination?: boolean;
+  orderBy?: string;
+  filteredObject?: T;
 }
 
 // 分页

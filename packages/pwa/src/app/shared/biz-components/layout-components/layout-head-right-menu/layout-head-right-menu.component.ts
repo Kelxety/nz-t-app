@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { LoginInOutService } from '@core/services/common/login-in-out.service';
 import { WindowService } from '@core/services/common/window.service';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { AccountService, UserPsd } from '@services/system/account.service';
 import { ScreenLessHiddenDirective } from '@shared/directives/screen-less-hidden.directive';
 import { ToggleFullscreenDirective } from '@shared/directives/toggle-fullscreen.directive';
@@ -51,7 +52,7 @@ export class LayoutHeadRightMenuComponent implements OnInit {
   changePassForm = this.fb.group({
     id: [null, [Validators.required]],
     oldPassword: [null, [Validators.required]],
-    newPassword: [null, [Validators.required]]
+    newPassword: [null, [Validators.required, Validators.minLength(6)]]
   });
 
   constructor(
@@ -69,7 +70,6 @@ export class LayoutHeadRightMenuComponent implements OnInit {
     private fb: FormBuilder
   ) {}
 
-  // 锁定屏幕
   lockScreen(): void {
     this.lockWidgetService
       .show({
@@ -82,7 +82,6 @@ export class LayoutHeadRightMenuComponent implements OnInit {
       .subscribe();
   }
 
-  // 修改密码
   changePassWorld(): void {
     this.changePasswordModalService.show({ nzTitle: 'Change Password' }).subscribe(({ modalValue, status }) => {
       if (status === ModalBtnStatus.Cancel) {
@@ -100,10 +99,18 @@ export class LayoutHeadRightMenuComponent implements OnInit {
           oldPassword: modalValue.oldPassword,
           newPassword: modalValue.newPassword
         });
-        this.accountService.editAccountPsd(this.changePassForm.getRawValue()).subscribe((res: any) => {
-          console.log(res);
-          this.loginOutService.loginOut().then();
-          this.message.success('Modified successfully, please log in again');
+        this.accountService.editAccountPsd(this.changePassForm.getRawValue()).subscribe({
+          next: (res: any) => {
+            console.log(res);
+            if (res.statusCode === 200) {
+              this.loginOutService.loginOut().then();
+              this.message.success('Modified successfully, please log in again');
+            } else if (res.statusCode === 401) {
+              this.message.warning('Invalid Credentials!');
+            } else {
+              this.message.warning(res.error);
+            }
+          }
         });
       });
     });
