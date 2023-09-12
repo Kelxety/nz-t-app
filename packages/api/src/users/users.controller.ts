@@ -75,7 +75,6 @@ export class UsersController {
   async findMe(
     @Request() request: CustomRequest,
   ): Promise<Partial<UserEntity>> {
-    console.log(request?.user);
     const userFind = await this.usersService.findOne(request?.user?.id);
     return new UserEntity(userFind);
   }
@@ -104,7 +103,6 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto);
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 
