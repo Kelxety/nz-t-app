@@ -50,12 +50,12 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "input": "../../node_modules/@ant-design/icons-angular/src/inline-svg/",
                 "output": "/assets/"
               }
             ],
             "styles": [
-              "node_modules/ng-zorro-antd/ng-zorro-antd.css",
+              "../../node_modules/ng-zorro-antd/ng-zorro-antd.css",
               {
                 "input": "src/styles/default.less",
                 "bundleName": "default",

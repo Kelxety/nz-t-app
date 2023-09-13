@@ -12,18 +12,5 @@
     "lint": "ng lint",
     "lint:style": "npx stylelint \"src/**/*.less\" --fix"
   },
-  "private": true,
-  "dependencies": {
-    "@angular/cdk": "^16.2.2",
-    "@ant-design/icons-angular": "^16.0.0",
-    "bidi": "link:@angular/cdk/bidi",
-    "date-fns": "^2.30.0",
-    "icons": "link:@ant-design/icons-angular/icons",
-    "lodash": "^4.17.21",
-    "ng-zorro-antd": "^16.1.0",
-    "qs": "^6.11.2"
-  },
-  "devDependencies": {
-    "@types/qs": "^6.9.8"
-  }
+  "private": true
 }

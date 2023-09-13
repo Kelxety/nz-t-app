@@ -72,7 +72,14 @@
     "prettier": "^2.8.8",
     "prettier-linter-helpers": "^1.0.0",
     "prettier-plugin-organize-attributes": "^0.0.5",
-    "stylelint-config-prettier": "^9.0.5"
+    "stylelint-config-prettier": "^9.0.5",
+    "@angular/cdk": "^16.2.2",
+    "@ant-design/icons-angular": "^16.0.0",
+    "bidi": "link:@angular/cdk/bidi",
+    "date-fns": "^2.30.0",
+    "icons": "link:@ant-design/icons-angular/icons",
+    "lodash": "^4.17.21",
+    "qs": "^6.11.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
