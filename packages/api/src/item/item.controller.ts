@@ -26,7 +26,7 @@ import { ItemService } from './item.service';
 @Controller('item')
 @ApiTags('scm_item')
 export class ItemController {
-  constructor(private readonly itemService: ItemService) {}
+  constructor(private readonly itemService: ItemService) { }
 
   @Post()
   @CustomItemDecorator()
@@ -34,7 +34,7 @@ export class ItemController {
     const data = await this.itemService.create(
       createItemDto,
       request?.headers?.authorization.split('Bearer ')[1],
-    );
+    )
     return {
       message: `Item successfully created`,
       data: new ItemEntity(data),

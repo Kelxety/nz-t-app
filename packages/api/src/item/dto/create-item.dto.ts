@@ -4,6 +4,7 @@ import { IsOptional, IsString } from 'class-validator';
 export class CreateItemDto {
   @ApiProperty()
   @IsString()
+  @IsOptional()
   itemCode: string;
 
   @ApiProperty()
@@ -11,12 +12,13 @@ export class CreateItemDto {
   @IsOptional()
   barcode: string;
 
-  @ApiProperty()
+  @ApiProperty({ uniqueItems: true })
   @IsString()
   itemName: string;
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   itemDescription: string;
 
   @ApiProperty()
