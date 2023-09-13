@@ -302,9 +302,9 @@ model ScmIssuanceDtl {
 
 model ScmItem {
   id                  String               @id @default(uuid())
-  itemCode            String?              @map("item_code") @db.VarChar(36)
+  itemCode            String?              @unique() @map("item_code") @db.VarChar(36)
   barcode             String?              @db.VarChar(50)
-  itemName            String?              @map("item_name") @db.VarChar(255)
+  itemName            String?              @unique() @map("item_name") @db.VarChar(255)
   itemDescription     String?              @map("item_description") @db.VarChar(50)
   itemcategoryId      String?              @map("itemcategory_id") @db.VarChar(36)
   unitId              String?              @map("unit_id") @db.VarChar(36)
@@ -346,9 +346,9 @@ model ScmItemDtl {
   entryDate             DateTime               @map("entry_date") @db.Date
   itemId                String                 @map("item_id") @db.VarChar(36)
   parentId              String?                @map("parent_id") @db.VarChar(36)
-  subitemCode           String?                @map("subitem_code") @db.VarChar(50)
-  subitemName           String                 @map("subitem_name") @db.VarChar(255)
-  barcode               String?                @db.VarChar(36)
+  subitemCode           String?                @unique() @map("subitem_code") @db.VarChar(50)
+  subitemName           String                 @unique() @map("subitem_name") @db.VarChar(255)
+  barcode               String?                @unique() @db.VarChar(36)
   unitId                String?                @map("unit_id") @db.VarChar(36)
   brandName             String?                @map("brand_name") @db.VarChar(150)
   lotNo                 String?                @map("lot_no") @db.VarChar(150)
