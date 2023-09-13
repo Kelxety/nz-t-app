@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -16,6 +17,19 @@ export const roundsOfHashing = 10;
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
+    const user = await this.prisma.user.findUnique({
+      include: {
+        refresh_token: true,
+        role: true,
+      },
+      where: { username: createUserDto.username },
+    });
+    console.log('conflict', user);
+    if (!user) {
+      throw new ConflictException(
+        `User with username of ${createUserDto.username}`,
+      );
+    }
     const password = await bcrypt.hash(createUserDto.password, roundsOfHashing);
     createUserDto.password = password;
     return this.prisma.user.create({
