@@ -18,6 +18,7 @@ import { fnFlatDataHasParentToTree } from '@utils/treeTableTools';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 import { AuthService } from '../http/auth/auth.service';
+import { User } from '@prisma/client';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +52,6 @@ export class LoginInOutService {
 
       data$.pipe().subscribe({
         next: (o: any) => {
-          console.log('USER', o);
           let id = parseInt(o.id);
           let auth: any[] = [];
           this.userInfoService.setUserName(o.accountName);
@@ -68,7 +68,6 @@ export class LoginInOutService {
           userInfo.authCode.push('default:system:role-manager');
           userInfo.authCode.push('default:system:menu');
           userInfo.authCode.push('default:system:dept');
-          console.log('USER STORED', userInfo);
           this.userInfoService.setUserInfo(userInfo);
           // this.cd.detectChanges();
           // resolve();
@@ -150,7 +149,7 @@ export class LoginInOutService {
     });
   }
 
-  getMe() {
+  getMe(): Observable<User> {
     return this.apiUser.me().pipe(
       map((res: any) => {
         return res;

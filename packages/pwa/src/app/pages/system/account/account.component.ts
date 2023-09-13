@@ -9,7 +9,8 @@ import { ActionCode } from '@app/config/actionCode';
 import { MessageService } from '@core/services/common/message.service';
 import { OptionsInterface, SearchCommonVO } from '@core/services/types';
 // import { User as UserType } from '@prisma/client';
-import { User as UserType } from '@prisma/client';
+import { Prisma, User as UserType } from '@prisma/client';
+import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
 import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { AccountService } from '@services/system/account.service';
 import { AntTableConfig, AntTableComponent } from '@shared/components/ant-table/ant-table.component';
@@ -31,9 +32,6 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { NzTableQueryParams } from 'ng-zorro-antd/table';
-
-import { DeptTreeComponent } from './dept-tree/dept-tree.component';
 
 @Component({
   selector: 'app-account',
@@ -44,7 +42,6 @@ import { DeptTreeComponent } from './dept-tree/dept-tree.component';
     CardTableWrapComponent,
     PageHeaderComponent,
     NzGridModule,
-    DeptTreeComponent,
     NzCardModule,
     FormsModule,
     NzFormModule,
@@ -96,13 +93,18 @@ export class AccountComponent implements OnInit {
   }
 
   getDataList(e?: any): void {
+    const numberOfFilters = Object.keys(this.searchParam).length;
     this.tableConfig.loading = true;
-    const params: SearchCommonVO<any> = {
+    const params: QueryParams<Prisma.UserWhereInput> = {
       pageSize: this.tableConfig.pageSize!,
       page: e?.page || this.tableConfig.pageIndex!,
-      filteredObject: this.searchParam,
+      filteredObject: numberOfFilters > 0 ? JSON.stringify(this.searchParam) : null,
       orderBy: null,
-      pagination: e.pagination!
+      // pagination: e.pagination || false
+      sort: [],
+      pagination: false,
+      pageIndex: 0,
+      filter: []
     };
     this.dataService
       .getAccountList(params)
@@ -113,14 +115,12 @@ export class AccountComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(res => {
-        console.log(res);
-        // if (res.statusCode === 200) {
-        //   this.dataList = res.data;
-        //   this.tableConfig.total = res.total!;
-        //   this.tableConfig.pageIndex = 1;
-        //   this.tableLoading(false);
-        //   this.checkedCashArray = [...this.checkedCashArray];
-        // }
+        if (res.statusCode === 200) {
+          this.dataList = res.data;
+          this.tableConfig.total = res.total!;
+          this.tableConfig.pageIndex = 1;
+          this.checkedCashArray = [...this.checkedCashArray];
+        }
         return res;
       });
   }
@@ -159,31 +159,32 @@ export class AccountComponent implements OnInit {
 
   reloadTable(): void {
     this.message.info('Refresh Successfully');
+    this.tableLoading(true);
     this.getDataList();
   }
 
   edit(id: string): void {
-    this.dataService
-      .getAccountDetail(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(res => {
-        this.modalService
-          .show({ nzTitle: 'Edit' }, res)
-          .pipe(
-            finalize(() => {
-              this.tableLoading(false);
-            }),
-            takeUntilDestroyed(this.destroyRef)
-          )
-          .subscribe(({ modalValue, status }) => {
-            if (status === ModalBtnStatus.Cancel) {
-              return;
-            }
-            modalValue.id = id;
-            this.tableLoading(true);
-            this.addEditData(modalValue, 'editAccount');
-          });
-      });
+    // this.dataService
+    //   .getAccountDetail(id)
+    //   .pipe(takeUntilDestroyed(this.destroyRef))
+    //   .subscribe(res => {
+    //     this.modalService
+    //       .show({ nzTitle: 'Edit' }, res)
+    //       .pipe(
+    //         finalize(() => {
+    //           this.tableLoading(false);
+    //         }),
+    //         takeUntilDestroyed(this.destroyRef)
+    //       )
+    //       .subscribe(({ modalValue, status }) => {
+    //         if (status === ModalBtnStatus.Cancel) {
+    //           return;
+    //         }
+    //         modalValue.id = id;
+    //         this.tableLoading(true);
+    //         this.addEditData(modalValue, 'editAccount');
+    //       });
+    //   });
   }
 
   addEditData(param: UserType, methodName: 'editAccount' | 'addAccount'): void {
@@ -303,7 +304,7 @@ export class AccountComponent implements OnInit {
         {
           title: 'Username',
           field: 'username',
-          width: 100
+          width: 120
         },
         {
           title: 'Status',
@@ -314,16 +315,16 @@ export class AccountComponent implements OnInit {
         {
           title: 'Name',
           field: 'name',
-          width: 100
+          width: 150
         },
         {
           title: 'Account Name',
           field: 'accountName',
-          width: 100
+          width: 140
         },
         {
           title: 'First Name',
-          field: 'FirstName',
+          field: 'firstName',
           width: 100
         },
         {
@@ -337,14 +338,13 @@ export class AccountComponent implements OnInit {
           width: 100
         },
         {
-          title: 'Gender',
+          title: 'Sex',
           width: 70,
-          field: 'gender',
-          pipe: 'sex'
+          field: 'gender'
         },
         {
           title: 'Description',
-          width: 100,
+          width: 140,
           field: 'description'
         },
         {
@@ -380,5 +380,6 @@ export class AccountComponent implements OnInit {
       pageSize: 10,
       pageIndex: 1
     };
+    this.getDataList();
   }
 }

@@ -18,7 +18,7 @@
   (nzPageSizeChange)="onPageSizeChange($event)"
   (nzQueryParams)="onQueryParamsChange($event)"
 >
-  <ng-template #rangeTemplate let-range="range" let-total>{{ range[0] }}-{{ range[1] }} 共 {{ total }} 条</ng-template>
+  <ng-template #rangeTemplate let-range="range" let-total>{{ range[0] }}-{{ range[1] }} pages {{ total }} page</ng-template>
   <thead>
     <tr>
       <th

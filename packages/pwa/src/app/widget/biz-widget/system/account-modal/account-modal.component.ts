@@ -55,9 +55,9 @@ export class AccountModalComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.roleService.getRoles({ page: 0, pageSize: 0 }).subscribe(({ list }) => {
         this.roleOptions = [];
-        list.forEach(({ id, roleName }) => {
+        list.forEach(({ id, name }) => {
           const obj: OptionsInterface = {
-            label: roleName,
+            label: name,
             value: id!
           };
           this.roleOptions.push(obj);

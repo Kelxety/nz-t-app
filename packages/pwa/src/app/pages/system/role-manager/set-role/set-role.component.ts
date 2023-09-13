@@ -94,8 +94,8 @@ export class SetRoleComponent implements OnInit {
     this.dataService
       .getRolesDetail(+this.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ roleName }) => {
-        this.pageHeaderInfo = { ...this.pageHeaderInfo, ...{ desc: `当前角色：${roleName}` } };
+      .subscribe(({ name }) => {
+        this.pageHeaderInfo = { ...this.pageHeaderInfo, ...{ desc: `当前角色：${name}` } };
         this.cdr.markForCheck();
       });
   }

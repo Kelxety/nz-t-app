@@ -3,13 +3,11 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-// tslint:disable:no-console
-
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   get(path: string, params: HttpParams = new HttpParams()): Observable<any> {
     const headers = new HttpHeaders({
@@ -18,7 +16,7 @@ export class ApiService {
     });
 
     return this.http.get<any>(path, { params, headers }).pipe(
-      tap(data => console.log('fetched data')),
+      tap(data => console.log('fetched datas')),
       catchError(this.handleError('error', []))
     );
   }

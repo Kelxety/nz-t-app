@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+
 import { ApiService } from '@app/shared';
+import { User } from '@prisma/client';
+
+import { ApiTypeService } from '../../services/api-type.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,11 +12,11 @@ import { ApiService } from '@app/shared';
 export class UserService {
   private baseUrl = '/api/users';
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiTypeService) {}
 
-  me(): Observable<any> {
+  me(): Observable<User> {
     const url = `${this.baseUrl}/me`;
-    return this.apiService.get(url);
+    return this.apiService.get<User>(url);
   }
 
   updateProfile(id: string, data: object) {

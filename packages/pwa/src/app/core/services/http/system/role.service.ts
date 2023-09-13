@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { Prisma, Role } from '@prisma/client';
+import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 
 import { PageInfo, SearchCommonVO } from '../../types';
@@ -27,22 +29,13 @@ export interface PutPermissionParam {
   roleId: number;
 }
 
-/*
- * 角色
- * */
-export interface Role {
-  id?: number;
-  roleName: string;
-  roleDesc?: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
   constructor(public http: BaseHttpService) {}
 
-  public getRoles(param: SearchCommonVO<Role>): Observable<PageInfo<Role>> {
+  public getRoles(param: SearchParams<Prisma.RoleWhereInput>): Observable<PageInfo<Role>> {
     return this.http.post('/role/list/', param);
   }
 
