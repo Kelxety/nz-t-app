@@ -57,7 +57,13 @@ interface TableSizeItem {
 export class CardTableWrapComponent implements OnInit, AfterContentInit {
   @Input() tableTitle: string | TemplateRef<NzSafeAny> | undefined;
   @Input() btnTpl: TemplateRef<NzSafeAny> | undefined;
-  @Input({ required: true }) isNormalTable: any = true;
+  #isNormalTable = true;
+  @Input() set isNormalTable(value: string | boolean) {
+    this.isNormalTable = value !== null && `${value} !== 'false`;
+  };
+  get isNormalTable() {
+    return this.#isNormalTable;
+  }
   @Output() readonly reload = new EventEmitter<NzSafeAny>();
   @ContentChild(AntTableComponentToken) antTableComponent!: AntTableComponentToken;
   @ContentChild(AntTreeTableComponentToken) antTreeTableComponent!: AntTreeTableComponentToken;

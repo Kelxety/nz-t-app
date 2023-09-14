@@ -37,7 +37,12 @@ export const MapSet = {
   visible: {
     true: '展示',
     false: '隐藏'
+  },
+  status: {
+    true: 'ACTIVE',
+    false: 'INACTIVE'
   }
+
 };
 
 export interface MapItem {

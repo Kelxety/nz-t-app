@@ -19,9 +19,9 @@
 
           <div nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24" [nzXl]="8" [nzXs]="24" [nzXXl]="8">
             <nz-form-item>
-              <nz-form-label [nzFor]="">Phone no</nz-form-label>
+              <nz-form-label [nzFor]="">Account Name</nz-form-label>
               <nz-form-control>
-                <input name="mobile" nz-input placeholder="Please enter phone number" [(ngModel)]="searchParam.accountName" />
+                <input name="name" nz-input placeholder="Please enter phone number" [(ngModel)]="searchParam.name" />
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -31,8 +31,8 @@
               <nz-form-item>
                 <nz-form-label [nzFor]="">Enable</nz-form-label>
                 <nz-form-control>
-                  <nz-select name="available" nzAllowClear nzPlaceHolder="Select" [(ngModel)]="searchParam.status">
-                    <nz-option *ngFor="let item of availableOptions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-select name="state" nzAllowClear nzPlaceHolder="Select" [(ngModel)]="searchParam.status">
+                    <nz-option *ngFor="let item of statusOptions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>
@@ -74,11 +74,20 @@
         (selectedChange)="selectedChecked($event)"
       ></app-ant-table>
       <ng-template #operationTpl let-id="id">
-        <span *appAuth="ActionCode.AccountEdit" class="operate-text" (click)="edit(id)">Edit</span>
-        <span *appAuth="ActionCode.AccountDel" class="operate-text" (click)="del(id)">Delete</span>
+        <!--Edit need appAuth <span *appAuth="ActionCode.AccountEdit" class="operate-text" (click)="edit(id)">Edit</span>
+        <span *appAuth="ActionCode.AccountDel" class="operate-text" (click)="del(id)">Delete</span> -->
+        <span class="operate-text" (click)="edit(id)">Edit</span>
+        <span class="operate-text" (click)="del(id)">Delete</span>
       </ng-template>
     </app-card-table-wrap>
   </div>
+
+  <ng-template #viewTpl let-id="id">
+    <span class="operate-text" (click)="view(id)">
+      <i nz-icon nzType="expand-alt" nzTheme="outline"></i>
+      View
+    </span>
+  </ng-template>
 
   <ng-template #tableBtns>
     <button *appAuth="ActionCode.AccountAdd" class="m-r-8" nz-button nzType="primary" (click)="add()">
@@ -91,7 +100,7 @@
     </button>
   </ng-template>
 
-  <ng-template #availableFlag let-available="available" let-id="id">
-    <nz-switch nzCheckedChildren="enebled" nzUnCheckedChildren="disabled" [ngModel]="available" [nzControl]="true" [nzDisabled]="true"></nz-switch>
+  <ng-template #statusFlag let-available="status" let-id="id">
+    <nz-switch [nzControl]="true" [ngModel]="available" [nzDisabled]="true" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
   </ng-template>
 </div>

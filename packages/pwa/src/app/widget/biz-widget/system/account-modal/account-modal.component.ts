@@ -38,12 +38,10 @@ export class AccountModalComponent implements OnInit {
 
   constructor(private modalRef: NzModalRef, private fb: FormBuilder, private validatorsService: ValidatorsService, private roleService: RoleService, private deptService: DeptService) {}
 
-  // 此方法为如果有异步数据需要加载，则在该方法中添加
   protected getAsyncFnData(modalValue: NzSafeAny): Observable<NzSafeAny> {
     return of(modalValue);
   }
 
-  // 返回false则不关闭对话框
   protected getCurrentValue(): Observable<NzSafeAny> {
     if (!fnCheckForm(this.addEditForm)) {
       return of(false);
@@ -67,23 +65,6 @@ export class AccountModalComponent implements OnInit {
     });
   }
 
-  // getDeptList(): Promise<void> {
-  //   return new Promise<void>(resolve => {
-  //     this.deptService.getDepts({ page: 0, pageSize: 0 }).subscribe(({ list }) => {
-  //       list.forEach(item => {
-  //         // @ts-ignore
-  //         item.title = item.departmentName;
-  //         // @ts-ignore
-  //         item.key = item.id;
-  //       });
-
-  //       const target = fnAddTreeDataGradeAndLeaf(fnFlatDataHasParentToTree(list));
-  //       this.deptNodes = target;
-  //       resolve();
-  //     });
-  //   });
-  // }
-
   initForm(): void {
     this.addEditForm = this.fb.group({
       userName: [null, [Validators.required]],
@@ -102,7 +83,7 @@ export class AccountModalComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.initForm();
     this.isEdit = !!this.nzModalData;
-    // await Promise.all([this.getRoleList(), this.getDeptList()]);
+    await Promise.all([this.getRoleList()]);
     if (this.isEdit) {
       this.addEditForm.patchValue(this.nzModalData);
       this.addEditForm.controls['password'].disable();

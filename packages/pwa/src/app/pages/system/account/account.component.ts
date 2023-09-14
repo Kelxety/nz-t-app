@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
+import { IconDirective } from '@ant-design/icons-angular';
 import { ActionCode } from '@app/config/actionCode';
 import { MessageService } from '@core/services/common/message.service';
 import { OptionsInterface, SearchCommonVO } from '@core/services/types';
@@ -12,6 +13,7 @@ import { OptionsInterface, SearchCommonVO } from '@core/services/types';
 import { Prisma, User as UserType } from '@prisma/client';
 import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
 import { ResType } from '@pwa/src/app/utils/types/return-types';
+import { RoleManageModalService } from '@pwa/src/app/widget/biz-widget/system/role-manage-modal/role-manage-modal.service';
 import { AccountService } from '@services/system/account.service';
 import { AntTableConfig, AntTableComponent } from '@shared/components/ant-table/ant-table.component';
 import { CardTableWrapComponent } from '@shared/components/card-table-wrap/card-table-wrap.component';
@@ -32,6 +34,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 
 @Component({
   selector: 'app-account',
@@ -54,12 +57,14 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     NzIconModule,
     AntTableComponent,
     AuthDirective,
-    NzSwitchModule
+    NzSwitchModule,
+    NzTagModule
   ]
 })
 export class AccountComponent implements OnInit {
   @ViewChild('operationTpl', { static: true }) operationTpl!: TemplateRef<any>;
-  @ViewChild('availableFlag', { static: true }) availableFlag!: TemplateRef<NzSafeAny>;
+  @ViewChild('statusFlag', { static: true }) statusFlag!: TemplateRef<NzSafeAny>;
+  @ViewChild('viewTpl', { static: true }) viewTpl!: TemplateRef<any>;
   searchParam: Partial<UserType> = {};
   tableConfig!: AntTableConfig;
   pageHeaderInfo: Partial<PageHeaderType> = {
@@ -70,7 +75,7 @@ export class AccountComponent implements OnInit {
   checkedCashArray: UserType[] = [];
   ActionCode = ActionCode;
   isCollapse = true;
-  availableOptions: OptionsInterface[] = [];
+  statusOptions: OptionsInterface[] = [];
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -79,6 +84,7 @@ export class AccountComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private messageService: MessageService,
     private modalService: AccountModalService,
+    private roleModalService: RoleManageModalService,
     private router: Router,
     public message: NzMessageService
   ) {}
@@ -187,6 +193,26 @@ export class AccountComponent implements OnInit {
     //   });
   }
 
+  view(id: string): void {
+    this.roleModalService
+      .show({ nzTitle: '新增' })
+      .pipe(
+        finalize(() => {
+          this.tableLoading(false);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(res => {
+        if (!res || res.status === ModalBtnStatus.Cancel) {
+          return;
+        }
+        console.log(res);
+        const param = { ...res.modalValue };
+        this.tableLoading(true);
+        // this.addEditData(param, 'addRoles');
+      });
+  }
+
   addEditData(param: UserType, methodName: 'editAccount' | 'addAccount'): void {
     this.dataService[methodName](param)
       .pipe(
@@ -293,7 +319,7 @@ export class AccountComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.availableOptions = [...MapPipe.transformMapToArray(MapSet.available, MapKeyType.Boolean)];
+    this.statusOptions = [...MapPipe.transformMapToArray(MapSet.status, MapKeyType.Boolean)];
     this.initTable();
   }
 
@@ -301,6 +327,12 @@ export class AccountComponent implements OnInit {
     this.tableConfig = {
       showCheckbox: true,
       headers: [
+        {
+          title: 'Roles & Permissions',
+          width: 100,
+          // field: 'role[0].name',
+          tdTemplate: this.viewTpl
+        },
         {
           title: 'Username',
           field: 'username',
@@ -310,7 +342,7 @@ export class AccountComponent implements OnInit {
           title: 'Status',
           width: 100,
           field: 'status',
-          tdTemplate: this.availableFlag
+          tdTemplate: this.statusFlag
         },
         {
           title: 'Name',
@@ -364,15 +396,11 @@ export class AccountComponent implements OnInit {
           field: 'updatedAt'
         },
         {
-          title: 'Department Name',
-          width: 100,
-          field: 'departmentName'
-        },
-        {
           title: 'Config',
           tdTemplate: this.operationTpl,
-          width: 150,
-          fixed: true
+          width: 120,
+          fixed: true,
+          fixedDir: 'right'
         }
       ],
       total: 0,
