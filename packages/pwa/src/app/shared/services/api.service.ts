@@ -33,7 +33,7 @@ export class ApiService {
 
     return this.http.post<any>(path, params, { headers }).pipe(
       tap((data: any) => console.log(`added`)),
-      catchError(this.handleError<any>('error'))
+      catchError(this.handleError<any>(''))
     );
   }
 
@@ -79,7 +79,7 @@ export class ApiService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       // TODO: send the error to remote logging infrastructure
-      console.error(error);
+      console.error(error)
 
       // Let the app keep running by returning an empty result.
       // return of(result as T);
