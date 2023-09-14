@@ -42,6 +42,7 @@ export class TransformInterceptor<T>
         message: data.message,
         data: data.data,
         total: data.total,
+        totalItems: data.totalItems,
       })),
     );
   }

@@ -7,7 +7,10 @@ import { finalize } from 'rxjs/operators';
 import { ActionCode } from '@app/config/actionCode';
 import { MessageService } from '@core/services/common/message.service';
 import { SearchCommonVO } from '@core/services/types';
-import { Role, RoleService } from '@services/system/role.service';
+import { Prisma, Role } from '@prisma/client';
+import { SharedModule } from '@pwa/src/app/shared';
+import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
+import { RoleService } from '@services/system/role.service';
 import { AntTableConfig, AntTableComponent } from '@shared/components/ant-table/ant-table.component';
 import { CardTableWrapComponent } from '@shared/components/card-table-wrap/card-table-wrap.component';
 import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -23,7 +26,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { NzTableQueryParams } from 'ng-zorro-antd/table';
+import { NzTableFilterValue, NzTableQueryParams, NzTableSortOrder } from 'ng-zorro-antd/table';
 
 interface SearchParam {
   roleName: string;
@@ -39,6 +42,7 @@ interface SearchParam {
     NzCardModule,
     FormsModule,
     NzFormModule,
+    SharedModule,
     NzGridModule,
     NzInputModule,
     NzButtonModule,
@@ -46,7 +50,8 @@ interface SearchParam {
     NzIconModule,
     CardTableWrapComponent,
     AntTableComponent,
-    AuthDirective
+    AuthDirective,
+    NzCardModule
   ]
 })
 export class RoleManageComponent implements OnInit {
@@ -82,9 +87,9 @@ export class RoleManageComponent implements OnInit {
     this.getDataList();
   }
 
-  getDataList(e?: any): void {
+  getDataList(e?: QueryParams<Prisma.RoleWhereInput>): void {
     this.tableConfig.loading = true;
-    const params: SearchCommonVO<any> = {
+    const params: SearchParams<any> = {
       pageSize: this.tableConfig.pageSize!,
       page: e?.page || this.tableConfig.pageIndex!
     };
@@ -97,6 +102,7 @@ export class RoleManageComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(data => {
+        console.log(data);
         const { list, total, pageNum } = data;
         this.dataList = [...list];
         this.tableConfig.total = total!;

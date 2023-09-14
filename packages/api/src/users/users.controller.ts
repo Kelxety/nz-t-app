@@ -53,6 +53,7 @@ export class UsersController {
     @Query()
     query: QueryT,
   ): Promise<ResponseT<UserEntity[]>> {
+    console.log(query.filteredObject);
     const users = await this.usersService.findAll({
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
       page: Number(query.page),

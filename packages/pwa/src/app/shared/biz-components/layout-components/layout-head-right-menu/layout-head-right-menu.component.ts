@@ -50,7 +50,7 @@ export class LayoutHeadRightMenuComponent implements OnInit {
   user!: UserPsd;
 
   changePassForm = this.fb.group({
-    id: [null, [Validators.required]],
+    id: ['', [Validators.required]],
     oldPassword: [null, [Validators.required]],
     newPassword: [null, [Validators.required, Validators.minLength(6)]]
   });
