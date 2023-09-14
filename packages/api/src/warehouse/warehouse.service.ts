@@ -26,19 +26,26 @@ export class WarehouseService {
   }: PaginateOptions<
     Prisma.ScmWarehouseWhereInput,
     Prisma.ScmWarehouseOrderByWithAggregationInput
-  >): Promise<ScmWarehouse[]> {
+  >): Promise<ScmWarehouse[] | any> {
     if (!pagination) {
       return this.prisma.scmWarehouse.findMany({
         where: data,
         orderBy: order,
       });
     }
-    return this.prisma.scmWarehouse.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmWarehouse.count({
+        where: data,
+      }),
+      this.prisma.scmWarehouse.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+
+    return returnData;
   }
 
   async findOne(id: string) {
