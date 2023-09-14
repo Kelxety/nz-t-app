@@ -25,6 +25,7 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
@@ -68,6 +69,7 @@ const MODULES: any[] = [
   NumberLoopPipe,
   NzInputModule,
   NzModalModule,
+  NzSpinModule,
   NzFormModule,
   ReactiveFormsModule,
   FormsModule,
