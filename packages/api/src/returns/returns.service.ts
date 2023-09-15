@@ -17,7 +17,7 @@ export class ReturnsService {
     });
   }
 
-  findAll({
+  async findAll({
     data,
     page,
     pageSize,
@@ -26,7 +26,7 @@ export class ReturnsService {
   }: PaginateOptions<
     Prisma.ScmReturnWhereInput,
     Prisma.ScmReturnOrderByWithAggregationInput
-  >): Promise<ScmReturn[]> {
+  >): Promise<ScmReturn[] | any> {
     if (!pagination) {
       return this.prisma.scmReturn.findMany({
         include: {
@@ -38,12 +38,18 @@ export class ReturnsService {
         orderBy: order,
       });
     }
-    return this.prisma.scmReturn.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmReturn.count({
+        where: data,
+      }),
+      this.prisma.scmReturn.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

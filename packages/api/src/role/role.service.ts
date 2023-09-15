@@ -40,19 +40,25 @@ export class RoleService {
   }: PaginateOptions<
     Prisma.RoleWhereInput,
     Prisma.RoleOrderByWithAggregationInput
-  >): Promise<Role[]> {
+  >): Promise<Role[] | any> {
     if (!pagination) {
       return await this.prisma.role.findMany({
         where: data,
         orderBy: order,
       });
     }
-    return await this.prisma.role.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.role.count({
+        where: data,
+      }),
+      this.prisma.role.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

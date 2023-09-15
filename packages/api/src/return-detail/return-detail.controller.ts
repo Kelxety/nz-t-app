@@ -59,11 +59,20 @@ export class ReturnDetailController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    return {
+    const resData = {
       message: 'list',
       data: data,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -77,7 +86,6 @@ export class ReturnDetailController {
     return {
       message: `Warehouse with id of ${id} detail fetched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -94,7 +102,6 @@ export class ReturnDetailController {
     return {
       message: `Patch with id of ${id} detail patched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -106,7 +113,6 @@ export class ReturnDetailController {
     return {
       message: 'Deleted Successfuly',
       data: data,
-      total: 1,
     };
   }
 }

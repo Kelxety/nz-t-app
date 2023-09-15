@@ -1,9 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
 import { toBoolean } from '../lib/helper/cast.helper';
 import { QueryT, ResponseT } from '../lib/interface';
-import { CustomItemLocationDecorator, CustomItemLocationDecoratorFindAll, CustomItemLocationDecoratorGet } from './decorators/item-location.decorator';
+import {
+  CustomItemLocationDecorator,
+  CustomItemLocationDecoratorFindAll,
+  CustomItemLocationDecoratorGet,
+} from './decorators/item-location.decorator';
 import { CreateItemLocationDto } from './dto/create-item-location.dto';
 import { UpdateItemLocationDto } from './dto/update-item-location.dto';
 import { ItemLocation } from './entities/item-location.entity';
@@ -12,11 +26,14 @@ import { ItemLocationService } from './item-location.service';
 @Controller('item-location')
 @ApiTags('scm_item_location')
 export class ItemLocationController {
-  constructor(private readonly itemLocationService: ItemLocationService) { }
+  constructor(private readonly itemLocationService: ItemLocationService) {}
 
   @Post()
   @CustomItemLocationDecorator()
-  async create(@Request() request: Req, @Body() createItemLocationDto: CreateItemLocationDto) {
+  async create(
+    @Request() request: Req,
+    @Body() createItemLocationDto: CreateItemLocationDto,
+  ) {
     const data = await this.itemLocationService.create(
       createItemLocationDto,
       request?.headers?.authorization.split('Bearer ')[1],
@@ -37,11 +54,20 @@ export class ItemLocationController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    return {
+    const resData = {
       message: `List of all data`,
-      data: data.map((res) => new ItemLocation(res)),
-      total: data.length,
+      data: data.map((res: Partial<ItemLocation>) => new ItemLocation(res)),
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -51,13 +77,16 @@ export class ItemLocationController {
     return {
       message: `${id} detail fetched Succesfully`,
       data: new ItemLocation(data),
-      total: 1,
     };
   }
 
   @Patch(':id')
   @CustomItemLocationDecorator()
-  async update(@Request() request: Req, @Param('id') id: string, @Body() updateItemLocationDto: UpdateItemLocationDto) {
+  async update(
+    @Request() request: Req,
+    @Param('id') id: string,
+    @Body() updateItemLocationDto: UpdateItemLocationDto,
+  ) {
     const data = await this.itemLocationService.update(
       id,
       updateItemLocationDto,
@@ -66,7 +95,6 @@ export class ItemLocationController {
     return {
       message: `${id} Data patched Succesfully`,
       data: new ItemLocation(data),
-      total: 1,
     };
   }
 
@@ -77,8 +105,6 @@ export class ItemLocationController {
     return {
       message: `${id} Data deleted Succesfully`,
       data: new ItemLocation(data),
-      total: 1,
     };
-
   }
 }

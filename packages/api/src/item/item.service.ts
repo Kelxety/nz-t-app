@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, ScmItem } from '@prisma/client';
 import { PaginateOptions } from '../lib/interface';
 import { PrismaService } from '../lib/prisma/prisma.service';
@@ -8,26 +12,26 @@ import { UpdateItemDto } from './dto/update-item.dto';
 
 @Injectable()
 export class ItemService {
-  constructor(private prisma: PrismaService, private role: RoleService) { }
+  constructor(private prisma: PrismaService, private role: RoleService) {}
 
   async create(createItemDto: CreateItemDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Error in token');
     const find = await this.prisma.scmItem.findUnique({
       where: {
-        itemName: createItemDto.itemName
-      }
-    })
+        itemName: createItemDto.itemName,
+      },
+    });
     if (find) {
-      throw new ConflictException(find.itemName)
+      throw new ConflictException(find.itemName);
     }
     const find2 = await this.prisma.scmItem.findUnique({
       where: {
         itemCode: createItemDto.itemCode,
       },
-    })
+    });
     if (find2) {
-      throw new ConflictException(find2.itemCode)
+      throw new ConflictException(find2.itemCode);
     }
     return await this.prisma.scmItem.create({
       data: { ...createItemDto, createdBy: creatorName.accountName },
@@ -38,7 +42,7 @@ export class ItemService {
     });
   }
 
-  findAll({
+  async findAll({
     data,
     page,
     pageSize,
@@ -47,7 +51,7 @@ export class ItemService {
   }: PaginateOptions<
     Prisma.ScmItemWhereInput,
     Prisma.ScmItemOrderByWithAggregationInput
-  >): Promise<ScmItem[]> {
+  >): Promise<ScmItem[] | any> {
     if (!pagination) {
       return this.prisma.scmItem.findMany({
         where: data,
@@ -64,22 +68,28 @@ export class ItemService {
         orderBy: order,
       });
     }
-    return this.prisma.scmItem.findMany({
-      where: data,
-      include: {
-        scmItemCategory: true,
-        scmItemDtl: {
-          where: {
-            balanceQty: {
-              gt: 0,
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmItem.count({
+        where: data,
+      }),
+      this.prisma.scmItem.findMany({
+        where: data,
+        include: {
+          scmItemCategory: true,
+          scmItemDtl: {
+            where: {
+              balanceQty: {
+                gt: 0,
+              },
             },
           },
         },
-      },
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

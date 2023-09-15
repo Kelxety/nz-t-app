@@ -2,7 +2,7 @@ import { PaginateOptions } from '@api/lib/interface';
 import { PrismaService } from '@api/lib/prisma/prisma.service';
 import { RoleService } from '@api/role/role.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, ScmReturnDtl } from '@prisma/client';
 import { CreateReturnDetailDto } from './dto/create-return-detail.dto';
 import { UpdateReturnDetailDto } from './dto/update-return-detail.dto';
 
@@ -18,7 +18,7 @@ export class ReturnDetailService {
     });
   }
 
-  findAll({
+  async findAll({
     data,
     page,
     pageSize,
@@ -27,19 +27,25 @@ export class ReturnDetailService {
   }: PaginateOptions<
     Prisma.ScmReturnDtlWhereInput,
     Prisma.ScmReturnDtlOrderByWithAggregationInput
-  >) {
+  >): Promise<ScmReturnDtl[] | any> {
     if (!pagination) {
       return this.prisma.scmReturnDtl.findMany({
         where: data,
         orderBy: order,
       });
     }
-    return this.prisma.scmReturnDtl.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmReturnDtl.count({
+        where: data,
+      }),
+      this.prisma.scmReturnDtl.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

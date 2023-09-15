@@ -24,7 +24,7 @@ export class HospitalPatientService {
     });
   }
 
-  findAll({
+  async findAll({
     data,
     page,
     pageSize,
@@ -33,7 +33,7 @@ export class HospitalPatientService {
   }: PaginateOptions<
     Prisma.HospitalPatientWhereInput,
     Prisma.HospitalPatientOrderByWithAggregationInput
-  >): Promise<HospitalPatient[]> {
+  >): Promise<HospitalPatient[] | any> {
     if (!pagination) {
       return this.prisma.hospitalPatient.findMany({
         include: {
@@ -43,12 +43,18 @@ export class HospitalPatientService {
         orderBy: order,
       });
     }
-    return this.prisma.hospitalPatient.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.hospitalPatient.count({
+        where: data,
+      }),
+      this.prisma.hospitalPatient.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

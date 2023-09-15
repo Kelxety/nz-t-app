@@ -44,11 +44,20 @@ export class RoleController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    return {
+    const resData = {
       message: `List of all roles fetch Successfully`,
       data: data,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -58,7 +67,6 @@ export class RoleController {
     return {
       message: `Role successfuly created`,
       data: new RoleEntity(userCreated),
-      total: 1,
     };
   }
 
@@ -77,7 +85,6 @@ export class RoleController {
     return {
       message: 'Role successfully updated',
       data: new RoleEntity(roleUpdated),
-      total: 1,
     };
   }
 
@@ -88,7 +95,6 @@ export class RoleController {
     return {
       message: 'Role successfully deleted',
       data: {},
-      total: 0,
     };
   }
 }

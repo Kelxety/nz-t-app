@@ -30,7 +30,7 @@ export class ChargeSlipService {
   }: PaginateOptions<
     Prisma.ScmChargeslipWhereInput,
     Prisma.ScmItemOrderByWithAggregationInput
-  >): Promise<ScmChargeslip[]> {
+  >): Promise<ScmChargeslip[] | any> {
     if (!pagination) {
       return this.prisma.scmChargeslip.findMany({
         where: data,
@@ -45,20 +45,26 @@ export class ChargeSlipService {
         orderBy: order,
       });
     }
-    return await this.prisma.scmChargeslip.findMany({
-      where: data,
-      include: {
-        hospitalPatient: true,
-        hospitalPatientType: true,
-        hospitalPhysician: true,
-        scmChargeslipDtls: true,
-        scmReturns: true,
-        scmWarehouse: true,
-      },
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmChargeslip.count({
+        where: data,
+      }),
+      this.prisma.scmChargeslip.findMany({
+        where: data,
+        include: {
+          hospitalPatient: true,
+          hospitalPatientType: true,
+          hospitalPhysician: true,
+          scmChargeslipDtls: true,
+          scmReturns: true,
+          scmWarehouse: true,
+        },
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

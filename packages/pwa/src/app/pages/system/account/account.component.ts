@@ -396,7 +396,7 @@ export class AccountComponent implements OnInit {
           field: 'updatedAt'
         },
         {
-          title: 'Config',
+          title: 'Actions',
           tdTemplate: this.operationTpl,
           width: 120,
           fixed: true,

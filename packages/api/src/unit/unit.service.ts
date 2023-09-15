@@ -22,19 +22,25 @@ export class UnitService {
   }: PaginateOptions<
     Prisma.ScmUnitWhereInput,
     Prisma.ScmUnitOrderByWithAggregationInput
-  >): Promise<ScmUnit[]> {
+  >): Promise<ScmUnit[] | any> {
     if (!pagination) {
       return await this.prisma.scmUnit.findMany({
         where: data,
         orderBy: order,
       });
     }
-    return await this.prisma.scmUnit.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmUnit.count({
+        where: data,
+      }),
+      this.prisma.scmUnit.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

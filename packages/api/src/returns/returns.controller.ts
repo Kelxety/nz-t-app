@@ -40,7 +40,6 @@ export class ReturnsController {
     return {
       message: 'Return successfully created',
       data: data,
-      total: 1,
     };
   }
 
@@ -55,11 +54,20 @@ export class ReturnsController {
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
     const returnData = data.map((item) => new ReturnEntity(item));
-    return {
+    const resData = {
       message: `List of all return fetch Successfully`,
       data: returnData,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -71,7 +79,6 @@ export class ReturnsController {
     return {
       message: 'Fetch return Successfully',
       data: returnData,
-      total: 1,
     };
   }
 
@@ -97,7 +104,6 @@ export class ReturnsController {
     return {
       message: `Return with id of ${id} detail deleted Successfully`,
       data: data,
-      total: 1,
     };
   }
 }

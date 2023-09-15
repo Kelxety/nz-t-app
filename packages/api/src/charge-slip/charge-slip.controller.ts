@@ -38,7 +38,6 @@ export class ChargeSlipController {
     return {
       message: 'Charge Slip successfully created',
       data: data,
-      total: 1,
     };
   }
 
@@ -59,11 +58,20 @@ export class ChargeSlipController {
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
     const returnData = data.map((chrgSlip) => new ChargeSlipEntity(chrgSlip));
-    return {
+    const resData = {
       message: `List of all Charge Slip fetch Successfully`,
       data: returnData,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -73,7 +81,6 @@ export class ChargeSlipController {
     return {
       message: 'Fetch chargeslip Successfully',
       data: data,
-      total: 1,
     };
   }
 
@@ -92,7 +99,6 @@ export class ChargeSlipController {
     return {
       message: `Charge Slip with id of ${id} detail patched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -103,7 +109,6 @@ export class ChargeSlipController {
     return {
       message: `Charge Slip with id of ${id} detail deleted Successfully`,
       data: removeData,
-      total: 1,
     };
   }
 }

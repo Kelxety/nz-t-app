@@ -54,19 +54,28 @@ export class UsersController {
     query: QueryT,
   ): Promise<ResponseT<UserEntity[]>> {
     console.log(query.filteredObject);
-    const users = await this.usersService.findAll({
+    const data = await this.usersService.findAll({
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
       page: Number(query.page),
       pageSize: Number(query.pageSize),
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    const returnUsers = users.map((use) => new UserEntity(use));
-    return {
+    const returnUsers = data.map((use) => new UserEntity(use));
+    const resData = {
       message: `List of all users fetch Successfully`,
       data: returnUsers,
-      total: users.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get('me')
@@ -94,7 +103,6 @@ export class UsersController {
     return {
       message: `Fetch user Successfully`,
       data: new UserEntity(user),
-      total: 1,
     };
   }
 

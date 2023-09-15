@@ -2,7 +2,7 @@ import { PaginateOptions } from '@api/lib/interface';
 import { PrismaService } from '@api/lib/prisma/prisma.service';
 import { RoleService } from '@api/role/role.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { HospitalPatientType, Prisma } from '@prisma/client';
 import { CreateHospitalPatientTypeDto } from './dto/create-hospital-patient-type.dto';
 import { UpdateHospitalPatientTypeDto } from './dto/update-hospital-patient-type.dto';
 
@@ -40,7 +40,7 @@ export class HospitalPatientTypeService {
   }: PaginateOptions<
     Prisma.HospitalPatientTypeWhereUniqueInput,
     Prisma.HospitalPatientTypeOrderByWithAggregationInput
-  >) {
+  >): Promise<HospitalPatientType[] | any> {
     if (!pagination) {
       return this.prisma.hospitalPatientType.findMany({
         include: {
@@ -50,15 +50,20 @@ export class HospitalPatientTypeService {
         orderBy: order,
       });
     }
-    const resData = await this.prisma.hospitalPatientType.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-      include: {
-        scmChargeslips: true,
-      },
-    });
+    const resData = await this.prisma.$transaction([
+      this.prisma.hospitalPatientType.count({
+        where: data,
+      }),
+      this.prisma.hospitalPatientType.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+        include: {
+          scmChargeslips: true,
+        },
+      }),
+    ]);
 
     return resData;
   }

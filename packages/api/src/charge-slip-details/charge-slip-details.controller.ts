@@ -34,7 +34,6 @@ export class ChargeSlipDetailsController {
     return {
       message: 'Chargeslip detail successfully created',
       data: data,
-      total: 1,
     };
   }
 
@@ -57,11 +56,20 @@ export class ChargeSlipDetailsController {
     const newData = data.map((get) => {
       return new ChargeSlipDetailEntity(get);
     });
-    return {
-      message: 'List of all chargeslip fetch Successfully',
+    const resData = {
+      message: 'List of all chargeslip detail fetch Successfully',
       data: newData,
-      total: newData.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -71,7 +79,6 @@ export class ChargeSlipDetailsController {
     return {
       message: `Get with id of ${id} fetch Successfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -88,7 +95,6 @@ export class ChargeSlipDetailsController {
     return {
       message: 'Chargeslip detail updated successfully',
       data: new ChargeSlipDetailEntity(data),
-      total: 1,
     };
   }
 

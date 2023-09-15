@@ -25,7 +25,6 @@ export interface QueryT {
 export interface ResponseT<T> {
   message: string;
   data: T;
-  total: number;
   totalItems?: number;
 }
 

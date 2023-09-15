@@ -37,11 +37,9 @@ export class HospitalPatientTypeController {
       createHospitalPatientTypeDto,
       request?.headers?.authorization.split('Bearer ')[1],
     );
-    console.log(data);
     return {
       message: `Hospital Patient Type successfully created!`,
       data: data,
-      total: 1,
     };
   }
 
@@ -63,11 +61,20 @@ export class HospitalPatientTypeController {
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
     const newData = data.map((entity) => new HospitalPatientTypeEntity(entity));
-    return {
+    const resData = {
       message: `List of all hospital patient type fetch Successfully`,
       data: newData,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -81,7 +88,6 @@ export class HospitalPatientTypeController {
     return {
       message: `Hospital Patient Type with the id of ${id} fetch Successfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -100,7 +106,6 @@ export class HospitalPatientTypeController {
     return {
       message: `Hospital Patient Type with id of ${id} detail patched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -110,7 +115,6 @@ export class HospitalPatientTypeController {
     return {
       message: `Hospital Patient Type with id of ${id} detail deleted Succesfully`,
       data: data,
-      total: 1,
     };
   }
 }

@@ -7,9 +7,12 @@ import { CreateItemRateHistoryDto } from './dto/create-item-rate-history.dto';
 
 @Injectable()
 export class ItemRateHistoryService {
-  constructor(private prisma: PrismaService, private role: RoleService) { }
+  constructor(private prisma: PrismaService, private role: RoleService) {}
 
-  async create(createItemRateHistoryDto: CreateItemRateHistoryDto, token: string) {
+  async create(
+    createItemRateHistoryDto: CreateItemRateHistoryDto,
+    token: string,
+  ) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Error in token');
     return await this.prisma.scmItemRateHistory.create({
@@ -26,29 +29,35 @@ export class ItemRateHistoryService {
   }: PaginateOptions<
     Prisma.ScmItemRateHistoryWhereInput,
     Prisma.ScmItemRateHistoryOrderByWithAggregationInput
-  >): Promise<ScmItemRateHistory[]> {
+  >): Promise<ScmItemRateHistory[] | any> {
     if (!pagination) {
       return this.prisma.scmItemRateHistory.findMany({
         include: {
-          scmItemDtl: true
+          scmItemDtl: true,
         },
         where: data,
         orderBy: order,
       });
     }
-    return this.prisma.scmItemRateHistory.findMany({
-      include: {
-        scmItemDtl: true
-      },
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = this.prisma.$transaction([
+      this.prisma.scmItemRateHistory.count({ where: data }),
+      this.prisma.scmItemRateHistory.findMany({
+        include: {
+          scmItemDtl: true,
+        },
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {
-    const data = await this.prisma.scmItemCategory.findUnique({ where: { id } });
+    const data = await this.prisma.scmItemCategory.findUnique({
+      where: { id },
+    });
     if (!data) {
       throw new NotFoundException(`${id} does not exist.`);
     }

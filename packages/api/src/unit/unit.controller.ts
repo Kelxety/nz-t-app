@@ -39,7 +39,6 @@ export class UnitController {
     return {
       message: 'Unit successfully created',
       data: data,
-      total: 1,
     };
   }
 
@@ -48,7 +47,7 @@ export class UnitController {
   async findAll(
     @Query()
     query: QueryT,
-  ): Promise<{ message: string; data: UnitEntity[]; total: number }> {
+  ) {
     const data = await this.unitService.findAll({
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
       page: Number(query.page),
@@ -56,11 +55,20 @@ export class UnitController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    return {
+    const resData = {
       message: 'List of all units fetch Successfully',
       data: data,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -70,7 +78,6 @@ export class UnitController {
     return {
       message: 'Fetch unit Successfully',
       data: data,
-      total: 1,
     };
   }
 
@@ -89,7 +96,6 @@ export class UnitController {
     return {
       message: `Unit with id of ${id} detail patched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -100,7 +106,6 @@ export class UnitController {
     return {
       message: `Unit with id of ${id} detail deleted Succesfully`,
       data: removeData,
-      total: 1,
     };
   }
 }

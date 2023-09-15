@@ -68,11 +68,20 @@ export class HospitalPatientController {
       return new HospitalPatientEntity(entity);
     });
 
-    return {
+    const resData = {
       message: `List of all patient fetch Successfully`,
       data: newData,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -82,7 +91,6 @@ export class HospitalPatientController {
     return {
       message: `Get with id of ${id} fetch Successfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -99,7 +107,6 @@ export class HospitalPatientController {
     return {
       message: `List of all patient fetch Successfully`,
       data: new HospitalPatientEntity(data),
-      total: 1,
     };
   }
 
@@ -110,7 +117,6 @@ export class HospitalPatientController {
     return {
       message: 'Successfully deleted!',
       data: deleted,
-      total: 1,
     };
   }
 }

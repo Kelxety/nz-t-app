@@ -8,7 +8,7 @@ import { UpdateItemLocationDto } from './dto/update-item-location.dto';
 
 @Injectable()
 export class ItemLocationService {
-  constructor(private prisma: PrismaService, private role: RoleService) { }
+  constructor(private prisma: PrismaService, private role: RoleService) {}
 
   async create(createItemLocationDto: CreateItemLocationDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
@@ -16,12 +16,12 @@ export class ItemLocationService {
     return await this.prisma.scmItemLocation.create({
       data: { ...createItemLocationDto, createdBy: creatorName.accountName },
       include: {
-        scmWarehouse: true
-      }
+        scmWarehouse: true,
+      },
     });
   }
 
-  findAll({
+  async findAll({
     data,
     page,
     pageSize,
@@ -30,38 +30,52 @@ export class ItemLocationService {
   }: PaginateOptions<
     Prisma.ScmItemLocationWhereInput,
     Prisma.ScmItemLocationOrderByWithAggregationInput
-  >): Promise<ScmItemLocation[]> {
+  >): Promise<ScmItemLocation[] | any> {
     if (!pagination) {
       return this.prisma.scmItemLocation.findMany({
         include: {
-          scmWarehouse: true
+          scmWarehouse: true,
         },
         where: data,
         orderBy: order,
       });
     }
-    return this.prisma.scmItemLocation.findMany({
-      include: {
-        scmWarehouse: true
-      },
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmItemLocation.count({
+        where: data,
+      }),
+      this.prisma.scmItemLocation.findMany({
+        include: {
+          scmWarehouse: true,
+        },
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {
-    const data = await this.prisma.scmItemLocation.findUnique({ where: { id } });
+    const data = await this.prisma.scmItemLocation.findUnique({
+      where: { id },
+    });
     if (!data) {
       throw new NotFoundException(`${id} does not exist.`);
     }
     return data;
   }
 
-  async update(id: string, updateItemLocationDto: UpdateItemLocationDto, token: string) {
+  async update(
+    id: string,
+    updateItemLocationDto: UpdateItemLocationDto,
+    token: string,
+  ) {
     const creatorName = await this.role.getRequesterName(token);
-    const data = await this.prisma.scmItemLocation.findUnique({ where: { id } });
+    const data = await this.prisma.scmItemLocation.findUnique({
+      where: { id },
+    });
     if (!data) {
       throw new NotFoundException(`${id} does not exist.`);
     }
@@ -69,8 +83,8 @@ export class ItemLocationService {
       where: { id },
       data: { ...updateItemLocationDto, updatedBy: creatorName.accountName },
       include: {
-        scmWarehouse: true
-      }
+        scmWarehouse: true,
+      },
     });
     return res;
   }

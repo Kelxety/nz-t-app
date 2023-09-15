@@ -26,7 +26,7 @@ import { ItemService } from './item.service';
 @Controller('item')
 @ApiTags('scm_item')
 export class ItemController {
-  constructor(private readonly itemService: ItemService) { }
+  constructor(private readonly itemService: ItemService) {}
 
   @Post()
   @CustomItemDecorator()
@@ -34,7 +34,7 @@ export class ItemController {
     const data = await this.itemService.create(
       createItemDto,
       request?.headers?.authorization.split('Bearer ')[1],
-    )
+    );
     return {
       message: `Item successfully created`,
       data: new ItemEntity(data),
@@ -51,11 +51,20 @@ export class ItemController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    return {
+    const resData = {
       message: `List of all Item fetch Successfully`,
       data: data.map((res) => new ItemEntity(res)),
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -65,7 +74,6 @@ export class ItemController {
     return {
       message: `Item with id of ${id} detail fetched Succesfully`,
       data: new ItemEntity(data),
-      total: 1,
     };
   }
 
@@ -84,7 +92,6 @@ export class ItemController {
     return {
       message: `Patch with id of ${id} detail patched Succesfully`,
       data: new ItemEntity(data),
-      total: 1,
     };
   }
 
@@ -95,7 +102,6 @@ export class ItemController {
     return {
       message: `Item with id of ${id} detail deleted Succesfully`,
       data: data,
-      total: 1,
     };
   }
 }

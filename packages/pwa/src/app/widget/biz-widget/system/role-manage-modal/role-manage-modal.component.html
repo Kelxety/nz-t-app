@@ -12,4 +12,13 @@
       <input id="roleDesc" name="roleDesc" formControlName="roleDesc" nz-input placeholder="请输入描述" />
     </nz-form-control>
   </nz-form-item>
+
+  <h1>Hello</h1>
+  <nz-checkbox-group [(ngModel)]="checkOptionsOne" (ngModelChange)="log(checkOptionsOne)"></nz-checkbox-group>
+  <br />
+  <br />
+  <nz-checkbox-group [(ngModel)]="checkOptionsTwo" (ngModelChange)="log(checkOptionsTwo)"></nz-checkbox-group>
+  <br />
+  <br />
+  <nz-checkbox-group [(ngModel)]="checkOptionsThree" (ngModelChange)="log(checkOptionsThree)"></nz-checkbox-group>
 </form>

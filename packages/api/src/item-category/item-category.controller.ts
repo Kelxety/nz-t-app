@@ -56,11 +56,20 @@ export class ItemCategoryController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    return {
+    const resData = {
       message: `List of Data`,
       data: data,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -70,7 +79,6 @@ export class ItemCategoryController {
     return {
       message: `${id} fetched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -89,7 +97,6 @@ export class ItemCategoryController {
     return {
       message: `Patch with id of ${id} detail patched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -100,7 +107,6 @@ export class ItemCategoryController {
     return {
       message: `${id} detail deleted Succesfully`,
       data: data,
-      total: 1,
     };
   }
 }

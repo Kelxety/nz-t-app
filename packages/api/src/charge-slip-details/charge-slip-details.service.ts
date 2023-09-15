@@ -24,7 +24,7 @@ export class ChargeSlipDetailsService {
   }: PaginateOptions<
     Prisma.ScmChargeslipDtlWhereInput,
     Prisma.ScmChargeslipOrderByWithRelationInput
-  >): Promise<ScmChargeslipDtl[]> {
+  >): Promise<ScmChargeslipDtl[] | any> {
     if (!pagination) {
       return this.prisma.scmChargeslipDtl.findMany({
         include: {
@@ -35,12 +35,18 @@ export class ChargeSlipDetailsService {
         orderBy: order,
       });
     }
-    return this.prisma.scmChargeslipDtl.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmChargeslipDtl.count({
+        where: data,
+      }),
+      this.prisma.scmChargeslipDtl.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

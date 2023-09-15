@@ -49,7 +49,7 @@ export class UsersService {
   }: PaginateOptions<
     Prisma.UserWhereInput,
     Prisma.UserOrderByWithAggregationInput
-  >): Promise<User[]> {
+  >): Promise<User[] | any> {
     if (!pagination) {
       return this.prisma.user.findMany({
         include: {
@@ -60,18 +60,22 @@ export class UsersService {
         orderBy: order,
       });
     }
-    const users = await this.prisma.user.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-      include: {
-        refresh_token: true,
-        role: true,
-      },
-    });
-
-    return users;
+    const returnData = await this.prisma.$transaction([
+      this.prisma.user.count({
+        where: data,
+      }),
+      this.prisma.user.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+        include: {
+          refresh_token: true,
+          role: true,
+        },
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

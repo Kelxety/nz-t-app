@@ -40,7 +40,6 @@ export class HospitalPhysicianController {
     return {
       message: 'Physician successfully created',
       data: data,
-      total: 1,
     };
   }
 
@@ -60,11 +59,20 @@ export class HospitalPhysicianController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    return {
+    const resData = {
       message: 'List of all physician fetch Successfully',
       data: data,
-      total: data.length,
     };
+    if (!query.pagination) {
+      return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
   }
 
   @Get(':id')
@@ -74,7 +82,6 @@ export class HospitalPhysicianController {
     return {
       message: 'Fetch physician Successfully',
       data: data,
-      total: 1,
     };
   }
 
@@ -93,7 +100,6 @@ export class HospitalPhysicianController {
     return {
       message: `Physician with id of ${id} detail patched Succesfully`,
       data: data,
-      total: 1,
     };
   }
 
@@ -103,7 +109,6 @@ export class HospitalPhysicianController {
     return {
       message: `Physician with id of ${id} detail deleted Succesfully`,
       data: removeData,
-      total: 1,
     };
   }
 }

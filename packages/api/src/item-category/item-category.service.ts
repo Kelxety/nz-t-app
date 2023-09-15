@@ -27,19 +27,25 @@ export class ItemCategoryService {
   }: PaginateOptions<
     Prisma.ScmItemCategoryWhereInput,
     Prisma.ScmItemCategoryOrderByWithAggregationInput
-  >): Promise<ScmItemCategory[]> {
+  >): Promise<ScmItemCategory[] | any> {
     if (!pagination) {
       return this.prisma.scmItemCategory.findMany({
         where: data,
         orderBy: order,
       });
     }
-    return this.prisma.scmItemCategory.findMany({
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmItemCategory.count({
+        where: data,
+      }),
+      this.prisma.scmItemCategory.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {

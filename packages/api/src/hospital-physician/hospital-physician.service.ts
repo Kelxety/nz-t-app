@@ -21,7 +21,7 @@ export class HospitalPhysicianService {
     });
   }
 
-  findAll({
+  async findAll({
     data,
     page,
     pageSize,
@@ -30,7 +30,7 @@ export class HospitalPhysicianService {
   }: PaginateOptions<
     Prisma.HospitalPhysicianWhereInput,
     Prisma.HospitalPhysicianOrderByWithAggregationInput
-  >): Promise<HospitalPhysicianEntity[]> {
+  >): Promise<HospitalPhysicianEntity[] | any> {
     if (!pagination) {
       return this.prisma.hospitalPhysician.findMany({
         include: {
@@ -40,15 +40,21 @@ export class HospitalPhysicianService {
         orderBy: order,
       });
     }
-    return this.prisma.hospitalPhysician.findMany({
-      include: {
-        scmChargeslips: true,
-      },
-      where: data,
-      take: pageSize || 10,
-      skip: (page - 1) * pageSize || 0,
-      orderBy: order,
-    });
+    const returnData = await this.prisma.$transaction([
+      this.prisma.hospitalPhysician.count({
+        where: data,
+      }),
+      this.prisma.hospitalPhysician.findMany({
+        include: {
+          scmChargeslips: true,
+        },
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
   }
 
   async findOne(id: string) {
