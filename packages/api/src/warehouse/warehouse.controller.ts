@@ -58,8 +58,7 @@ export class WarehouseController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    if (query?.pagination) {
-      console.log(data[1].length);
+    if (toBoolean(query?.pagination)) {
       return {
         message: `List of all warehouse fetch Successfully`,
         data: data[1],
