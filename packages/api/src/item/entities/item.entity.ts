@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ScmItem } from '@prisma/client';
 import { Exclude } from 'class-transformer';
+import { IsEnum } from 'class-validator';
 import { ItemDetailEntity } from '../../item-detail/entities/item-detail.entity';
 
 export class ItemEntity implements ScmItem {
@@ -15,6 +16,7 @@ export class ItemEntity implements ScmItem {
   barcode: string;
 
   @ApiProperty()
+  @IsEnum(ItemDetailEntity)
   itemName: string;
 
   @ApiProperty()

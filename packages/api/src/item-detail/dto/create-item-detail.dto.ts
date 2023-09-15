@@ -34,6 +34,7 @@ export class CreateItemDetailDto {
 
     @IsString()
     @ApiProperty()
+    @ApiProperty()
     barcode: string;
 
     @IsString()
@@ -43,14 +44,17 @@ export class CreateItemDetailDto {
 
     @IsString()
     @ApiProperty()
+    @IsOptional()
     brandName: string;
 
     @IsString()
     @ApiProperty()
+    @IsOptional()
     lotNo: string;
 
     @IsString()
     @ApiProperty()
+    @IsOptional()
     batchNo: string;
 
     @Transform(({ value }) => value && new Date(value))
