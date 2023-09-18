@@ -103,7 +103,6 @@ export class RoleService {
       username: string;
       role: Role;
     };
-    console.log(decoded);
     if (!decoded) {
       throw new Error();
     }

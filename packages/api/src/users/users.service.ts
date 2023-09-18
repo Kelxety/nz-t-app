@@ -105,32 +105,50 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    const roleConnections = [];
+
+    for (const roleId of updateUserDto?.role) {
+      roleConnections.push({ id: roleId });
+    }
+    // Iterate through each role ID in updateUserDto.role
+    console.log('1,2', roleConnections);
+
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist.`);
     }
-    const isPasswordValid = await bcrypt.compare(
-      updateUserDto.password,
-      user.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Password is incorrect!');
-    }
 
     if (updateUserDto.password) {
+      const isPasswordValid = await bcrypt.compare(
+        updateUserDto.password,
+        user.password,
+      );
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Password is incorrect!');
+      }
       updateUserDto.password = await bcrypt.hash(
         updateUserDto.password,
         roundsOfHashing,
       );
+
+      return this.prisma.user.update({
+        where: { id },
+        data: {
+          password: updateUserDto.password,
+          ...updateUserDto,
+          role: {
+            connect: roleConnections,
+          },
+        },
+      });
     }
     return this.prisma.user.update({
       where: { id },
       data: {
-        password: updateUserDto.password,
         ...updateUserDto,
         role: {
-          create: updateUserDto.role,
+          connect: roleConnections,
         },
       },
     });

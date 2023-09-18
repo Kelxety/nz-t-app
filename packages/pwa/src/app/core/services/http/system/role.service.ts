@@ -1,8 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Prisma, Role } from '@prisma/client';
+import { ApiService, HttpParamsService } from '@pwa/src/app/shared';
 import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
+import { ApiTypeService } from '@pwa/src/app/shared/services/api-type.service';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 
 import { PageInfo, SearchCommonVO } from '../../types';
@@ -33,33 +36,35 @@ export interface PutPermissionParam {
   providedIn: 'root'
 })
 export class RoleService {
-  constructor(public http: BaseHttpService) {}
+  private _roles = signal<Role[]>([]);
+  roles = this._roles.asReadonly();
+  public baseUrl = '/api/role';
+  constructor(private apiService: ApiTypeService, private httpParams: HttpParamsService) {}
 
-  public getRoles(param: SearchParams<Prisma.RoleWhereInput>): Observable<PageInfo<Role>> {
-    return this.http.post('/role/list/', param);
+  public getRoles(param: SearchParams<Prisma.RoleWhereInput>): Observable<ResType<Role[]>> {
+    const parameters = this.httpParams.convert(param);
+    return this.apiService.get<ResType<Role[]>>(this.baseUrl, parameters);
   }
 
-  public getRolesDetail(id: number): Observable<Role> {
-    return this.http.get(`/role/${id}/`);
+  public getRolesDetail(id: string): Observable<ResType<Role>> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.get(url);
   }
 
-  public addRoles(param: Role): Observable<void> {
-    return this.http.post('/role/', param);
+  public addRoles(data: Role): Observable<ResType<Role>> {
+    this._roles.mutate(res => res.push(data));
+    return this.apiService.post(this.baseUrl, data);
   }
 
-  public delRoles(ids: number[]): Observable<void> {
-    return this.http.post('/role/del/', { ids });
+  public delRoles(ids: string[]): Observable<void> {
+    // return this.http.post('/role/del/', { ids });
+    const url = `${this.baseUrl}/${ids}`;
+    return this.apiService.delete(url);
   }
 
-  public editRoles(param: Role): Observable<void> {
-    return this.http.put('/role/', param);
-  }
-
-  public getPermissionById(id: string): Observable<string[]> {
-    return this.http.get(`/permission/${id}/`);
-  }
-
-  public updatePermission(param: PutPermissionParam): Observable<NzSafeAny> {
-    return this.http.put('/permission/', param);
+  public editRoles(id: string, data: Role): Observable<ResType<Role>> {
+    this._roles.update(res => res.filter(datas => datas.id === id));
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.patch(url, data);
   }
 }

@@ -54,7 +54,7 @@ export class SetRoleComponent implements OnInit {
   permissionList: Array<Menu & { isOpen?: boolean; checked?: boolean }> = [];
   roleName!: string;
   destroyRef = inject(DestroyRef);
-  @Input({ required: true }) id!: string; // 从路由中获取的角色id，ng16支持的新特性
+  @Input({ required: true }) id!: string;
 
   constructor(
     private dataService: RoleService,
@@ -65,37 +65,33 @@ export class SetRoleComponent implements OnInit {
     public message: NzMessageService
   ) {}
 
-  // 初始化数据
-  initPermission(): void {
-    // 通过角色id获取这个角色拥有的权限码
-    this.dataService
-      .getPermissionById(this.id)
-      .pipe(
-        concatMap(authCodeArr => {
-          this.authCodeArr = authCodeArr;
-          // 获取所有菜单
-          return this.menusService.getMenuList({ page: 0, pageSize: 0 });
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(response => {
-        // isOpen表示 节点是否展开
-        const menuArray: Array<Menu & { isOpen?: boolean; checked?: boolean }> = response.list;
-        menuArray.forEach(item => {
-          item.isOpen = false;
-          item.checked = this.authCodeArr.includes(item.code!);
-        });
-        this.permissionList = fnAddTreeDataGradeAndLeaf(fnFlatDataHasParentToTree(menuArray));
-        this.cdr.markForCheck();
-      });
-  }
+  // initPermission(): void {
+  //   this.dataService
+  //     .getPermissionById(this.id)
+  //     .pipe(
+  //       concatMap(authCodeArr => {
+  //         this.authCodeArr = authCodeArr;
+  //         return this.menusService.getMenuList({ page: 0, pageSize: 0 });
+  //       }),
+  //       takeUntilDestroyed(this.destroyRef)
+  //     )
+  //     .subscribe(response => {
+  //       const menuArray: Array<Menu & { isOpen?: boolean; checked?: boolean }> = response.list;
+  //       menuArray.forEach(item => {
+  //         item.isOpen = false;
+  //         item.checked = this.authCodeArr.includes(item.code!);
+  //       });
+  //       this.permissionList = fnAddTreeDataGradeAndLeaf(fnFlatDataHasParentToTree(menuArray));
+  //       this.cdr.markForCheck();
+  //     });
+  // }
 
   getRoleName(): void {
     this.dataService
-      .getRolesDetail(+this.id)
+      .getRolesDetail(this.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ name }) => {
-        this.pageHeaderInfo = { ...this.pageHeaderInfo, ...{ desc: `当前角色：${name}` } };
+      .subscribe(({ data }) => {
+        this.pageHeaderInfo = { ...this.pageHeaderInfo, ...{ desc: `current role：${data.name}` } };
         this.cdr.markForCheck();
       });
   }
@@ -117,12 +113,12 @@ export class SetRoleComponent implements OnInit {
       permissionIds: seledAuthArray,
       roleId: +this.id
     };
-    this.dataService
-      .updatePermission(param)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.message.success('设置成功，重新登录后生效');
-      });
+    // this.dataService
+    //   .updatePermission(param)
+    //   .pipe(takeUntilDestroyed(this.destroyRef))
+    //   .subscribe(() => {
+    //     this.message.success('设置成功，重新登录后生效');
+    //   });
   }
 
   _onReuseInit(): void {
@@ -131,6 +127,6 @@ export class SetRoleComponent implements OnInit {
 
   ngOnInit(): void {
     this.getRoleName();
-    this.initPermission();
+    // this.initPermission();
   }
 }
