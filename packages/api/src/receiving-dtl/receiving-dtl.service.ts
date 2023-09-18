@@ -1,11 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../lib/prisma/prisma.service';
+import { RoleService } from '../role/role.service';
 import { CreateReceivingDtlDto } from './dto/create-receiving-dtl.dto';
 import { UpdateReceivingDtlDto } from './dto/update-receiving-dtl.dto';
 
 @Injectable()
 export class ReceivingDtlService {
-  create(createReceivingDtlDto: CreateReceivingDtlDto) {
-    return 'This action adds a new receivingDtl';
+  constructor(private prisma: PrismaService, private role: RoleService) { }
+
+  async create(createReceivingDtlDto: CreateReceivingDtlDto, token: string) {
+    const creatorName = await this.role.getRequesterName(token);
+    if (!creatorName) throw new Error('Error in token');
+    return await this.prisma.scmReceiveDtl.create({
+      data: { ...createReceivingDtlDto, createdBy: creatorName.accountName },
+      include: {
+        scmWarehouse: true,
+        scmReceiveMode: true
+      },
+    });
   }
 
   findAll() {

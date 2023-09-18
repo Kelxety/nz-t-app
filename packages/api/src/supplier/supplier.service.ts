@@ -1,26 +1,87 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, ScmSupplier } from '@prisma/client';
+import { PaginateOptions } from '../lib/interface';
+import { PrismaService } from '../lib/prisma/prisma.service';
+import { RoleService } from '../role/role.service';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 
 @Injectable()
 export class SupplierService {
-  create(createSupplierDto: CreateSupplierDto) {
-    return 'This action adds a new supplier';
+  constructor(private prisma: PrismaService, private role: RoleService) { }
+
+  async create(createSupplierDto: CreateSupplierDto, token: string) {
+    const creatorName = await this.role.getRequesterName(token);
+    if (!creatorName) throw new Error('Error in token');
+    return await this.prisma.scmSupplier.create({
+      data: { ...createSupplierDto, createdBy: creatorName.accountName },
+    });
   }
 
-  findAll() {
-    return `This action returns all supplier`;
+  async findAll({
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmSupplierWhereInput,
+    Prisma.ScmSupplierOrderByWithAggregationInput
+  >): Promise<ScmSupplier[] | any> {
+    if (!pagination) {
+      return this.prisma.scmSupplier.findMany({
+        where: data,
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmSupplier.count({
+        where: data,
+      }),
+      this.prisma.scmSupplier.findMany({
+        where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+
+    return returnData;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} supplier`;
+  async findOne(id: string) {
+    const data = await this.prisma.scmSupplier.findUnique({
+      where: { id },
+    });
+    if (!data) {
+      throw new NotFoundException(`${id} does not exist.`);
+    }
+    return data;
   }
 
-  update(id: number, updateSupplierDto: UpdateSupplierDto) {
-    return `This action updates a #${id} supplier`;
+  async update(id: string, updateSupplierDto: UpdateSupplierDto, token: string) {
+    const creatorName = await this.role.getRequesterName(token);
+    const data = await this.prisma.scmSupplier.findUnique({
+      where: { id },
+    });
+    if (!data) {
+      throw new NotFoundException(`${id} does not exist.`);
+    }
+    const res = await this.prisma.scmSupplier.update({
+      where: { id },
+      data: { ...updateSupplierDto, updatedBy: creatorName.accountName },
+    });
+    return res;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} supplier`;
+  async remove(id: string) {
+    await this.findOne(id);
+
+    const deletedData = this.prisma.scmSupplier.delete({ where: { id } });
+    return deletedData;
+  }
+
+  async count() {
+    return this.prisma.scmSupplier.count();
   }
 }

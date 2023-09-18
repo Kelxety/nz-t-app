@@ -1,12 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from "class-transformer";
-import { IsBoolean, IsDate, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsNumber, IsOptional, IsString } from "class-validator";
 
 
 export class CreateReceivingDto {
 
     @ApiProperty()
     @IsOptional()
+    @IsNumber()
     fyCode: number;
 
     @Transform(({ value }) => value && new Date(value))

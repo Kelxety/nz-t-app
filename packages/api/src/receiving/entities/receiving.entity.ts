@@ -62,10 +62,10 @@ export class ReceivingEntity implements ScmReceive {
     updatedAt: Date;
 
     @ApiProperty({ required: false, type: WarehouseEntity })
-    warehouse: WarehouseEntity;
+    warehouse?: WarehouseEntity;
 
     @ApiProperty({ required: false, type: ReceiveMode })
-    receivemode: ReceiveMode;
+    receivemode?: ReceiveMode;
 
     constructor({ warehouse, receivemode, ...data }: Partial<ReceivingEntity>) {
         Object.assign(this, data);
