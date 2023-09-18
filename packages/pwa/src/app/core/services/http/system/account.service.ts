@@ -48,9 +48,11 @@ export class AccountService {
   }
 
   patch(id: string, data: object): Observable<ResType<User[]>> {
+    console.log(data);
+    const parameters = this.httpParams.convert(data);
     this._user.update(res => res.filter(datas => datas.id === id));
     const url = `${this.baseUrl}/${id}`;
-    return this.apiService.patch(url, data);
+    return this.apiService.patch(url, parameters);
   }
 
   delAccount(ids: string[]): Observable<ResType<User[]>> {
@@ -60,8 +62,9 @@ export class AccountService {
   }
 
   public editAccount(param: User): Observable<void> {
-    const url = `${this.baseUrl}`;
-    return this.apiService.put(url, param);
+    const parameters = this.httpParams.convert(param);
+    const url = `${this.baseUrl}/${param.id}`;
+    return this.apiService.patch(url, parameters);
   }
 
   public editAccountPsd(params: UserPsd): Observable<string> {

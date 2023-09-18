@@ -77,16 +77,20 @@
         <!--Edit need appAuth <span *appAuth="ActionCode.AccountEdit" class="operate-text" (click)="edit(id)">Edit</span>
         <span *appAuth="ActionCode.AccountDel" class="operate-text" (click)="del(id)">Delete</span> -->
         <span class="operate-text" (click)="edit(id)">Edit</span>
-        <span class="operate-text" (click)="del(id)">Delete</span>
+        <span>|{{ ' ' }}</span>
+        <span class="operate-text" (click)="del(id)"><span class="text-red-500">Delete</span></span>
       </ng-template>
     </app-card-table-wrap>
   </div>
 
-  <ng-template #viewTpl let-id="id">
-    <span class="operate-text" (click)="view(id)">
+  <ng-template #viewTpl let-id="id" let-role="role">
+    <div *ngFor="let item of role">
+      <nz-tag [nzColor]="'blue'">{{ item.name }}</nz-tag>
+    </div>
+    <!-- <span class="operate-text" (click)="view(id)">
       <i nz-icon nzType="expand-alt" nzTheme="outline"></i>
       View
-    </span>
+    </span> -->
   </ng-template>
 
   <ng-template #tableBtns>

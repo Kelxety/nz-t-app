@@ -101,12 +101,11 @@ export class RoleManageComponent implements OnInit {
         }),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(data => {
-        console.log(data);
-        const { list, total, pageNum } = data;
-        this.dataList = [...list];
+      .subscribe(res => {
+        const { data, total } = res;
+        this.dataList = [...data];
         this.tableConfig.total = total!;
-        this.tableConfig.pageIndex = pageNum!;
+        this.tableConfig.pageIndex = total!;
         this.tableLoading(false);
         this.checkedCashArray = [...this.checkedCashArray];
       });
@@ -154,13 +153,13 @@ export class RoleManageComponent implements OnInit {
   }
 
   // 修改
-  edit(id: number): void {
+  edit(id: string): void {
     this.dataService
       .getRolesDetail(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
         this.modalService
-          .show({ nzTitle: '编辑' }, res)
+          .show({ nzTitle: 'edit' }, res.data)
           .pipe(
             finalize(() => {
               this.tableLoading(false);
@@ -179,15 +178,27 @@ export class RoleManageComponent implements OnInit {
   }
 
   addEditData(param: Role, methodName: 'editRoles' | 'addRoles'): void {
-    this.dataService[methodName](param)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.getDataList();
-      });
+    if (methodName === 'editRoles') {
+      this.dataService[methodName](param.id, param)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.getDataList();
+          }
+        });
+    } else {
+      this.dataService[methodName](param)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.getDataList();
+          }
+        });
+    }
   }
 
-  del(id: number): void {
-    const ids: number[] = [id];
+  del(id: string): void {
+    const ids: string[] = [id];
     this.modalSrv.confirm({
       nzTitle: '确定要删除吗？',
       nzContent: '删除后不可恢复',

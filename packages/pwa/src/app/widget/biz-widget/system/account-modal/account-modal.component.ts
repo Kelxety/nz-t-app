@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 
 import { OptionsInterface } from '@core/services/types';
 import { ValidatorsService } from '@core/services/validators/validators.service';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import { DeptService } from '@services/system/dept.service';
 import { RoleService } from '@services/system/role.service';
 import { fnCheckForm } from '@utils/tools';
@@ -30,10 +30,11 @@ import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 })
 export class AccountModalComponent implements OnInit {
   addEditForm!: FormGroup;
-  readonly nzModalData: User = inject(NZ_MODAL_DATA);
+  readonly nzModalData: User & { role: Role[] } = inject(NZ_MODAL_DATA);
   roleOptions: OptionsInterface[] = [];
   isEdit = false;
   value?: string;
+  roleOfUser = [];
   deptNodes: NzTreeNodeOptions[] = [];
 
   constructor(private modalRef: NzModalRef, private fb: FormBuilder, private validatorsService: ValidatorsService, private roleService: RoleService, private deptService: DeptService) {}
@@ -51,9 +52,9 @@ export class AccountModalComponent implements OnInit {
 
   getRoleList(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.roleService.getRoles({ page: 0, pageSize: 0 }).subscribe(({ list }) => {
+      this.roleService.getRoles({ page: 0, pageSize: 0, pagination: false }).subscribe(({ data }) => {
         this.roleOptions = [];
-        list.forEach(({ id, name }) => {
+        data.forEach(({ id, name }) => {
           const obj: OptionsInterface = {
             label: name,
             value: id!
@@ -65,18 +66,32 @@ export class AccountModalComponent implements OnInit {
     });
   }
 
+  getStatusOfUser(value: string): boolean {
+    if (!value || value === 'inactive') return false;
+    if (value.toLocaleLowerCase() === 'active') return true;
+    return false;
+  }
+
+  getRolesForUser(role: Role[]): string[] {
+    role.forEach(role => {
+      this.roleOfUser.push(role.id);
+    });
+    return this.roleOfUser;
+  }
+
   initForm(): void {
     this.addEditForm = this.fb.group({
-      userName: [null, [Validators.required]],
+      username: [null, [Validators.required]],
+      firstName: [null, [Validators.required]],
+      middleName: [null],
+      lastName: [null, [Validators.required]],
       password: ['a123456', [Validators.required, this.validatorsService.passwordValidator()]],
-      sex: [1],
-      available: [true],
+      gender: ['MALE'],
+      status: this.getStatusOfUser('active'),
       telephone: [null, [this.validatorsService.telephoneValidator()]],
       mobile: [null, [this.validatorsService.mobileValidator()]],
       email: [null, [this.validatorsService.emailValidator()]],
-      roleId: [null, [Validators.required]],
-      departmentId: [null, [Validators.required]],
-      departmentName: [null]
+      role: [this.roleOfUser, [Validators.required]]
     });
   }
 
@@ -85,7 +100,7 @@ export class AccountModalComponent implements OnInit {
     this.isEdit = !!this.nzModalData;
     await Promise.all([this.getRoleList()]);
     if (this.isEdit) {
-      this.addEditForm.patchValue(this.nzModalData);
+      this.addEditForm.patchValue({ ...this.nzModalData, status: this.getStatusOfUser(this.nzModalData.status), role: this.getRolesForUser(this.nzModalData.role) });
       this.addEditForm.controls['password'].disable();
     }
   }

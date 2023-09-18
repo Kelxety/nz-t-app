@@ -121,6 +121,7 @@ export class AccountComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(res => {
+        console.log(res);
         if (res.statusCode === 200) {
           this.dataList = res.data;
           this.tableConfig.total = res.total!;
@@ -170,27 +171,28 @@ export class AccountComponent implements OnInit {
   }
 
   edit(id: string): void {
-    // this.dataService
-    //   .getAccountDetail(id)
-    //   .pipe(takeUntilDestroyed(this.destroyRef))
-    //   .subscribe(res => {
-    //     this.modalService
-    //       .show({ nzTitle: 'Edit' }, res)
-    //       .pipe(
-    //         finalize(() => {
-    //           this.tableLoading(false);
-    //         }),
-    //         takeUntilDestroyed(this.destroyRef)
-    //       )
-    //       .subscribe(({ modalValue, status }) => {
-    //         if (status === ModalBtnStatus.Cancel) {
-    //           return;
-    //         }
-    //         modalValue.id = id;
-    //         this.tableLoading(true);
-    //         this.addEditData(modalValue, 'editAccount');
-    //       });
-    //   });
+    this.dataService
+      .getAccountDetail(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(res => {
+        return this.modalService
+          .show({ nzTitle: 'Edit' }, res.data)
+          .pipe(
+            finalize(() => {
+              this.tableLoading(false);
+            }),
+            takeUntilDestroyed(this.destroyRef)
+          )
+          .subscribe(({ modalValue, status }) => {
+            if (status === ModalBtnStatus.Cancel) {
+              return;
+            }
+            console.log(modalValue);
+            modalValue.id = id;
+            this.tableLoading(true);
+            this.addEditData(modalValue, 'editAccount');
+          });
+      });
   }
 
   view(id: string): void {
@@ -214,7 +216,15 @@ export class AccountComponent implements OnInit {
   }
 
   addEditData(param: UserType, methodName: 'editAccount' | 'addAccount'): void {
-    this.dataService[methodName](param)
+    let method = '';
+    if (methodName === 'editAccount') {
+      method = 'patch';
+    } else {
+      method = 'post';
+    }
+    if (method === '') return;
+    console.log(param);
+    this.dataService[method](param.id, param)
       .pipe(
         finalize(() => {
           this.tableLoading(false);
@@ -328,12 +338,6 @@ export class AccountComponent implements OnInit {
       showCheckbox: true,
       headers: [
         {
-          title: 'Roles & Permissions',
-          width: 100,
-          // field: 'role[0].name',
-          tdTemplate: this.viewTpl
-        },
-        {
           title: 'Username',
           field: 'username',
           width: 120
@@ -394,6 +398,13 @@ export class AccountComponent implements OnInit {
           title: 'Updated Date',
           width: 100,
           field: 'updatedAt'
+        },
+        {
+          title: 'Roles',
+          width: 150,
+          tdTemplate: this.viewTpl,
+          fixed: true,
+          fixedDir: 'right'
         },
         {
           title: 'Actions',

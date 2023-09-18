@@ -1,3 +1,4 @@
+import { NgFor } from '@angular/common';
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
@@ -16,28 +17,11 @@ import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
   templateUrl: './role-manage-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [FormsModule, NzFormModule, ReactiveFormsModule, NzGridModule, NzInputModule, NzCheckboxModule]
+  imports: [FormsModule, NzFormModule, ReactiveFormsModule, NgFor, NzGridModule, NzInputModule, NzCheckboxModule]
 })
 export class RoleManageModalComponent implements OnInit {
-  addEditForm!: FormGroup;
-
   readonly nzModalData: Role = inject(NZ_MODAL_DATA);
 
-  checkOptionsOne = [
-    { label: 'Apple', value: 'Apple', checked: true },
-    { label: 'Pear', value: 'Pear' },
-    { label: 'Orange', value: 'Orange' }
-  ];
-  checkOptionsTwo = [
-    { label: 'Apple', value: 'Apple' },
-    { label: 'Pear', value: 'Pear', checked: true },
-    { label: 'Orange', value: 'Orange' }
-  ];
-  checkOptionsThree = [
-    { label: 'Apple', value: 'Apple', disabled: true, checked: true },
-    { label: 'Pear', value: 'Pear', disabled: true },
-    { label: 'Orange', value: 'Orange' }
-  ];
   myForm: any;
   checks: any = [
     { description: 'descr1', value: 'value1' },
@@ -77,24 +61,12 @@ export class RoleManageModalComponent implements OnInit {
     }
   }
 
-  // 此方法为如果有异步数据需要加载，则在该方法中添加
   protected getAsyncFnData(modalValue: NzSafeAny): Observable<NzSafeAny> {
     return of(modalValue);
   }
 
-  // 返回false则不关闭对话框
-  protected getCurrentValue(): Observable<NzSafeAny> {
-    if (!fnCheckForm(this.addEditForm)) {
-      return of(false);
-    }
-    return of(this.addEditForm.value);
-  }
-
   ngOnInit(): void {
     this.initRoleForm();
-    if (!!this.nzModalData) {
-      this.addEditForm.patchValue(this.nzModalData);
-    }
   }
 
   log(value: object[]): void {
