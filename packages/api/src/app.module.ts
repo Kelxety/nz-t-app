@@ -20,6 +20,10 @@ import { HospitalPhysicianModule } from './hospital-physician/hospital-physician
 import { ChargeSlipDetailsModule } from './charge-slip-details/charge-slip-details.module';
 import { ReturnsModule } from './returns/returns.module';
 import { ReturnDetailModule } from './return-detail/return-detail.module';
+import { ReceivingModule } from './receiving/receiving.module';
+import { SupplierModule } from './supplier/supplier.module';
+import { ReceiveModeModule } from './receive-mode/receive-mode.module';
+import { ReceivingDtlModule } from './receiving-dtl/receiving-dtl.module';
 
 @Module({
   imports: [
@@ -42,6 +46,10 @@ import { ReturnDetailModule } from './return-detail/return-detail.module';
     ChargeSlipDetailsModule,
     ReturnsModule,
     ReturnDetailModule,
+    ReceivingModule,
+    SupplierModule,
+    ReceiveModeModule,
+    ReceivingDtlModule,
   ],
   controllers: [AppController],
   providers: [AppService],

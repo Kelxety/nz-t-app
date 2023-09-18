@@ -1,17 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, ScmWarehouse } from '@prisma/client';
 import { PaginateOptions } from '@api/lib/interface';
 import { PrismaService } from '@api/lib/prisma/prisma.service';
 import { RoleService } from '@api/role/role.service';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, ScmWarehouse } from '@prisma/client';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
 
 @Injectable()
 export class WarehouseService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) { }
   async create(createWarehouseDto: CreateWarehouseDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Unathorized');
+    const find = await this.prisma.scmWarehouse.findUnique({
+      where: {
+        whAcro: createWarehouseDto.whAcro,
+      },
+      select: {
+        whAcro: true
+      }
+    });
+    console.log(find)
+    if (find) {
+      throw new ConflictException(find.whAcro);
+    }
     return await this.prisma.scmWarehouse.create({
       data: { ...createWarehouseDto, createdBy: creatorName.accountName },
     });
