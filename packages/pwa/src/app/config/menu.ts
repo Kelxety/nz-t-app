@@ -125,6 +125,28 @@ const menuNav: Menu[] = [
         icon: 'menu',
         selected: false,
         open: false
+      },
+      {
+        id: 4,
+        menuName: 'Supplier',
+        // "code": "manage_tms_class",
+        fatherId: 113,
+        path: '/default/configuration/supplier',
+        menuType: 'C',
+        icon: 'menu',
+        selected: false,
+        open: false
+      },
+      {
+        id: 4,
+        menuName: 'Receive mode',
+        // "code": "manage_tms_class",
+        fatherId: 113,
+        path: '/default/configuration/receive-mode',
+        menuType: 'C',
+        icon: 'menu',
+        selected: false,
+        open: false
       }
     ]
   },

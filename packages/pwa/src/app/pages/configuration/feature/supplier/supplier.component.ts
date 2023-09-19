@@ -5,28 +5,33 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { Subject } from 'rxjs';
 import { SpinService } from '../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../shared';
-import { WarehouseServices } from '../../Services/warehouse/warehouse.service';
+import { SupplierServices } from '../../Services/supplier/supplier.service';
 import { CreateEditModalComponent } from './create-edit-modal/create-edit-modal.component';
 
-interface WarehouseData {
+interface supplierData {
   id: string;
-  whName: string;
-  whAcro: string;
+  supplierName: string;
+  supplierAddress: string;
+  receivemodeId: string;
+  contactPerson: string;
+  contactNo: number;
   state: string;
+  remarks: string;
   createdBy: string;
   createdAt: Date;
   updatedBy: string;
   updatedAt: Date;
 
+
 }
 @Component({
-  selector: 'app-warehouse',
-  templateUrl: './warehouse.component.html',
-  styleUrls: ['./warehouse.component.less'],
+  selector: 'app-supplier',
+  templateUrl: './supplier.component.html',
+  styleUrls: ['./supplier.component.less'],
   standalone: true,
   imports: [SharedModule]
 })
-export class WarehouseComponent {
+export class SupplierComponent {
   search: string = '';
   private ngUnsubscribe = new Subject();
 
@@ -38,8 +43,8 @@ export class WarehouseComponent {
 
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly WarehouseData[] = [];
-  listOfData: readonly WarehouseData[] = [];
+  listOfCurrentPageData: readonly supplierData[] = [];
+  listOfData: readonly supplierData[] = [];
   setOfCheckedId = new Set<string>();
 
   model: any = {
@@ -57,7 +62,7 @@ export class WarehouseComponent {
     private fb: FormBuilder,
     private msg: NzMessageService,
     private modalService: NzModalService,
-    private warehouseServices: WarehouseServices
+    private supplierServices: SupplierServices
   ) { }
 
   ngOnInit(): void {
@@ -99,7 +104,7 @@ export class WarehouseComponent {
     this.refreshCheckedStatus();
   }
 
-  onCurrentPageDataChange($event: readonly WarehouseData[]): void {
+  onCurrentPageDataChange($event: readonly supplierData[]): void {
     this.listOfCurrentPageData = $event;
     this.refreshCheckedStatus();
   }
@@ -111,7 +116,7 @@ export class WarehouseComponent {
 
   add() {
     const dialogRef = this.modalService.create({
-      nzTitle: 'Add Warehouse',
+      nzTitle: 'Add Supplier',
       nzContent: CreateEditModalComponent,
       nzData: {
         actionType: 'Create'
@@ -134,7 +139,7 @@ export class WarehouseComponent {
     model.loading = true;
 
 
-    this.warehouseServices.list({ pagination: true }).subscribe({
+    this.supplierServices.list({ pagination: true }).subscribe({
       next: (res: any) => {
         const list = res.data
 
@@ -153,7 +158,7 @@ export class WarehouseComponent {
 
   edit(data: any) {
     const dialogRef = this.modalService.create({
-      nzTitle: 'Edit Warehouse',
+      nzTitle: 'Edit Supplier',
       nzContent: CreateEditModalComponent,
       nzData: {
         id: data,
@@ -176,7 +181,7 @@ export class WarehouseComponent {
     const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
 
     // this.validateFormDetail.get('state').setValue('In-Active')
-    this.warehouseServices.patch(data.id, { state: 'In-Active' }).subscribe({
+    this.supplierServices.patch(data.id, { state: 'In-Active' }).subscribe({
       next: (res: any) => {
         this.msg.remove(id)
 
@@ -216,7 +221,6 @@ export class WarehouseComponent {
 
 
   filter(search: string) {
-    throw new Error('Method not implemented.');
   }
 
 }

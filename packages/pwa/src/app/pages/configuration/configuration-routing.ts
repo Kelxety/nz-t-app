@@ -30,5 +30,15 @@ export default [
     path: 'warehouse',
     data: { title: 'Warehouse', key: 'Warehouse', breadcrumb: 'Warehouse' },
     loadComponent: () => import('./feature/warehouse/warehouse.component').then(c => c.WarehouseComponent)
+  },
+  {
+    path: 'supplier',
+    data: { title: 'Supplier', key: 'supplier', breadcrumb: 'Supplier' },
+    loadComponent: () => import('./feature/supplier/supplier.component').then(c => c.SupplierComponent)
+  },
+  {
+    path: 'receive-mode',
+    data: { title: 'Receive mode', key: 'receive-mode', breadcrumb: 'Receive mode' },
+    loadComponent: () => import('./feature/receive-mode/receive-mode.component').then(c => c.ReceiveModeComponent)
   }
 ] as Route[];

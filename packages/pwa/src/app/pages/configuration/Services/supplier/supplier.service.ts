@@ -8,7 +8,7 @@ import { ResType } from '@utils/types/return-types';
 @Injectable({
     providedIn: 'root'
 })
-export class StockReceivingDtlServices {
+export class SupplierServices {
     private _items = signal<ScmSupplier[]>([])
     public baseUrl = '/api/supplier';
 
