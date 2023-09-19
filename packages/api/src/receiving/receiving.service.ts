@@ -36,7 +36,8 @@ export class ReceivingService {
       return this.prisma.scmReceive.findMany({
         include: {
           scmWarehouse: true,
-          scmReceiveMode: true
+          scmReceiveMode: true,
+          scmSupplier: true
         },
         where: data,
         orderBy: order,
@@ -49,7 +50,8 @@ export class ReceivingService {
       this.prisma.scmReceive.findMany({
         include: {
           scmWarehouse: true,
-          scmReceiveMode: true
+          scmReceiveMode: true,
+          scmSupplier: true
         },
         where: data,
         take: pageSize || 10,
@@ -66,7 +68,8 @@ export class ReceivingService {
       where: { id },
       include: {
         scmReceiveMode: true,
-        scmWarehouse: true
+        scmWarehouse: true,
+        scmSupplier: true
       }
     });
     if (!data) {
@@ -88,7 +91,8 @@ export class ReceivingService {
       data: { ...updateReceivingDto, updatedBy: creatorName.accountName },
       include: {
         scmWarehouse: true,
-        scmReceiveMode: true
+        scmReceiveMode: true,
+        scmSupplier: true
       },
     });
     return res;

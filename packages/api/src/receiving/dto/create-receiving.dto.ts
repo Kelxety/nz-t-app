@@ -34,14 +34,17 @@ export class CreateReceivingDto {
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     purchaserequestNo: string;
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     deliveryreceiptNo: string;
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     purchaseorderNo: string;
 
     @ApiProperty()
@@ -50,6 +53,7 @@ export class CreateReceivingDto {
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     remarks: string;
 
     @ApiProperty()

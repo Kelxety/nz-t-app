@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateReceivingDtlDto {
     @ApiProperty()
@@ -30,8 +31,10 @@ export class CreateReceivingDtlDto {
     @IsString()
     batchNo: string;
 
+    @Transform(({ value }) => value && new Date(value))
+    @IsDate()
     @ApiProperty()
-    @IsString()
+    @IsOptional()
     expirationDate: Date;
 
     @ApiProperty()

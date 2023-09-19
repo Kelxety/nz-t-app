@@ -16,7 +16,8 @@ export class SupplierController {
 
   @Post()
   @CustomSupplierDecorator()
-  async create(@Request() request: Req, @Body() createSupplierDto: CreateSupplierDto) {
+  async create(@Request() request: Req,
+    @Body() createSupplierDto: CreateSupplierDto) {
     const data = await this.supplierService.create(
       createSupplierDto,
       request?.headers?.authorization.split('Bearer ')[1],
@@ -65,7 +66,8 @@ export class SupplierController {
 
   @Patch(':id')
   @CustomSupplierDecorator()
-  async update(@Request() request: Req, @Param('id') id: string, @Body() updateSupplierDto: UpdateSupplierDto) {
+  async update(@Request() request: Req,
+    @Param('id') id: string, @Body() updateSupplierDto: UpdateSupplierDto) {
     const data = await this.supplierService.update(
       id,
       updateSupplierDto,

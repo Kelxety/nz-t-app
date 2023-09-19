@@ -2,6 +2,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { ScmSupplier } from "@prisma/client";
 
 export class SupplierEntity implements ScmSupplier {
+    constructor(partial: Partial<SupplierEntity>) {
+        Object.assign(this, partial);
+    }
     @ApiProperty()
     id: string;
 

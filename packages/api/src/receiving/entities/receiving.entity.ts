@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ScmReceive } from "@prisma/client";
 import { ReceiveMode } from "../../receive-mode/entities/receive-mode.entity";
+import { SupplierEntity } from "../../supplier/entities/supplier.entity";
 import { WarehouseEntity } from "../../warehouse/entities/warehouse.entity";
 
 export class ReceivingEntity implements ScmReceive {
@@ -67,7 +68,10 @@ export class ReceivingEntity implements ScmReceive {
     @ApiProperty({ required: false, type: ReceiveMode })
     receivemode?: ReceiveMode;
 
-    constructor({ warehouse, receivemode, ...data }: Partial<ReceivingEntity>) {
+    @ApiProperty({ required: false, type: SupplierEntity })
+    supplier?: SupplierEntity;
+
+    constructor({ warehouse, receivemode, supplier, ...data }: Partial<ReceivingEntity>) {
         Object.assign(this, data);
 
         if (warehouse) {
@@ -76,6 +80,9 @@ export class ReceivingEntity implements ScmReceive {
 
         if (receivemode) {
             this.receivemode = new ReceiveMode(receivemode);
+        }
+        if (supplier) {
+            this.supplier = new SupplierEntity(supplier);
         }
     }
 }
