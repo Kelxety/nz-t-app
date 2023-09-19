@@ -1,18 +1,17 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Subject } from 'rxjs';
 import { SpinService } from '../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../shared';
-import { UnitServices } from '../../Services/unit/unit.service';
+import { WarehouseServices } from '../../Services/warehouse/warehouse.service';
 import { CreateEditModalComponent } from './create-edit-modal/create-edit-modal.component';
 
-interface UnitData {
+interface WarehouseData {
   id: string;
-  unitName: string;
-  unitAcro: string;
+  whName: string;
+  whAcro: string;
   state: string;
   createdBy: string;
   createdAt: Date;
@@ -20,15 +19,14 @@ interface UnitData {
   updatedAt: Date;
 
 }
-
 @Component({
-  selector: 'app-unit',
-  templateUrl: './unit.component.html',
-  styleUrls: ['./unit.component.less'],
+  selector: 'app-warehouse',
+  templateUrl: './warehouse.component.html',
+  styleUrls: ['./warehouse.component.less'],
   standalone: true,
   imports: [SharedModule]
 })
-export class UnitComponent {
+export class WarehouseComponent {
   search: string = '';
   private ngUnsubscribe = new Subject();
 
@@ -40,8 +38,8 @@ export class UnitComponent {
 
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly UnitData[] = [];
-  listOfData: readonly UnitData[] = [];
+  listOfCurrentPageData: readonly WarehouseData[] = [];
+  listOfData: readonly WarehouseData[] = [];
   setOfCheckedId = new Set<string>();
 
   model: any = {
@@ -58,10 +56,9 @@ export class UnitComponent {
     private spinService: SpinService,
     private fb: FormBuilder,
     private msg: NzMessageService,
-    private unitServices: UnitServices,
     private modalService: NzModalService,
+    private warehouseServices: WarehouseServices
   ) { }
-
 
   ngOnInit(): void {
     this.loadData();
@@ -71,72 +68,6 @@ export class UnitComponent {
   ngOnDestroy() {
     this.ngUnsubscribe.next({});
     this.ngUnsubscribe.complete();
-  }
-
-  add() {
-    const dialogRef = this.modalService.create({
-      nzTitle: 'Add Unit',
-      nzContent: CreateEditModalComponent,
-      nzData: {
-        actionType: 'Create'
-      },
-    });
-
-    dialogRef.componentInstance?.statusData.subscribe(
-      ($e) => {
-        // console.log('Added:', $e);
-        // this.model.list.push($e);
-        // this.filter(this.search);
-        this.loadData();
-        this.cd.detectChanges();
-      },
-    );
-  }
-
-  edit(data: any) {
-    const dialogRef = this.modalService.create({
-      nzTitle: 'Edit Unit',
-      nzContent: CreateEditModalComponent,
-      nzData: {
-        id: data,
-        actionType: 'Edit'
-      },
-    });
-
-    dialogRef.componentInstance?.statusData.subscribe(
-      ($e) => {
-        this.loadData();
-        this.cd.detectChanges();
-      },
-    );
-  }
-
-  softDelete(data: any) {
-
-    let model: any = this.model;
-    model.loading = true;
-    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-
-    // this.validateFormDetail.get('state').setValue('In-Active')
-    this.unitServices.patch(data.id, { state: 'In-Active' }).subscribe({
-      next: (res: any) => {
-        this.msg.remove(id)
-
-
-      },
-      error: (err: any) => {
-        model.loading = false
-        this.msg.remove(id)
-        this.msg.error('Unsuccessfully saved')
-      },
-      complete: () => {
-
-        this.msg.success('Item updated successfully')
-        this.loadData()
-        // model.loading = false;
-        this.cd.detectChanges();
-      }
-    })
   }
 
   updateCheckedSet(id: string, checked: boolean): void {
@@ -168,7 +99,7 @@ export class UnitComponent {
     this.refreshCheckedStatus();
   }
 
-  onCurrentPageDataChange($event: readonly UnitData[]): void {
+  onCurrentPageDataChange($event: readonly WarehouseData[]): void {
     this.listOfCurrentPageData = $event;
     this.refreshCheckedStatus();
   }
@@ -178,17 +109,32 @@ export class UnitComponent {
     this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
   }
 
+  add() {
+    const dialogRef = this.modalService.create({
+      nzTitle: 'Add Warehouse',
+      nzContent: CreateEditModalComponent,
+      nzData: {
+        actionType: 'Create'
+      },
+    });
+
+    dialogRef.componentInstance?.statusData.subscribe(
+      ($e) => {
+        // console.log('Added:', $e);
+        // this.model.list.push($e);
+        // this.filter(this.search);
+        this.loadData();
+        this.cd.detectChanges();
+      },
+    );
+  }
+
   loadData() {
     let model: any = this.model;
     model.loading = true;
 
-    let order: any = [
-      {
-        sortColumn: 'itemCode',
-        sortDirection: 'asc'
-      }
-    ];
-    this.unitServices.list({ order: order, pagination: false }).subscribe({
+
+    this.warehouseServices.list({ pagination: true }).subscribe({
       next: (res: any) => {
         const list = res.data
 
@@ -203,6 +149,52 @@ export class UnitComponent {
         this.cd.detectChanges();
       }
     });
+  }
+
+  edit(data: any) {
+    const dialogRef = this.modalService.create({
+      nzTitle: 'Edit Unit',
+      nzContent: CreateEditModalComponent,
+      nzData: {
+        id: data,
+        actionType: 'Edit'
+      },
+    });
+
+    dialogRef.componentInstance?.statusData.subscribe(
+      ($e) => {
+        this.loadData();
+        this.cd.detectChanges();
+      },
+    );
+  }
+
+  softDelete(data: any) {
+
+    let model: any = this.model;
+    model.loading = true;
+    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+
+    // this.validateFormDetail.get('state').setValue('In-Active')
+    this.warehouseServices.patch(data.id, { state: 'In-Active' }).subscribe({
+      next: (res: any) => {
+        this.msg.remove(id)
+
+
+      },
+      error: (err: any) => {
+        model.loading = false
+        this.msg.remove(id)
+        this.msg.error('Unsuccessfully saved')
+      },
+      complete: () => {
+
+        this.msg.success('Item updated successfully')
+        this.loadData()
+        // model.loading = false;
+        this.cd.detectChanges();
+      }
+    })
   }
 
   handleOk(): void {

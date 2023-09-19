@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
 import { SharedModule } from '../../../../../shared';
-import { UnitServices } from '../../../Services/unit/unit.service';
+import { WarehouseServices } from '../../../Services/warehouse/warehouse.service';
 
 interface statusState {
   status: number;
@@ -35,15 +35,15 @@ export class CreateEditModalComponent {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private unitServices: UnitServices,
+    private warehouseServices: WarehouseServices,
     private msg: NzMessageService
   ) {
     this.data = this.nzData.id;
     this.actionType = this.nzData.actionType;
 
     this.validateForm = this.fb.group({
-      unitName: ['', [Validators.required]],
-      unitAcro: ['', [Validators.required]],
+      whName: ['', [Validators.required]],
+      whAcro: ['', [Validators.required]],
       state: ['Active']
     });
   }
@@ -80,8 +80,8 @@ export class CreateEditModalComponent {
 
   getData() {
     this.validateForm.patchValue({
-      unitName: this.data?.unitName,
-      unitAcro: this.data.unitAcro,
+      whName: this.data?.whName,
+      whAcro: this.data.whAcro,
       state: this.data.state
     })
 
@@ -91,7 +91,7 @@ export class CreateEditModalComponent {
 
     if (this.validateForm.valid) {
       const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-      this.unitServices.create(this.validateForm.getRawValue()).subscribe({
+      this.warehouseServices.create(this.validateForm.getRawValue()).subscribe({
         next: (res: any) => {
           this.msg.remove(id)
           this.msg.success('Added successfully!');
@@ -119,22 +119,27 @@ export class CreateEditModalComponent {
     }
   }
 
+
   submitEdit() {
     if (this.validateForm.valid) {
       const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-      this.unitServices.patch(this.data.id, this.validateForm.getRawValue()).subscribe({
+      this.warehouseServices.patch(this.data.id, this.validateForm.getRawValue()).subscribe({
         next: (res: any) => {
           this.msg.success('Successfully updated!');
           this.statusData.emit({ status: 200, data: res })
           this.closeMe();
         },
         error: (error: any) => {
-          if (error.code === 400) {
+          if (error) {
+            if (typeof error) {
+              this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
+            }
             this.msg.remove(id)
             this.msg.error('Unsuccessfully saved')
           }
         },
         complete: () => {
+
           this.msg.remove(id)
         }
       });
@@ -149,8 +154,8 @@ export class CreateEditModalComponent {
     }
   }
 
-
   closeMe() {
     this.#modal.destroy({})
   }
+
 }

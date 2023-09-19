@@ -14,7 +14,7 @@
           <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="itemCode" nzLabelWrap>Item
             Code</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24">
-            <input nz-input type="text" formControlName="itemCode" id="itemCode" />
+            <input nz-input type="text" formControlName="itemCode" placeholder="Item Code" id="itemCode" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
@@ -34,7 +34,8 @@
         <nz-form-item>
           <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="itemDescription">Description</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24">
-            <textarea rows="4" nz-input formControlName="itemDescription" id="itemDescription"></textarea>
+            <textarea rows="4" placeholder="Description" nz-input formControlName="itemDescription"
+              id="itemDescription"></textarea>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
@@ -53,10 +54,10 @@
 
   <nz-layout>
     <div class="m-2 h-auto">
-      <nz-card nzTitle=" Add Items" class="w-full" [nzExtra]="options" [nzHoverable]="true">
+      <nz-card nzTitle="Add Items" class="w-full" [nzExtra]="options" [nzHoverable]="true">
         <form nz-form [formGroup]="validateFormDetail" id="validateFormDetail">
           <div class="flex flex-row gap-2">
-            <div class="w-[50%]">
+            <div class="w-[45%]">
               <nz-form-item>
                 <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="entryDate" nzLabelWrap>Entry
                   Date</nz-form-label>
@@ -76,7 +77,7 @@
                   nzLabelWrap>SubItem
                   Code</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
-                  <input nz-input formControlName="subitemCode" id="subitemCode" />
+                  <input nz-input placeholder="Sub Item code" formControlName="subitemCode" id="subitemCode" />
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
@@ -84,29 +85,22 @@
                   [nzXs]="24" nzFor="subitemName" nzLabelWrap>SubItem
                   Name</nz-form-label>
                 <nz-form-control [nzSm]="14" nzHasFeedback [nzXs]="24">
-                  <input nz-input formControlName="subitemName" id="subitemName" />
+                  <input nz-input placeholder="Sub Item name" formControlName="subitemName" id="subitemName" />
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
                 <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="barcode">Barcode</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
-                  <input nz-input formControlName="barcode" id="barcode" />
+                  <input nz-input formControlName="barcode" id="barcode" placeholder="Barcode" />
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzErrorTip="Please input your Unit!" nzLabelAlign="left" [nzSm]="6" nzRequired
-                  [nzXs]="24" nzFor="unitId">Unit</nz-form-label>
-                <nz-form-control [nzSm]="14" nzHasFeedback [nzXs]="24">
-                  <!-- <input nz-input formControlName="unitId" id="unitId" /> -->
-                  <nz-select nzMode="multiple" nzPlaceHolder="Select users" nzAllowClear nzShowSearch nzServerSearch
-                    formControlName="unitId" [(ngModel)]="selectedUser" (nzOnSearch)="onSearch($event)">
-                    <ng-container *ngFor="let o of optionList">
-                      <nz-option *ngIf="!isLoading" [nzValue]="o" [nzLabel]="o"></nz-option>
-                    </ng-container>
-                    <nz-option *ngIf="isLoading" nzDisabled nzCustomContent>
-                      <span nz-icon nzType="loading" class="loading-icon"></span>
-                      Loading Data...
-                    </nz-option>
+                <nz-form-label nzErrorTip="Please input your Unit!" nzLabelAlign="left" nzHasFeedback [nzSm]="6"
+                  nzRequired [nzXs]="24" nzFor="unitId">Unit</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
+                  <nz-select nzShowSearch nzAllowClear nzStatus="error" nzAllowClear nzPlaceHolder="Select a unit"
+                    formControlName="unitId" id="unitId">
+                    <nz-option *ngFor="let o of optionList" [nzValue]="o.id" [nzLabel]="o.unitAcro"></nz-option>
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>
@@ -114,7 +108,7 @@
                 <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="brandName" nzLabelWrap>Brand
                   Name</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
-                  <input nz-input formControlName="brandName" id="brandName" />
+                  <input nz-input formControlName="brandName" id="brandName" placeholder="Brand name" />
                 </nz-form-control>
               </nz-form-item>
               <div class="grid grid-cols-2 -gap-y-6 gap-x-2">
@@ -122,14 +116,14 @@
                   <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="lotNo" nzLabelWrap>Lot
                     no.</nz-form-label>
                   <nz-form-control [nzXs]="24">
-                    <input nz-input formControlName="lotNo" id="lotNo" />
+                    <input nz-input formControlName="lotNo" id="lotNo" placeholder="Lot. no" />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
                   <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="batchNo" nzLabelWrap>Batch
                     no.</nz-form-label>
                   <nz-form-control [nzXs]="24">
-                    <input nz-input formControlName="batchNo" id="batchNo" />
+                    <input nz-input formControlName="batchNo" id="batchNo" placeholder="Batch no." />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -171,8 +165,10 @@
                 </nz-form-item>
               </div>
               <nz-form-item>
-                <nz-form-label nzLabelAlign="left" [nzSm]="6" [nzXs]="24" nzFor="state">Status</nz-form-label>
-                <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
+                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="state">Status</nz-form-label>
+                <nz-form-control [nzXs]="24">
+                  <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
+                </nz-form-control>
               </nz-form-item>
               <div class=" float-right px-4">
                 <nz-form-control>
@@ -183,28 +179,39 @@
                 </nz-form-control>
               </div>
             </div>
-            <nz-card class="w-full h-auto" nzTitle="Item list">
+            <nz-card class=" my-4" nzTitle="Item List" class="w-[100%]">
               <div class="loc-content" *ngIf="!model.loading; else isLoading">
-                <nz-table nzShowSizeChanger #fixedTable [nzSize]="'default'"
-                  [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }" \ [nzPageSize]="10">
+                <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzSize]="'default'"
+                  [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
+                  (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
                   <thead>
                     <tr>
-                      <th>Expiration Date</th>
-                      <th>Item code</th>
-                      <th>Item Name</th>
-                      <th>Quantity</th>
-                      <th>Price</th>
+                      <th nzWidth="120px">Entry & Exp. Date</th>
+                      <th nzWidth="110px">Item code</th>
+                      <th nzWidth="200px">Brand Name/Item Name</th>
+                      <th nzWidth="90px" nzAlign="center">Quantity</th>
+                      <th nzWidth="100px" nzAlign="right">Cost</th>
+                      <th nzWidth="100px" nzAlign="right">Price</th>
                       <th nzWidth="90px">Status</th>
                       <th nzWidth="80px" class="text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let data of fixedTable.data">
-                      <td nzEllipsis>{{ data.itemCode }}</td>
-                      <td nzEllipsis>{{ data.itemName }}</td>
-                      <td nzEllipsis>{{ data.scmItemCategory.catName }}</td>
-                      <td nzEllipsis>{{ data.description }}</td>
-                      <td nzEllipsis><nz-badge nzColor="green" [nzText]="data.state"></nz-badge></td>
+                      <td>
+                        <div class="flex flex-col">
+                          <span class="font-semibold">{{ data?.entryDate | date : 'shortDate'}}</span>
+                          <span class="text-xs text-gray-500">Exp. {{ data?.expirationDate | date : 'shortDate'}}</span>
+                        </div>
+                      </td>
+                      <td nzEllipsis>{{ data?.subitemCode }}</td>
+                      <td nzBreakWord>{{data.brandName}} - {{ data?.subitemName }}</td>
+                      <td class="text-center">{{ data?.balanceQty }}</td>
+                      <td nzEllipsis class="text-right">{{ data?.cost | currency : 'PHP' }}</td>
+                      <td nzEllipsis class="text-right">{{ data?.price | currency : 'PHP' }}</td>
+                      <td nzEllipsis><nz-badge [nzColor]="data.state === 'Active' ? 'green' : 'red'"
+                          [nzText]="data?.state"></nz-badge>
+                      </td>
                       <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
                         <span class="pointer" nz-icon nzType="edit" nzTheme="outline"></span>
                         <nz-divider nzType="vertical"></nz-divider>
@@ -220,6 +227,9 @@
         </form>
       </nz-card>
     </div>
+
+
+
 
     <ng-template #options>
       <div nz-space nzAlign="start">

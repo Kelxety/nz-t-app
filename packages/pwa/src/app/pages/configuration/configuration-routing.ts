@@ -25,5 +25,10 @@ export default [
     path: 'unit',
     data: { title: 'Unit', key: 'unit', breadcrumb: 'Unit' },
     loadComponent: () => import('./feature/unit/unit.component').then(c => c.UnitComponent)
+  },
+  {
+    path: 'warehouse',
+    data: { title: 'Warehouse', key: 'Warehouse', breadcrumb: 'Warehouse' },
+    loadComponent: () => import('./feature/warehouse/warehouse.component').then(c => c.WarehouseComponent)
   }
 ] as Route[];

@@ -47,18 +47,18 @@ const menuNav: Menu[] = [
       }
     ]
   },
-  // {
-  //     "id": 125,
-  //     "menuName": "RPT Ledger",
-  //     "code": "manage_tms_ledger",
-  //     "fatherId": 0,
-  //     "path": "/default/tms_ledger",
-  //     "menuType": "C",
-  //     "icon": "container",
-  //     "alIcon": "",
-  //     "selected": false,
-  //     "open": false
-  // },
+  {
+    id: 2,
+    menuName: 'Stock Receiving',
+    // code: 'default:receiving',
+    fatherId: 0,
+    path: '/default/receiving',
+    menuType: 'C',
+    icon: 'stock',
+    alIcon: '',
+    selected: false,
+    open: false
+  },
   {
     id: 120,
     menuName: 'Configuration',
@@ -110,6 +110,17 @@ const menuNav: Menu[] = [
         // "code": "manage_tms_class",
         fatherId: 113,
         path: '/default/configuration/unit',
+        menuType: 'C',
+        icon: 'menu',
+        selected: false,
+        open: false
+      },
+      {
+        id: 4,
+        menuName: 'Warehouse',
+        // "code": "manage_tms_class",
+        fatherId: 113,
+        path: '/default/configuration/warehouse',
         menuType: 'C',
         icon: 'menu',
         selected: false,

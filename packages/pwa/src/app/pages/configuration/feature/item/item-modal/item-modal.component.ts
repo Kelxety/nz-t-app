@@ -4,8 +4,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmItemCategory, ScmItemDtl } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
-import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { SpinService } from '../../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../../shared';
 import { ResType } from '../../../../../utils/types/return-types';
@@ -24,7 +23,7 @@ interface dataModel {
   isSubmitting?: boolean;
 }
 
-interface data {
+interface ItemDtldata {
   id: string;
   itemCode: string;
   barcode: string;
@@ -32,6 +31,7 @@ interface data {
   itemDescription: string;
   itemcategoryId: string;
   unitId: string;
+  itemId: string
   state: string;
   remarks: string;
   createdBy: string;
@@ -61,15 +61,16 @@ export class ItemModalComponent {
   selectedValue = 'Active';
   dataModel: any = {};
 
-  randomUserUrl = 'https://api.randomuser.me/?results=5';
   searchChange$ = new BehaviorSubject('');
-  optionList: string[] = [];
+  optionList: any;
   selectedUser?: string;
   isLoading = false;
 
   listOfOption = [
     { label: 'Active', value: 'Active' },
-    { label: 'In-Active', value: 'In-Active' }
+    { label: 'In-Active', value: 'In-Active' },
+    { label: 'Transaction', value: 'Transaction' },
+    { label: 'Out of stock', value: 'Out of stock' }
   ];
 
   treeData: any;
@@ -149,61 +150,43 @@ export class ItemModalComponent {
   ngOnInit(): void {
 
     this.loadAccount()
+    this.loadUnitData()
     this.spinService.setCurrentGlobalSpinStore(false);
     // this.validateFormDetail.disable()
 
-    const getRandomNameList = (name: string): Observable<any> =>
-      this.http
-        .get(`${this.randomUserUrl}`)
-        .pipe(
-          catchError(() => of({ results: [] })),
-          map((res: any) => res.results)
-        )
-        .pipe(map((list: any) => list.map((item: any) => `${item.name.first} ${name}`)));
-    const optionList$: Observable<string[]> = this.searchChange$
-      .asObservable()
-      .pipe(debounceTime(500))
-      .pipe(switchMap(getRandomNameList));
-    optionList$.subscribe(data => {
-      this.optionList = data;
-      this.isLoading = false;
-    });
-
-
   }
 
-  onSearch(value: string): void {
-    this.isLoading = true;
-    this.searchChange$.next(value);
+  onCurrentPageDataChange($event: readonly any[]): void {
+    this.listOfCurrentPageData = $event;
   }
+
 
   private setupFormChangeListeners() {
-    // this.validateFormDetail.get('cost').valueChanges.subscribe(() => {
-    //   this.computePriceOrMarkup();
-    // });
-
-    this.validateFormDetail.get('markup').valueChanges.subscribe(() => {
-      this.computePriceFromMarkup();
+    this.validateFormDetail.get('cost').valueChanges.subscribe(() => {
+      this.computePriceOrMarkup();
     });
 
     this.validateFormDetail.get('price').valueChanges.subscribe(() => {
       this.computeMarkupFromPrice();
     });
+
+    this.validateFormDetail.get('markup').valueChanges.subscribe(() => {
+      this.computePriceFromMarkup();
+    });
+
+
   }
+
 
   private computePriceOrMarkup() {
     const cost = this.validateFormDetail.get('cost').value;
     const markup = this.validateFormDetail.get('markup').value;
-    const price = this.validateFormDetail.get('price').value;
 
     if (cost !== null && markup !== null) {
-      this.validateFormDetail.patchValue({
-        price: cost + cost * (markup / 100),
-      });
-    } else if (cost !== null && price !== null) {
-      this.validateFormDetail.patchValue({
-        markup: ((price - cost) / cost) * 100,
-      });
+      const price = this.roundToTwoDecimals(cost + cost * (markup / 100));
+      this.validateFormDetail.get('price').setValue(price, { emitEvent: false });
+    } else {
+      this.validateFormDetail.get('price').setValue(0, { emitEvent: false });
     }
   }
 
@@ -212,9 +195,10 @@ export class ItemModalComponent {
     const markup = this.validateFormDetail.get('markup').value;
 
     if (cost !== null && markup !== null) {
-      this.validateFormDetail.patchValue({
-        price: cost + cost * (markup / 100)
-      });
+      const price = this.roundToTwoDecimals(cost + cost * (markup / 100));
+      this.validateFormDetail.get('price').setValue(price, { emitEvent: false });
+    } else {
+      this.validateFormDetail.get('price').setValue(0, { emitEvent: false });
     }
   }
 
@@ -223,34 +207,55 @@ export class ItemModalComponent {
     const price = this.validateFormDetail.get('price').value;
 
     if (cost !== null && price !== null) {
-      this.validateFormDetail.patchValue({
-        markup: ((price - cost) / cost) * 100,
-      });
+      const computedMarkup = ((price - cost) / cost) * 100;
+      const markup = this.roundToTwoDecimals(computedMarkup);
+      this.validateFormDetail.get('markup').setValue(markup, { emitEvent: false });
+    } else {
+      this.validateFormDetail.get('markup').setValue(0, { emitEvent: false });
     }
   }
+
+  private roundToTwoDecimals(value: number): number {
+    return Math.round(value * 100) / 100; // Round to two decimal places
+  }
+
 
   loadData() {
     let model: any = this.model;
     model.loading = true;
 
-    let order: any = [
-      {
-        sortColumn: 'itemCode',
-        sortDirection: 'asc'
-      }
-    ];
-    this.itemDetailServices.list({ order: order, pagination: false }).subscribe({
+
+    this.itemDetailServices.list({ pagination: false, state: 'Active', filteredObject: JSON.stringify({ itemId: this.data?.id }) }).subscribe({
       next: (res: ResType<ScmItemDtl[]>) => {
         const list = res.data;
 
         model.list = list;
         model.filteredList = list;
+        this.cd.detectChanges();
       },
       error: (err: any) => {
         console.log(err);
       },
       complete: () => {
         model.loading = false;
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  loadUnitData() {
+    this.unitServices.list({ pagination: false, state: 'Active' }).subscribe({
+      next: (res: any) => {
+        const list = res.data;
+        this.optionList = list;
+        this.isLoading = true
+        this.cd.detectChanges();
+      },
+      error: (err: any) => {
+        console.log(err);
+      },
+      complete: () => {
+        this.isLoading = false
         this.cd.detectChanges();
       }
     });
@@ -264,24 +269,32 @@ export class ItemModalComponent {
       this.itemServices.create(this.validateForm.getRawValue()).subscribe({
         next: (res: any) => {
           this.msg.remove(id)
-          this.msg.success('Item saved successfully!');
-
+          this.validateFormDetail.get('markup').setValue(0)
+          console.log(res.data)
           this.data = res.data
           //  this.statusData.emit({status: 200, data: res})
         },
         error: (error: any) => {
-
-          if (error.code === 400) {
-            this.btnDisable = false
+          // console.log(error.error)
+          if (error) {
+            if (typeof error) {
+              this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
+            }
+            this.msg.remove(id)
             this.msg.error('Unsuccessfully saved')
+            this.btnDisable = false
+            this.cd.detectChanges()
           }
         },
         complete: () => {
+          this.msg.success('Item saved successfully!');
           this.btnDisable = false
           this.dtlBtn = false
-          this.validateFormDetail.enable()
           this.isCollapsed = true
           this.resetForm();
+          this.loadData()
+          this.cd.detectChanges()
+
         }
       });
     } else {
@@ -322,8 +335,8 @@ export class ItemModalComponent {
       const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
       this.dtlBtn = true
       this.itemDetailServices.create(this.validateFormDetail.getRawValue()).subscribe({
-        next: (res: ResType<ScmItemDtl[]>) => {
-          this.msg.success('Item saved successfully!');
+        next: (res: any) => {
+          this.msg.remove(id)
           //  this.statusData.emit({status: 200, data: res})
         },
         error: (error: any) => {
@@ -333,6 +346,7 @@ export class ItemModalComponent {
           }
         },
         complete: () => {
+          this.msg.success('Item saved successfully!');
           this.loadData()
           this.dtlBtn = false
           this.resetForm2()
@@ -461,8 +475,15 @@ export class ItemModalComponent {
     // e.preventDefault();
     this.validateFormDetail.reset();
     this.validateFormDetail.patchValue({
-      state: 'Active'
+      state: 'Active',
+      entryDate: new Date(),
+      balanceQty: 0,
+      markup: 0
     })
+
+    this.validateFormDetail.get('cost').setValue(0, { emitEvent: false });
+    this.validateFormDetail.get('markup').setValue(0, { emitEvent: false });
+
 
     for (const key in this.validateFormDetail.controls) {
       if (this.validateFormDetail.controls.hasOwnProperty(key)) {

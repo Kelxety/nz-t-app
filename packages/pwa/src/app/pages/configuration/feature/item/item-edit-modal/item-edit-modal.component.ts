@@ -10,6 +10,7 @@ import { ResType } from '../../../../../utils/types/return-types';
 import { ItemCatergoryServices } from '../../../Services/item-category/item-category.service';
 import { ItemDetailServices } from '../../../Services/item-detail/item-detail.service';
 import { ItemServices } from '../../../Services/item/item.service';
+import { UnitServices } from '../../../Services/unit/unit.service';
 
 interface dataModel {
   list: any;
@@ -35,7 +36,6 @@ interface data {
   createdAt: Date;
   updatedBy: string;
   updatedAt: Date;
-
 }
 
 @Component({
@@ -55,17 +55,22 @@ export class ItemEditModalComponent {
   validateForm!: UntypedFormGroup;
   validateFormDetail!: UntypedFormGroup;
   data: ScmItem
+  ItemDetailData: any
   selectedValue = 'Active';
   dataModel: any = {};
 
   listOfOption = [
     { label: 'Active', value: 'Active' },
-    { label: 'In-Active', value: 'In-Active' }
+    { label: 'In-Active', value: 'In-Active' },
+    { label: 'Transaction', value: 'Transaction' },
+    { label: 'Out of stock', value: 'Out of stock' }
   ];
 
   treeData: any;
   id!: any;
   date = new Date();
+  dtlBtn = false
+  optionList: any;
 
   dataLabel: string
 
@@ -102,6 +107,7 @@ export class ItemEditModalComponent {
     private itemServices: ItemServices,
     private route: ActivatedRoute,
     private itemDetailServices: ItemDetailServices,
+    private unitServices: UnitServices,
     private cd: ChangeDetectorRef,) {
     this.validateForm = this.fb.group({
       itemCode: [null],
@@ -113,7 +119,7 @@ export class ItemEditModalComponent {
     });
     this.validateFormDetail = this.fb.group({
       entryDate: [new Date()],
-      expirationDate: [new Date(), [Validators.required]],
+      expirationDate: [null, [Validators.required]],
       itemId: [null],
       subitemCode: [null],
       subitemName: [null, [Validators.min(4), Validators.required]],
@@ -121,7 +127,7 @@ export class ItemEditModalComponent {
       unitId: [null],
       brandName: [null],
       lotNo: [null],
-      batchNo: [],
+      batchNo: [null],
       markup: [0, [Validators.required]],
       balanceQty: [0, [Validators.required]],
       price: [0, [Validators.required]],
@@ -134,11 +140,13 @@ export class ItemEditModalComponent {
       this.id = this.route.snapshot?.params;
 
     }
+    this.setupFormChangeListeners();
   }
 
   ngOnInit(): void {
 
-    this.loadAccount()
+    console.log(this.id)
+
     this.spinService.setCurrentGlobalSpinStore(false);
     if (this.id) {
       this.dataLabel = 'Edit'
@@ -146,13 +154,73 @@ export class ItemEditModalComponent {
     }
   }
 
+  onCurrentPageDataChange($event: readonly any[]): void {
+    this.listOfCurrentPageData = $event;
+  }
+
+  private setupFormChangeListeners() {
+    this.validateFormDetail.get('cost').valueChanges.subscribe(() => {
+      this.computePriceOrMarkup();
+    });
+
+    this.validateFormDetail.get('price').valueChanges.subscribe(() => {
+      this.computeMarkupFromPrice();
+    });
+
+    this.validateFormDetail.get('markup').valueChanges.subscribe(() => {
+      this.computePriceFromMarkup();
+    });
+
+  }
+
+
+  private computePriceOrMarkup() {
+    const cost = this.validateFormDetail.get('cost').value;
+    const markup = this.validateFormDetail.get('markup').value;
+
+    if (cost !== null && markup !== null) {
+      const price = this.roundToTwoDecimals(cost + cost * (markup / 100));
+      this.validateFormDetail.get('price').setValue(price, { emitEvent: false });
+    } else {
+      this.validateFormDetail.get('price').setValue(0, { emitEvent: false });
+    }
+  }
+
+  private computePriceFromMarkup() {
+    const cost = this.validateFormDetail.get('cost').value;
+    const markup = this.validateFormDetail.get('markup').value;
+
+    if (cost !== null && markup !== null) {
+      const price = this.roundToTwoDecimals(cost + cost * (markup / 100));
+      this.validateFormDetail.get('price').setValue(price, { emitEvent: false });
+    } else {
+      this.validateFormDetail.get('price').setValue(0, { emitEvent: false });
+    }
+  }
+
+  private computeMarkupFromPrice() {
+    const cost = this.validateFormDetail.get('cost').value;
+    const price = this.validateFormDetail.get('price').value;
+
+    if (cost !== null && price !== null) {
+      const computedMarkup = ((price - cost) / cost) * 100;
+      const markup = this.roundToTwoDecimals(computedMarkup);
+      this.validateFormDetail.get('markup').setValue(markup, { emitEvent: false });
+    } else {
+      this.validateFormDetail.get('markup').setValue(0, { emitEvent: false });
+    }
+  }
+
+  private roundToTwoDecimals(value: number): number {
+    return Math.round(value * 100) / 100; // Round to two decimal places
+  }
+
   loadData() {
     let model: any = this.model;
     model.loading = true;
-
-    console.log(this.data)
     this.itemServices.get(this.id?.id).subscribe({
       next: (res: ResType<any>) => {
+        this.data = res.data
         this.validateForm.patchValue({
           itemCode: res?.data?.itemCode,
           itemName: res?.data?.itemName,
@@ -165,113 +233,183 @@ export class ItemEditModalComponent {
 
       },
       complete: () => {
-        model.loading = false;
-        // this.cd.detectChanges();
-      }
-    })
-    // this.itemServices.list({ order: order, pagination: false }).subscribe({
-    //   next: (res: ResType<ScmItemDtl[]>) => {
-    //     const list = res.data;
-
-    //     model.list = list;
-    //     model.filteredList = list;
-    //   },
-    //   error: (err: any) => {
-    //     console.log(err);
-    //   },
-    //   complete: () => {
-    //     model.loading = false;
-    //     this.cd.detectChanges();
-    //   }
-    // });
-  }
-
-
-  onCreateItem() {
-    let form: any = Object.assign({}, this.validateForm.value);
-
-    console.log(this.validateForm.getRawValue())
-    this.itemServices.create(this.validateForm.getRawValue()).subscribe({
-      next: (res: any) => {
-        this.resetForm();
-        this.msg.success('Item saved successfully!');
-        this.isCollapsed = true
-        this.data = res.data
-        //  this.statusData.emit({status: 200, data: res})
-      },
-      error: (error: any) => {
-        if (typeof error.error.violations !== 'undefined') {
-          error.error.violations.map((violation: any) => {
-            const prop = violation.propertyPath;
-            const formControl = this.validateForm.get(prop);
-            if (formControl) {
-              if (formControl.errors !== null && formControl.errors['other']) {
-                formControl.errors['other'].push(violation.message);
-              } else {
-                formControl.setErrors({
-                  other: [violation.message],
-                });
-              }
-            }
-          });
-        }
-      },
-      complete: () => {
-
-      }
-    });
-  }
-
-  onUpdateItem() {
-    let model: any = this.model;
-    model.loading = true;
-    this.itemServices.patch(this.id.id, this.validateForm.getRawValue()).subscribe({
-      next: (res: any) => {
-        this.msg.success('Item updated successfully')
-        this.isCollapsed = true
-
-      },
-      error: (err: any) => {
-
-      },
-      complete: () => {
+        this.loadAccount()
         model.loading = false;
         this.cd.detectChanges();
       }
     })
   }
 
-  onAddItem() {
-    let form: any = Object.assign({}, this.validateForm.value);
+  onAdd() {
+    this.dataLabel = 'Add'
+  }
 
-    console.log(JSON.stringify(form))
-    this.itemDetailServices.create(form).subscribe({
+  onCancelForAdd() {
+    this.dataLabel = 'Edit'
+  }
+
+  loadDetailData() {
+    let model: any = this.model;
+    model.loading = true;
+
+
+    this.itemDetailServices.list({ pagination: false, filteredObject: JSON.stringify({ itemId: this.id?.id }) }).subscribe({
       next: (res: ResType<ScmItemDtl[]>) => {
-        this.resetForm();
-        this.msg.success('Item saved successfully!');
-        //  this.statusData.emit({status: 200, data: res})
+        const list = res.data;
+
+        model.list = list;
+        model.filteredList = list;
+        this.cd.detectChanges();
       },
-      error: (error: any) => {
-        if (typeof error.error.violations !== 'undefined') {
-          error.error.violations.map((violation: any) => {
-            const prop = violation.propertyPath;
-            const formControl = this.validateForm.get(prop);
-            if (formControl) {
-              if (formControl.errors !== null && formControl.errors['other']) {
-                formControl.errors['other'].push(violation.message);
-              } else {
-                formControl.setErrors({
-                  other: [violation.message],
-                });
-              }
-            }
-          });
-        }
+      error: (err: any) => {
+        console.log(err);
       },
       complete: () => {
-
+        model.loading = false;
+        this.cd.detectChanges();
       }
     });
+  }
+
+  loadUnitData() {
+    this.unitServices.list({ pagination: false, state: 'Active' }).subscribe({
+      next: (res: any) => {
+        const list = res.data;
+        this.optionList = list;
+
+        this.cd.detectChanges();
+      },
+      error: (err: any) => {
+        console.log(err);
+      },
+      complete: () => {
+        this.loadDetailData()
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  onAddItem() {
+    if (this.validateFormDetail.valid) {
+      this.validateFormDetail.get('itemId').setValue(this.id.id)
+      const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+      this.dtlBtn = true
+      this.itemDetailServices.create(this.validateFormDetail.getRawValue()).subscribe({
+        next: (res: any) => {
+          this.msg.remove(id)
+          //  this.statusData.emit({status: 200, data: res})
+        },
+        error: (error: any) => {
+          if (error.code === 400) {
+            this.dtlBtn = false
+            this.msg.error('Unsuccessfully saved')
+          }
+        },
+        complete: () => {
+          this.msg.success('Item saved successfully!');
+          this.loadData()
+          this.dtlBtn = false
+          this.resetForm2()
+        }
+      });
+    } else {
+      Object.values(this.validateFormDetail.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+          this.dtlBtn = false
+        }
+      });
+
+    }
+  }
+
+  onEdit(data: any) {
+    this.ItemDetailData = data
+    this.setupFormChangeListeners();
+    this.validateFormDetail.patchValue({
+      entryDate: new Date(data.entryDate),
+      expirationDate: new Date(data.expirationDate),
+      itemId: data.itemId,
+      subitemCode: data.subitemCode,
+      subitemName: data.subitemName,
+      barcode: data.barcode,
+      unitId: data?.scmUnit.id,
+      brandName: data.brandName,
+      lotNo: data.lotNo,
+      batchNo: data.batchNo,
+      markup: data.markup,
+      balanceQty: data.balanceQty,
+      price: data.price,
+      cost: data.cost,
+      state: data.state,
+    })
+  }
+
+
+  onUpdateItem() {
+    let model: any = this.model;
+    model.loading = true;
+    if (this.validateFormDetail.valid) {
+      const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+      this.itemServices.patch(this.id.id, this.validateForm.getRawValue()).subscribe({
+        next: (res: any) => {
+          this.msg.success('Item updated successfully')
+          this.isCollapsed = true
+
+        },
+        error: (err: any) => {
+
+        },
+        complete: () => {
+          model.loading = false;
+          this.cd.detectChanges();
+        }
+      })
+    } else {
+      Object.values(this.validateFormDetail.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true })
+        }
+      });
+
+    }
+  }
+
+  onUpdateItemDetail() {
+    if (this.validateFormDetail.valid) {
+      let model: any = this.model;
+      model.loading = true;
+      const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+      this.itemDetailServices.patch(this.ItemDetailData.id, this.validateFormDetail.getRawValue()).subscribe({
+        next: (res: any) => {
+          this.msg.remove(id)
+          this.isCollapsed = true
+
+        },
+        error: (err: any) => {
+          this.msg.remove(id)
+          this.msg.error('Unsuccessfully saved')
+        },
+        complete: () => {
+
+          this.msg.success('Item updated successfully')
+          this.loadDetailData()
+          model.loading = false;
+          this.cd.detectChanges();
+        }
+      })
+
+    } else {
+      Object.values(this.validateFormDetail.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true })
+        }
+      });
+
+    }
   }
 
   onCancel(): void {
@@ -308,10 +446,39 @@ export class ItemEditModalComponent {
         console.log(err);
       },
       complete: () => {
+        this.loadUnitData()
         model.loading = false;
         this.cd.detectChanges();
       }
     });
+  }
+
+  softDelete(dtlId: any) {
+
+    let model: any = this.model;
+    model.loading = true;
+    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+
+    // this.validateFormDetail.get('state').setValue('In-Active')
+    this.itemDetailServices.patch(dtlId.id, { state: 'In-Active' }).subscribe({
+      next: (res: any) => {
+        this.msg.remove(id)
+        this.isCollapsed = true
+
+      },
+      error: (err: any) => {
+        model.loading = false
+        this.msg.remove(id)
+        this.msg.error('Unsuccessfully saved')
+      },
+      complete: () => {
+
+        this.msg.success('Item updated successfully')
+        this.loadDetailData()
+        model.loading = false;
+        this.cd.detectChanges();
+      }
+    })
   }
 
   treeConstruct(treeData: any): Promise<any> {
@@ -364,17 +531,25 @@ export class ItemEditModalComponent {
     }
   }
 
-  resetForm(): void {
+
+  resetForm2(): void {
     // e.preventDefault();
-    this.validateForm.reset();
-    this.validateForm.patchValue({
-      state: 'Active'
+    this.validateFormDetail.reset();
+    this.validateFormDetail.patchValue({
+      state: 'Active',
+      entryDate: new Date(),
+      balanceQty: 0,
+      markup: 0
     })
 
-    for (const key in this.validateForm.controls) {
-      if (this.validateForm.controls.hasOwnProperty(key)) {
-        this.validateForm.controls[key].markAsPristine();
-        this.validateForm.controls[key].updateValueAndValidity();
+    this.validateFormDetail.get('cost').setValue(0, { emitEvent: false });
+    this.validateFormDetail.get('markup').setValue(0, { emitEvent: false });
+
+
+    for (const key in this.validateFormDetail.controls) {
+      if (this.validateFormDetail.controls.hasOwnProperty(key)) {
+        this.validateFormDetail.controls[key].markAsPristine();
+        this.validateFormDetail.controls[key].updateValueAndValidity();
       }
     }
   }
