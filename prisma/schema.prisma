@@ -762,7 +762,7 @@ model ScmStockLedger {
 
 model ScmSupplier {
   id              String          @id @default(uuid())
-  supplierName    String          @map("supplier_name") @db.VarChar(150)
+  supplierName    String          @unique() @map("supplier_name") @db.VarChar(150)
   supplierAddress String?         @map("supplier_address") @db.VarChar(255)
   receivemodeId   String?         @map("receivemode_id") @db.VarChar(36)
   contactPerson   String?         @map("contact_person") @db.VarChar(150)
