@@ -37,7 +37,7 @@ export class SupplierServices {
     patch(id: string, data: object): Observable<ResType<ScmSupplier>> {
         this._items.update(res => res.filter(datas => datas.id === id))
         const url = `${this.baseUrl}/${id}`;
-        return this.apiService.patch(url, this._items);
+        return this.apiService.patch(url, data);
     }
 
     delete(id: string): Observable<ResType<ScmSupplier[]>> {

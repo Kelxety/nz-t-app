@@ -21,7 +21,7 @@ export class SupplierEntity implements ScmSupplier {
     contactPerson: string;
 
     @ApiProperty()
-    contactNo: number;
+    contactNo: string;
 
     @ApiProperty()
     state: string;

@@ -46,7 +46,7 @@ export class CreateEditModalComponent {
       supplierName: ['', [Validators.required]],
       supplierAddress: ['', [Validators.required]],
       contactPerson: [null],
-      contactNo: [null],
+      contactNo: [''],
       remarks: [null],
       state: ['Active']
     });
@@ -98,6 +98,7 @@ export class CreateEditModalComponent {
 
     if (this.validateForm.valid) {
       const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+      this.validateForm.get('contactNo').setValue(parseInt(this.validateForm.get('contactNo').value))
       this.supplierServices.create(this.validateForm.getRawValue()).subscribe({
         next: (res: any) => {
           this.msg.remove(id)

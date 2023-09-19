@@ -21,8 +21,6 @@ interface supplierData {
   createdAt: Date;
   updatedBy: string;
   updatedAt: Date;
-
-
 }
 @Component({
   selector: 'app-supplier',

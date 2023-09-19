@@ -71,17 +71,17 @@ const menuNav: Menu[] = [
     open: false,
 
     children: [
-      {
-        id: 121,
-        menuName: 'Classification',
-        // "code": "manage_tms_class",
-        fatherId: 113,
-        path: '/default/configuration/tms_class',
-        menuType: 'C',
-        icon: 'menu',
-        selected: false,
-        open: false
-      },
+      // {
+      //   id: 121,
+      //   menuName: 'Classification',
+      //   // "code": "manage_tms_class",
+      //   fatherId: 113,
+      //   path: '/default/configuration/tms_class',
+      //   menuType: 'C',
+      //   icon: 'menu',
+      //   selected: false,
+      //   open: false
+      // },
       {
         id: 2,
         menuName: 'Item',

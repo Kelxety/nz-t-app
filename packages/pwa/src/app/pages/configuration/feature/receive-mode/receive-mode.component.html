@@ -1,1 +1,74 @@
-<p>receive-mode works!</p>
+<nz-layout>
+    <nz-content>
+        <nz-card [nzBordered]="false" class="-p-1">
+            <nz-breadcrumb [nzAutoGenerate]="true" class="-m-2">
+                <nz-breadcrumb-item>
+                    <a>Home</a>
+                </nz-breadcrumb-item>
+                <nz-breadcrumb-item>
+                    <a>Configuration</a>
+                </nz-breadcrumb-item>
+            </nz-breadcrumb>
+        </nz-card>
+        <nz-card class="m-4" nzTitle="Receive mode List" [nzExtra]="options">
+            <div class="loc-content" *ngIf="!model.loading; else isLoading">
+                <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzSize]="'default'"
+                    [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
+                    (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
+                    <thead>
+                        <tr>
+                            <th>Receive mode</th>
+                            <th nzWidth="110px">Status</th>
+                            <th nzWidth="80px" class="text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of fixedTable.data">
+                            <td nzEllipsis>{{ data?.recvMode }}</td>
+                            <td nzEllipsis><nz-badge [nzColor]="data.state === 'Active' ? 'green' : 'red'"
+                                    [nzText]="data?.state"></nz-badge></td>
+                            <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+                                <span class="pointer" nz-icon nzType="edit" nzTheme="outline"
+                                    (click)="edit(data)"></span>
+                                <nz-divider nzType="vertical"></nz-divider>
+                                <span class="pointer" nz-icon nzType="stop" nzTheme="outline" style="color: red"
+                                    nz-popconfirm
+                                    nzPopconfirmTitle="Are you sure you want to delete {{ data.unitName }}"
+                                    (nzOnConfirm)="softDelete(data)" (nzOnCancel)="cancel()"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </div>
+        </nz-card>
+
+        <ng-template #suffixIconSearch>
+            <span nz-icon nzType="search"></span>
+        </ng-template>
+
+        <ng-template #options>
+            <div nz-space nzAlign="start">
+                <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="Search..." name="search" [ngModel]="search" />
+                </nz-input-group>
+                <nz-button-group *nzSpaceItem>
+                    <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="add()"
+                        nzTooltipTitle="Add " nzTooltipPlacement="topLeft" nz-tooltip>
+                        <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    </button>
+                    <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px"
+                        nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip>
+                        <span nz-icon nzType="reload" nzTheme="outline"></span>
+                    </button>
+                </nz-button-group>
+            </div>
+        </ng-template>
+
+        <ng-template #isLoading>
+            <div style="padding: 24px">
+                <nz-skeleton [nzActive]="true"></nz-skeleton>
+                <nz-skeleton [nzActive]="true"></nz-skeleton>
+            </div>
+        </ng-template>
+    </nz-content>
+</nz-layout>
