@@ -95,6 +95,7 @@ export class CreateEditModalComponent {
         next: (res: any) => {
           this.msg.remove(id)
           this.msg.success('Added successfully!');
+          this.statusData.emit({ status: 200, data: res })
         },
         error: (error: any) => {
           if (error.code === 400) {
@@ -121,7 +122,7 @@ export class CreateEditModalComponent {
   submitEdit() {
     if (this.validateForm.valid) {
       const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-      this.unitServices.update(this.data.id, this.validateForm.getRawValue()).subscribe({
+      this.unitServices.patch(this.data.id, this.validateForm.getRawValue()).subscribe({
         next: (res: any) => {
           this.msg.success('Successfully updated!');
           this.statusData.emit({ status: 200, data: res })

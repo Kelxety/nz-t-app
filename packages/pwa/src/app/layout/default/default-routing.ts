@@ -19,6 +19,11 @@ export default [
         loadChildren: () => import('../../pages/dashboard/dashboard-routing')
       },
       {
+        path: 'receiving',
+        data: { title: 'Stock Receiving', key: 'receiving' },
+        loadComponent: () => import('../../pages/receiving/receiving.component').then(m => m.ReceivingComponent)
+      },
+      {
         path: 'configuration',
         loadChildren: () => import('../../pages/configuration/configuration-routing')
       },

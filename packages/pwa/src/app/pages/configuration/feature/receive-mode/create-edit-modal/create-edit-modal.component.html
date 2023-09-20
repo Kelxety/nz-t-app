@@ -1,0 +1,26 @@
+<form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+
+    <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzLabelAlign="left" nzRequired>Receive mode</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback nzErrorTip="Please input your Receive mode!">
+            <input nz-input formControlName="recvMode" placeholder="Receive mode" />
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzLabelAlign="left" [nzSm]="7" [nzXs]="24" nzFor="state">Status</nz-form-label>
+        <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
+    </nz-form-item>
+
+
+
+    <div *nzModalFooter>
+        <nz-form-control>
+            <button *ngIf="actionType === 'Create'" nz-button nzType="primary" type="submit"
+                (click)="submitCreate()">Save </button>
+            <button *ngIf="actionType === 'Edit'" nz-button nzType="primary" type="submit"
+                [disabled]="!validateForm.valid" (click)="submitEdit()">Save changes</button>
+            <button nz-button (click)="closeMe() ">Close</button>
+        </nz-form-control>
+    </div>
+</form>

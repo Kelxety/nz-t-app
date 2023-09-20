@@ -33,10 +33,10 @@
                                 <span class="pointer" nz-icon nzType="edit" nzTheme="outline"
                                     (click)="edit(data)"></span>
                                 <nz-divider nzType="vertical"></nz-divider>
-                                <span class="pointer" nz-icon nzType="delete" nzTheme="outline" style="color: red"
+                                <span class="pointer" nz-icon nzType="stop" nzTheme="outline" style="color: red"
                                     nz-popconfirm
-                                    nzPopconfirmTitle="Are you sure you want to delete {{ data.className }}"
-                                    (nzOnConfirm)="confirm(data)" (nzOnCancel)="cancel()"></span>
+                                    nzPopconfirmTitle="Are you sure you want to delete {{ data.unitName }}"
+                                    (nzOnConfirm)="softDelete(data)" (nzOnCancel)="cancel()"></span>
                             </td>
                         </tr>
                     </tbody>

@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewChild, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SpinService } from '../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../shared';
 import { UnitServices } from '../../Services/unit/unit.service';
@@ -111,6 +111,34 @@ export class UnitComponent {
     );
   }
 
+  softDelete(data: any) {
+
+    let model: any = this.model;
+    model.loading = true;
+    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+
+    // this.validateFormDetail.get('state').setValue('In-Active')
+    this.unitServices.patch(data.id, { state: 'In-Active' }).subscribe({
+      next: (res: any) => {
+        this.msg.remove(id)
+
+
+      },
+      error: (err: any) => {
+        model.loading = false
+        this.msg.remove(id)
+        this.msg.error('Unsuccessfully saved')
+      },
+      complete: () => {
+
+        this.msg.success('Item updated successfully')
+        this.loadData()
+        // model.loading = false;
+        this.cd.detectChanges();
+      }
+    })
+  }
+
   updateCheckedSet(id: string, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(id);
@@ -162,13 +190,10 @@ export class UnitComponent {
     ];
     this.unitServices.list({ order: order, pagination: false }).subscribe({
       next: (res: any) => {
-        const list = signal(res.data)
-        list.mutate(res => {
-          model.list.push(...res)
-          model.filteredList.push(...res)
-        })
-        // model.list = list;
-        // model.filteredList = list;
+        const list = res.data
+
+        model.list = list;
+        model.filteredList = list;
       },
       error: (err: any) => {
         console.log(err);
@@ -196,37 +221,8 @@ export class UnitComponent {
     // this.msg.info('click cancel');
   }
 
-  confirm(data: any): void {
-    this.delete(data);
-  }
 
-  delete(data: any): void {
-    // p: primary model, a: api service, data: row to delete
-    let model: any = this.model;
-    const id = data.id;
-    const load = this.msg.loading('Removing in progress..', { nzDuration: 0 }).messageId;
 
-    this.unitServices
-      .delete(id)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe({
-        next: () => {
-          model.list = model.list.filter((item: any) => item.id !== data.id);
-          this.filter(this.search);
-          this.msg.remove(load);
-          this.cd.detectChanges();
-        },
-        error: (err: any) => {
-          model.list = model.list.filter((item: any) => item.id !== data.id);
-          this.filter(this.search);
-          this.msg.remove(load);
-          this.cd.detectChanges();
-          this.msg.warning(err.message);
-          this.msg.remove(load);
-        },
-        complete: () => { }
-      });
-  }
   filter(search: string) {
     throw new Error('Method not implemented.');
   }
