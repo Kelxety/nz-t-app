@@ -5,11 +5,13 @@
     .drawer-handle {
       position: fixed;
       z-index: 1000;
-      top: 90px;
+      top: 52px;
       right: 0;
-      background: @primary-color;
-      width: 48px;
-      height: 48px;
+      // background: @default-color;
+      width: 40px;
+      height: 40px;
+      border-top-left-radius: 50%;
+      border-bottom-left-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -17,7 +19,7 @@
       transition: right 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 
       i {
-        color: #ffffff;
+        color: @primary-color;
         font-size: 20px;
       }
 
@@ -26,8 +28,21 @@
         z-index: 9999;
       }
     }
+    .drawer-handle:hover {
+      animation: fadeIn 2s;
+      background: @primary-color;
+      width: 40x;
+      i {
+        color: #ffffff;
+      }
+    }
   }
 });
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
 
 .block-checkbox {
   display: flex;
