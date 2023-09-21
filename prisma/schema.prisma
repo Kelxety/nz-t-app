@@ -868,17 +868,32 @@ model RefreshToken {
 }
 
 model Role {
-  id          String   @id @default(uuid())
-  user        User[]   @relation("system_user_role")
-  name        String   @unique
+  id          String       @id @default(uuid())
+  user        User[]       @relation("system_user_role")
+  permission  Permission[]
+  name        String       @unique
   description String?
-  status      String   @default("active")
-  createdBy   String?  @map("created_by") @db.VarChar(50)
-  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(0)
-  updatedBy   String?  @map("updated_by") @db.VarChar(50)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+  status      String       @default("active")
+  createdBy   String?      @map("created_by") @db.VarChar(50)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.DateTime(0)
+  updatedBy   String?      @map("updated_by") @db.VarChar(50)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.DateTime(0)
 
   @@map("system_role")
+}
+
+model Permission {
+  id        String   @id @default(uuid())
+  url       String
+  urlCode   String?
+  Role      Role?    @relation(fields: [roleId], references: [id])
+  roleId    String?
+  createdBy String?  @map("created_by") @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedBy String?  @map("updated_by") @db.VarChar(50)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+
+  @@map("system_permission")
 }
 
 enum Gender {
