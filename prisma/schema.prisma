@@ -491,7 +491,6 @@ model ScmReceiveDtl {
   qty            Int?
   cost           Float?
   costAmount     Float?      @map("cost_amount")
-  totalPrice     Float?      @map("total_price")
   lotNo          String?     @map("lot_no") @db.VarChar(50)
   batchNo        String?     @map("batch_no") @db.VarChar(50)
   expirationDate DateTime?   @map("expiration_date") @db.Date
