@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -100,12 +99,9 @@ export class ItemModalComponent {
     loading: true
   }
 
-
-
   @ViewChild('tableContainer') private readonly _tableContainer!: ElementRef;
 
   constructor(
-
     private fb: UntypedFormBuilder,
     private router: Router,
     private spinService: SpinService,
@@ -115,7 +111,6 @@ export class ItemModalComponent {
     private unitServices: UnitServices,
     private route: ActivatedRoute,
     private itemDetailServices: ItemDetailServices,
-    private http: HttpClient,
     private cd: ChangeDetectorRef,) {
     this.validateForm = this.fb.group({
       itemCode: [null],

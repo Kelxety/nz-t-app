@@ -483,6 +483,7 @@ model ScmReceive {
   @@index([receivemodeId], map: "receivemode_id")
   @@index([supplierId], map: "supplier_id")
   @@index([warehouseId], map: "warehouse_id")
+  @@fulltext([rcvRefno, purchaserequestNo, deliveryreceiptNo, purchaseorderNo])
   @@map("scm_receive")
 }
 

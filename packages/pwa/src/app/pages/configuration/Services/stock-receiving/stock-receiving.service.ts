@@ -10,7 +10,7 @@ import { ResType } from '@utils/types/return-types';
 })
 export class StockReceivingServices {
     private _items = signal<ScmReceive[]>([])
-    public baseUrl = '/api/receive-mode';
+    public baseUrl = '/api/receiving';
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 

@@ -24,6 +24,16 @@ export default [
         loadComponent: () => import('../../pages/receiving/receiving.component').then(m => m.ReceivingComponent)
       },
       {
+        path: 'receiving-transaction-list',
+        data: { title: 'Receiving Transaction List', key: 'receiving-transaction-list' },
+        loadComponent: () => import('../../pages/receiving-transaction-list/receiving-transaction-list.component').then(m => m.ReceivingTransactionListComponent)
+      },
+      {
+        path: 'price-update',
+        data: { title: 'Price Update', key: 'price-update' },
+        loadComponent: () => import('../../pages/price-update/price-update.component').then(m => m.PriceUpdateComponent)
+      },
+      {
         path: 'configuration',
         loadChildren: () => import('../../pages/configuration/configuration-routing')
       },

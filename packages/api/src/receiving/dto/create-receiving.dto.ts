@@ -6,8 +6,8 @@ import { IsBoolean, IsDate, IsNumber, IsOptional, IsString } from "class-validat
 export class CreateReceivingDto {
 
     @ApiProperty()
-    @IsOptional()
     @IsNumber()
+    @IsOptional()
     fyCode: number;
 
     @Transform(({ value }) => value && new Date(value))
@@ -18,6 +18,7 @@ export class CreateReceivingDto {
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     rcvRefno: string;
 
     @ApiProperty()
@@ -58,10 +59,12 @@ export class CreateReceivingDto {
 
     @ApiProperty()
     @IsBoolean()
+    @IsOptional()
     isPosted: boolean;
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     postedBy: string;
 
     @Transform(({ value }) => value && new Date(value))

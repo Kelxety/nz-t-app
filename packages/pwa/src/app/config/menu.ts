@@ -60,6 +60,18 @@ const menuNav: Menu[] = [
     open: false
   },
   {
+    id: 2,
+    menuName: 'Price Update',
+    // code: 'default:receiving',
+    fatherId: 0,
+    path: '/default/price-update',
+    menuType: 'C',
+    icon: 'stock',
+    alIcon: '',
+    selected: false,
+    open: false
+  },
+  {
     id: 120,
     menuName: 'Configuration',
     // "code": "manage_configuration",

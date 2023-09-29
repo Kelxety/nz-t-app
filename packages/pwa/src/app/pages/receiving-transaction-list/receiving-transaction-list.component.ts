@@ -1,46 +1,58 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-
+import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { Subject, takeUntil } from 'rxjs';
+import { SpinService } from '../../core/services/store/common-store/spin.service';
+import { SharedModule } from '../../shared';
+import { StockReceivingServices } from '../configuration/Services/stock-receiving/stock-receiving.service';
+import { ViewDetailListComponent } from './view-detail-list/view-detail-list.component';
 
-import { SpinService } from '../../../../core/services/store/common-store/spin.service';
-import { SharedModule } from '../../../../shared';
-import { ItemServices } from '../../Services/item/item.service';
-
-interface ItemData {
+interface ReceiveData {
   id: string;
-  itemCode: string;
-  itemName: string;
-  itemDescription: string;
-  scmItemCategory: string[];
-  scmItemDtl: string[];
+  fyCode: number;
+  rcvDate: Date;
+  rcvRefno: string;
+  warehouseId: string;
+  supplierId: string;
+  receivemodeId: string;
+  purchaserequestNo: string;
+  deliveryreceiptNo: string;
+  purchaseorderNo: string;
   state: string;
+  remarks: string;
+  isPosted: boolean;
+  postedBy: string;
+  postedAt: Date;
+  createdBy: string;
+  createdAt: Date;
+  updatedBy: string;
+  updatedAt: Date;
+
 }
 
 @Component({
-  selector: 'app-item',
-  templateUrl: './item.component.html',
-  styleUrls: ['./item.component.less'],
+  selector: 'app-receiving-transaction-list',
+  templateUrl: './receiving-transaction-list.component.html',
+  styleUrls: ['./receiving-transaction-list.component.less'],
   standalone: true,
   imports: [SharedModule]
 })
-export class ItemComponent {
+export class ReceivingTransactionListComponent {
   search: string = '';
   private ngUnsubscribe = new Subject();
 
   public tableHeight!: number;
   isVisible = false;
   isConfirmLoading = false;
-
+  selectedRow: any;
   @ViewChild('tableContainer') private readonly _tableContainer!: ElementRef;
 
   checked = false;
   indeterminate = false;
-  listOfCurrentPageData: readonly ItemData[] = [];
-  listOfData: readonly ItemData[] = [];
+  listOfCurrentPageData: readonly ReceiveData[] = [];
+  listOfData: readonly ReceiveData[] = [];
   setOfCheckedId = new Set<string>();
 
   model: any = {
@@ -50,6 +62,8 @@ export class ItemComponent {
     loading: true
   };
 
+  switchValue = false;
+
   listOfSelection = [];
 
   constructor(
@@ -57,10 +71,9 @@ export class ItemComponent {
     private spinService: SpinService,
     private fb: FormBuilder,
     private msg: NzMessageService,
-    private itemServices: ItemServices,
+    private stockReceivingServices: StockReceivingServices,
     private modalService: NzModalService,
     private router: Router,
-    private routers: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -102,7 +115,7 @@ export class ItemComponent {
     this.refreshCheckedStatus();
   }
 
-  onCurrentPageDataChange($event: readonly ItemData[]): void {
+  onCurrentPageDataChange($event: readonly ReceiveData[]): void {
     this.listOfCurrentPageData = $event;
     this.refreshCheckedStatus();
   }
@@ -122,7 +135,7 @@ export class ItemComponent {
         sortDirection: 'asc'
       }
     ];
-    this.itemServices.list({ order: order, pagination: false }).subscribe({
+    this.stockReceivingServices.list({ order: order, pagination: false }).subscribe({
       next: (res: any) => {
         const list = signal(res.data)
         list.mutate(res => {
@@ -176,7 +189,7 @@ export class ItemComponent {
     const id = data.id;
     const load = this.msg.loading('Removing in progress..', { nzDuration: 0 }).messageId;
 
-    this.itemServices
+    this.stockReceivingServices
       .delete(id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
@@ -204,4 +217,42 @@ export class ItemComponent {
     console.log('S', this.search);
     this.cd.detectChanges();
   }
+
+  onReceive() {
+    this.router.navigate(['/default/receiving']);
+  }
+
+  onRowClick(data: any) {
+    this.selectedRow = data;
+    const dialogRef = this.modalService.create({
+      nzTitle: 'Detail list',
+      nzContent: ViewDetailListComponent,
+      nzData: {
+        actionType: 'View',
+        data: this.selectedRow
+      },
+    });
+
+    // dialogRef.componentInstance?.statusData.subscribe(
+    //   ($e) => {
+    //     // console.log('Added:', $e);
+    //     // this.model.list.push($e);
+    //     // this.filter(this.search);
+    //     this.loadData();
+    //     this.cd.detectChanges();
+    //   },
+    // );
+  }
+
+  onEditClick(event: MouseEvent, data: any) {
+    event.stopPropagation(); // Prevent the click event from propagating to the row
+    // Add your edit logic here
+  }
+
+  onDeleteClick(event: MouseEvent, data: any) {
+    event.stopPropagation(); // Prevent the click event from propagating to the row
+    // Add your delete logic here, such as showing a confirmation dialog
+    // or directly initiating the delete operation
+  }
+
 }

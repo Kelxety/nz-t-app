@@ -39,5 +39,6 @@ export class CreateReceivingDtlDto {
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     barcodeNo: string;
 }
