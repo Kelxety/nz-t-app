@@ -34,7 +34,7 @@ export class CreateItemDetailDto {
 
     @IsString()
     @ApiProperty()
-    @ApiProperty()
+    @IsOptional()
     barcode: string;
 
     @IsString()
@@ -80,10 +80,10 @@ export class CreateItemDetailDto {
     @ApiProperty()
     balanceQty: number;
 
+    @ApiProperty()
     @IsString()
     @IsOptional()
-    @ApiProperty()
-    rrMode: string;
+    rrModeId: string;
 
     @IsString()
     @ApiProperty()

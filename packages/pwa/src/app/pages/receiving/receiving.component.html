@@ -1,3 +1,840 @@
-<nz-layout class="p-4">
+<nz-layout>
+    <!-- <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" nzWidth="450px" nzTheme="light"
+        nzBreakpoint="sm" [nzCollapsedWidth]="50">
+
+        <nz-header>
+            <span class="trigger float-right items-center p-4 text-xl" nz-icon
+                [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" (click)="isCollapsed = !isCollapsed"></span>
+        </nz-header> -->
+
+    <div nz-space class=" justify-between py-1 items-center gap-1 px-1">
+        <div class="font-bold items-center">
+            Ref No. - {{this.refNo()}}
+        </div>
+        <nz-button-group *nzSpaceItem class="space-x-0.5 justify-end">
+            <button nz-button nzType="primary" class="items-center" nzTooltipTitle="List" nzTooltipPlacement="topLeft"
+                (click)="onTransactionList()" nz-tooltip>
+                <span nz-icon nzType="container" nzTheme="outline"></span>
+                <span>TRANSACTION LIST</span>
+            </button>
+            <button nz-button nzType="primary" nzTooltipTitle="List" nzTooltipPlacement="topLeft" nz-tooltip>
+                <span nz-icon nzType="printer" nzTheme="outline"></span>
+                <span class="text-sm">RE-PRINT</span>
+            </button>
+        </nz-button-group>
+
+
+    </div>
+    <nz-card [hidden]="isCollapsed">
+        <div class="flex flex-row-reverse gap-4">
+            <div class="flex-none">
+                <form nz-form [formGroup]="validateForm" id="validateForm">
+                    <nz-form-item>
+                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="entryDate" nzRequired nzLabelWrap>
+                            Date</nz-form-label>
+                        <nz-form-control [nzXs]="24">
+                            <nz-date-picker formControlName="rcvDate"></nz-date-picker>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="-mt-2">
+                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired>Warehouse</nz-form-label>
+                        <nz-form-control nzHasFeedback [nzXs]="24" nzErrorTip="Please select a warehouse!">
+                            <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplate"
+                                formControlName="warehouseId" id="warehouseId" nzPlaceHolder="Select warehouse">
+                                <nz-option *ngFor="let item of listOfItemWarehouse" [nzLabel]="item.whName"
+                                    [nzValue]="item.id"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="-mt-2">
+                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired>Supplier</nz-form-label>
+                        <nz-form-control [nzXs]="24" nzHasFeedback nzErrorTip="Please select a supplier!">
+                            <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplateSupplier"
+                                formControlName="supplierId" id="supplierId" nzPlaceHolder="Select supplier">
+                                <nz-option *ngFor="let item of listOfItemSupplier" [nzLabel]="item.supplierName"
+                                    [nzValue]="item.id"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="-mt-2">
+                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired nzLabelWrap>Receive
+                            mode</nz-form-label>
+                        <nz-form-control [nzXs]="24" nzHasFeedback nzErrorTip="Please select a Receive mode!">
+                            <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplateMode"
+                                formControlName="receivemodeId" id="receivemodeId" nzPlaceHolder="Select Receive mode">
+                                <nz-option *ngFor="let item of listOfItemRm" [nzLabel]="item.recvMode"
+                                    [nzCustomContent]="true" [nzValue]="item.id"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="-mt-2">
+                        <nz-form-label nzLabelAlign="left" nzHasFeedback [nzXs]="24" nzFor="purchaserequestNo"
+                            nzLabelWrap>PR
+                            no.</nz-form-label>
+                        <nz-form-control [nzXs]="24">
+                            <input nz-input placeholder="Purchase request no." formControlName="purchaserequestNo"
+                                id="purchaserequestNo" />
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="-mt-2">
+                        <nz-form-label nzLabelAlign="left" nzHasFeedback [nzXs]="24" nzFor="deliveryreceiptNo"
+                            nzLabelWrap>DR
+                            no.</nz-form-label>
+                        <nz-form-control [nzXs]="24">
+                            <input nz-input placeholder="Delivery receipt no." formControlName="deliveryreceiptNo"
+                                id="deliveryreceiptNo" />
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="-mt-2">
+                        <nz-form-label nzLabelAlign="left" nzHasFeedback [nzXs]="24" nzFor="purchaseorderNo"
+                            nzLabelWrap>PO
+                            no.</nz-form-label>
+                        <nz-form-control [nzXs]="24">
+                            <input nz-input placeholder="Purchase order no." formControlName="purchaseorderNo"
+                                id="purchaseorderNo" />
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="-mt-2">
+                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="remarks">Remarks</nz-form-label>
+                        <nz-form-control [nzXs]="24">
+                            <textarea rows="4" placeholder="Remarks" nz-input formControlName="remarks"
+                                id="remarks"></textarea>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <div>
+                        <nz-form-control>
+                            <button nz-button nzType="primary" type="submit" class="w-full" (click)="onSaveAll()">
+                                <span nz-icon nzType="save" nzTheme="outline"></span>
+                                Save
+                            </button>
+                        </nz-form-control>
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="flex-auto">
+                <div class="h-auto">
+                    <!-- <nz-card nzTitle="Add Items" class="w-full" [nzHoverable]="true"> -->
+                    <form nz-form [formGroup]="validateFormDetail" id="validateFormDetail">
+                        <div class="flex flex-row gap-2">
+                            <div class="w-[40%]">
+                                <nz-form-item>
+                                    <nz-form-label nzErrorTip="Please select item!" nzLabelAlign="left" nzRequired
+                                        [nzXs]="24">Select Item</nz-form-label>
+                                    <nz-form-control [nzXs]="24" nzHasFeedback>
+                                        <nz-select #selectItem nzShowSearch nzAllowClear nzStatus="error" nzAllowClear
+                                            nzPlaceHolder="Select item" formControlName="selectedItem"
+                                            id="selectedItem">
+                                            <nz-option *ngFor="let o of listOfItem" [nzValue]="o"
+                                                [nzLabel]="o.itemName"></nz-option>
+                                        </nz-select>
+                                    </nz-form-control>
+                                </nz-form-item>
+                                <nz-form-item class="-mt-2">
+                                    <nz-form-label nzLabelAlign="left" nzFlex="105px" nzFor="expirationDate" nzLabelWrap
+                                        nzTooltipTitle="Expiration Date">EXP.
+                                        Date</nz-form-label>
+                                    <nz-form-control nzFlex="auto">
+                                        <nz-date-picker formControlName="expirationDate"
+                                            id="expirationDate"></nz-date-picker>
+                                    </nz-form-control>
+                                </nz-form-item>
+                                <nz-form-item class="-mt-2">
+                                    <nz-form-label nzLabelAlign="left" nzHasFeedback nzFlex="105px" nzFor="subitemCode"
+                                        nzLabelWrap>SubItem
+                                        Code</nz-form-label>
+                                    <nz-form-control nzFlex="auto">
+                                        <input nz-input placeholder="Sub Item code" formControlName="subitemCode"
+                                            id="subitemCode" />
+                                    </nz-form-control>
+                                </nz-form-item>
+                                <nz-form-item class="-mt-2">
+                                    <nz-form-label nzErrorTip="Please input your SubItem Name!" nzLabelAlign="left"
+                                        nzFlex="105px" nzRequired nzFor="subitemName" nzLabelWrap>SubItem
+                                        Name</nz-form-label>
+                                    <nz-form-control nzHasFeedback nzFlex="auto">
+                                        <input nz-input placeholder="Sub Item name" formControlName="subitemName"
+                                            id="subitemName" />
+                                    </nz-form-control>
+                                </nz-form-item>
+                                <nz-form-item class="-mt-2">
+                                    <nz-form-label nzLabelAlign="left" nzFlex="105px"
+                                        nzFor="barcodeNo">Barcode</nz-form-label>
+                                    <nz-form-control nzFlex="auto">
+                                        <input nz-input formControlName="barcodeNo" id="barcodeNo"
+                                            placeholder="Barcode" />
+                                    </nz-form-control>
+                                </nz-form-item>
+                                <nz-form-item class="-mt-2">
+                                    <nz-form-label nzErrorTip="Please input your Unit!" nzLabelAlign="left"
+                                        nzHasFeedback nzRequired nzFlex="105px" nzFor="unitId">Unit</nz-form-label>
+                                    <nz-form-control nzFlex="auto" nzHasFeedback>
+                                        <nz-select nzShowSearch nzAllowClear nzStatus="error" nzAllowClear
+                                            nzPlaceHolder="Select a unit" formControlName="unitId" id="unitId">
+                                            <nz-option *ngFor="let o of optionList" [nzValue]="o.id"
+                                                [nzLabel]="o.unitAcro"></nz-option>
+                                        </nz-select>
+                                    </nz-form-control>
+                                </nz-form-item>
+                                <nz-form-item class="-mt-2">
+                                    <nz-form-label nzLabelAlign="left" nzFlex="105px" nzFor="brandName"
+                                        nzLabelWrap>Brand
+                                        Name</nz-form-label>
+                                    <nz-form-control nzFlex="auto">
+                                        <input nz-input formControlName="brandName" id="brandName"
+                                            placeholder="Brand name" />
+                                    </nz-form-control>
+                                </nz-form-item>
+                                <div class="grid grid-cols-2 -gap-y-6 gap-x-2">
+                                    <nz-form-item class="-mt-4">
+                                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="lotNo" nzLabelWrap
+                                            nzRequired>Lot
+                                            no.</nz-form-label>
+                                        <nz-form-control [nzXs]="24" nzHasFeedback>
+                                            <input nz-input formControlName="lotNo" id="lotNo" placeholder="Lot. no" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                    <nz-form-item class="-mt-4">
+                                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="batchNo" nzLabelWrap>Batch
+                                            no.</nz-form-label>
+                                        <nz-form-control [nzXs]="24">
+                                            <input nz-input formControlName="batchNo" id="batchNo"
+                                                placeholder="Batch no." />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                    <nz-form-item class="-mt-4">
+                                        <nz-form-label nzLabelAlign="left" nzErrorTip="Please input Cost!" nzRequired
+                                            [nzXs]="24" nzFor="cost" onchange="onComputeCost">Cost</nz-form-label>
+                                        <nz-form-control [nzXs]="24" nzHasFeedback>
+                                            <nz-space nzDirection="vertical" class="w-full">
+                                                <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
+                                                    <nz-input-number formControlName="cost" id="cost"
+                                                        [nzStep]="1"></nz-input-number>
+                                                </nz-input-number-group>
+                                            </nz-space>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                    <nz-form-item class="-mt-4">
+                                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="qty" nzRequired
+                                            nzErrorTip="Please input Quantity!">Quantity</nz-form-label>
+                                        <nz-form-control [nzXs]="24" nzHasFeedback>
+                                            <input nz-input formControlName="qty" type="number" id="qty" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+
+                                    <nz-form-item class="-mt-4">
+                                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="markup"
+                                            onchange="onComputeMarkup">Markup</nz-form-label>
+                                        <nz-form-control [nzXs]="24">
+                                            <input nz-input formControlName="markup" type="number" id="markup" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                    <nz-form-item class="-mt-4">
+                                        <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="price"
+                                            nzErrorTip="Please input Price!">Price</nz-form-label>
+                                        <nz-form-control [nzXs]="24" nzHasFeedback>
+                                            <nz-space nzDirection="vertical" class="w-full">
+                                                <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
+                                                    <nz-input-number formControlName="price" id="price"
+                                                        [nzStep]="1"></nz-input-number>
+                                                </nz-input-number-group>
+                                            </nz-space>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                    <div>
+                                    </div>
+                                    <div class=" py-4 -mt-4 mb-2">
+                                        <span class="font-bold text-base px-1">
+                                            Total cost: {{totalCost() | currency : 'PHP' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <nz-form-control>
+                                        <button class="w-full" nz-button nzType="primary" (click)="addItem()"
+                                            type="submit">
+                                            Add Item
+                                            <span nz-icon nzType="double-right" nzTheme="outline"></span>
+                                        </button>
+                                    </nz-form-control>
+                                </div>
+                            </div>
+                            <nz-card nzTitle="Receiving list" class="w-[100%]">
+                                <div *ngIf="!model.loading; else isLoading">
+                                    <nz-table nzOuterBordered nzShowSizeChanger #fixedTable [nzData]="itemDataList()"
+                                        [nzSize]="'default'" [nzScroll]="{ y: '450px' }" [nzFooter]="renderFooter"
+                                        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="1" nzAlign="center">Item Name</th>
+                                                <th colspan="5"></th>
+
+                                            </tr>
+                                            <tr>
+                                                <th rowspan="1" nzAlign="center"> <span class="text-gray-400" style="-webkit-transform: scaleX(-1);
+                                                    transform: scaleX(-1);" nz-icon nzType="enter"></span>
+                                                </th>
+                                                <th rowspan="1">Expiration Date</th>
+                                                <th rowspan="1" nzAlign="center">Quantity</th>
+                                                <th rowspan="1" nzAlign="right">Cost</th>
+                                                <th rowspan="1" nzAlign="right">Total Cost</th>
+                                                <th rowspan="1" nzWidth="80px" nzAlign="center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody *ngFor="let group of fixedTable.data">
+                                            <tr>
+                                                <td nzAlign="center">
+                                                    <span class="font-semibold">
+                                                        {{group?.itemData?.itemName}}</span>
+                                                </td>
+                                                <td nzAlign="left" colspan="4">
+                                                </td>
+                                                <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+
+                                                    <span class="pointer" nz-icon nzType="delete" nzTheme="outline"
+                                                        style="color: red" nz-popconfirm
+                                                        (nzOnConfirm)="removeFromHeaderList(group)"
+                                                        nzPopconfirmTitle="Are you sure you want to delete {{ group?.itemData?.itemName }}"></span>
+                                                </td>
+                                            </tr>
+
+                                            <tr *ngFor="let data of group.itemDetails">
+                                                <td nzAlign="center"><span class="text-gray-400" style="-webkit-transform: scaleX(-1);
+                                                    transform: scaleX(-1);" nz-icon nzType="enter"></span></td>
+                                                <td>
+                                                    <span class="text-sm">{{
+                                                        data?.expirationDate |
+                                                        date : 'LLL/dd/YYYY'}}</span>
+                                                </td>
+                                                <td class="text-center text-sm">{{ data?.qty }}</td>
+                                                <td nzEllipsis class="text-right text-sm">{{ data?.cost |
+                                                    currency :
+                                                    'PHP'
+                                                    }}</td>
+                                                <td nzEllipsis class="text-right text-sm">{{
+                                                    data?.costAmount | currency
+                                                    : 'PHP'
+                                                    }}</td>
+                                                <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+                                                    <!-- <span [hidden]="group.loadNow" class="pointer" nz-icon nzType="edit"
+                                                        nzTheme="outline"></span>
+                                                    <nz-divider [hidden]="group.loadNow" nzType="vertical"></nz-divider> -->
+                                                    <span [hidden]="group.loadNow" class="pointer" nz-icon
+                                                        nzType="delete" nzTheme="outline" style="color: red"
+                                                        nz-popconfirm (nzOnConfirm)="removeFromDetailList(group, data)"
+                                                        nzPopconfirmTitle="Are you sure you want to delete {{ group?.itemData?.itemName }} - Exp.{{data?.expirationDate | date: 'shortDate'}}/Lot no. {{data?.lotNo}}"></span>
+                                                    <span *ngIf="group.loadNow" nz-icon nzType="loading"
+                                                        class="text-blue-500" nzTheme="outline"></span>
+                                                    <span *ngIf="group.loadNow === false" class="text-green-400" nz-icon
+                                                        nzType="check-circle" nzTheme="outline"></span>
+                                                    <span *ngIf="group.loadNow === 'ERROR'" class="text-red-500" nz-icon
+                                                        nzType="close-circle" nzTheme="outline"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </nz-table>
+                                </div>
+                            </nz-card>
+                        </div>
+                    </form>
+                    <!-- </nz-card> -->
+                </div>
+
+            </div>
+        </div>
+    </nz-card>
+    <!-- </nz-sider> -->
+
+    <ng-template #renderFooter>
+        <div class="w-full text-right">
+            <p class="font-bold">Total cost: {{this.totalCostAmount() | currency
+                : 'PHP'}}</p>
+        </div>
+    </ng-template>
+
+    <ng-template #renderTemplate>
+        <nz-divider></nz-divider>
+        <span class="text-xs px-2 text-gray-600">Add new warehouse</span>
+        <div class="flex flex-row space-x-2 items-center justify-center p-2">
+            <div class="space-y-2 border">
+
+                <input required type="text" [(ngModel)]="warehouse.whName" nz-input placeholder="Name" />
+                <input required type="text" placeholder="Acro" [(ngModel)]="warehouse.whAcro" nz-input />
+            </div>
+            <a class="flex text-xs items-center justify-center text-center space-x-2" (click)="saveNewWh()"
+                type="submit">
+                <span class="text-sm px-1" nz-icon nzType="plus"></span>
+                Warehouse
+            </a>
+        </div>
+    </ng-template>
+
+    <ng-template #renderTemplateSupplier>
+        <nz-divider></nz-divider>
+        <span class="text-xs px-2 text-gray-500">Add new supplier</span>
+        <div class="flex flex-row space-x-2 items-center justify-center p-2">
+            <div class="space-y-2 border">
+                <input type="text" [(ngModel)]="supplier.supplierName" nz-input placeholder="Name" />
+            </div>
+            <a class="flex text-xs items-center justify-center text-center space-x-2" type="button"
+                (click)="saveNewSupplier()">
+                <span class="text-xs px-1" nz-icon nzType="plus"></span>
+                Supplier
+            </a>
+        </div>
+    </ng-template>
+
+    <ng-template #renderTemplateMode>
+        <nz-divider></nz-divider>
+        <span class="text-xs px-2 text-gray-500">Add new receive mode</span>
+        <div class="flex flex-row space-x-2 items-center justify-center p-2">
+            <div class="space-y-2 border">
+                <input type="text" nz-input placeholder="Mode" [(ngModel)]="newRecvMode.recvMode" />
+            </div>
+            <a class="flex text-xs items-center justify-center text-center space-x-2" type="button"
+                (click)="saveNewRecvMode()">
+                <span class="text-xs px-1" nz-icon nzType="plus"></span>
+                Mode
+            </a>
+        </div>
+    </ng-template>
+
+    <ng-template #options>
+
+    </ng-template>
+
+    <ng-template #isLoading>
+        <div style="padding: 24px">
+            <nz-skeleton [nzActive]="true"></nz-skeleton>
+            <nz-skeleton [nzActive]="true"></nz-skeleton>
+        </div>
+    </ng-template>
 
 </nz-layout>
+<!-- <div>
+        <nz-layout>
+    
+        
+            <div nz-space class=" justify-between py-1 items-center gap-1 px-1">
+                <div class="font-bold items-center">
+                    Ref No. - {{this.refNo()}}
+                </div>
+                <nz-button-group *nzSpaceItem class="space-x-0.5 justify-end">
+                    <button nz-button nzType="primary" class="items-center" nzTooltipTitle="List" nzTooltipPlacement="topLeft"
+                        (click)="onTransactionList()" nz-tooltip>
+                        <span nz-icon nzType="container" nzTheme="outline"></span>
+                        <span>TRANSACTION LIST</span>
+                    </button>
+                    <button nz-button nzType="primary" nzTooltipTitle="List" nzTooltipPlacement="topLeft" nz-tooltip>
+                        <span nz-icon nzType="printer" nzTheme="outline"></span>
+                        <span class="text-sm">RE-PRINT</span>
+                    </button>
+                </nz-button-group>
+        
+        
+            </div>
+            <nz-card [hidden]="isCollapsed">
+                <div class="flex flex-row-reverse gap-4">
+                    <div class="flex-none">
+                        <form nz-form [formGroup]="validateForm" id="validateForm">
+                            <nz-form-item>
+                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="entryDate" nzRequired nzLabelWrap>
+                                    Date</nz-form-label>
+                                <nz-form-control [nzXs]="24">
+                                    <nz-date-picker formControlName="rcvDate"></nz-date-picker>
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item class="-mt-2">
+                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired>Warehouse</nz-form-label>
+                                <nz-form-control nzHasFeedback [nzXs]="24" nzErrorTip="Please select a warehouse!">
+                                    <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplate"
+                                        formControlName="warehouseId" id="warehouseId" nzPlaceHolder="Select warehouse">
+                                        <nz-option *ngFor="let item of listOfItemWarehouse" [nzCustomContent]="true"
+                                            [nzLabel]="item.whName" [nzValue]="item.id">
+                                            <div>{{item.whName}} | {{item.whAcro}}</div>
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item class="-mt-2">
+                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired>Supplier</nz-form-label>
+                                <nz-form-control [nzXs]="24" nzHasFeedback nzErrorTip="Please select a supplier!">
+                                    <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplateSupplier"
+                                        formControlName="supplierId" id="supplierId" nzPlaceHolder="Select supplier">
+                                        <nz-option *ngFor="let item of listOfItemSupplier" [nzLabel]="item.supplierName"
+                                            [nzValue]="item.id"></nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item class="-mt-2">
+                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired nzLabelWrap>Receive
+                                    mode</nz-form-label>
+                                <nz-form-control [nzXs]="24" nzHasFeedback nzErrorTip="Please select a Receive mode!">
+                                    <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplateMode"
+                                        formControlName="receivemodeId" id="receivemodeId" nzPlaceHolder="Select Receive mode">
+                                        <nz-option *ngFor="let item of listOfItemRm" [nzLabel]="item.recvMode"
+                                            [nzCustomContent]="true" [nzValue]="item.id">
+                                            <div class="justify-between">{{item.recvMode}} | <nz-badge
+                                                    [nzColor]="item.state === 'Active' ? 'green' : 'red'"
+                                                    [nzText]="item?.state"></nz-badge></div>
+                                        </nz-option>
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item class="-mt-2">
+                                <nz-form-label nzLabelAlign="left" nzHasFeedback [nzXs]="24" nzFor="purchaserequestNo"
+                                    nzLabelWrap>PR
+                                    no.</nz-form-label>
+                                <nz-form-control [nzXs]="24">
+                                    <input nz-input placeholder="Purchase request no." formControlName="purchaserequestNo"
+                                        id="purchaserequestNo" />
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item class="-mt-2">
+                                <nz-form-label nzLabelAlign="left" nzHasFeedback [nzXs]="24" nzFor="deliveryreceiptNo"
+                                    nzLabelWrap>DR
+                                    no.</nz-form-label>
+                                <nz-form-control [nzXs]="24">
+                                    <input nz-input placeholder="Delivery receipt no." formControlName="deliveryreceiptNo"
+                                        id="deliveryreceiptNo" />
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item class="-mt-2">
+                                <nz-form-label nzLabelAlign="left" nzHasFeedback [nzXs]="24" nzFor="purchaseorderNo"
+                                    nzLabelWrap>PO
+                                    no.</nz-form-label>
+                                <nz-form-control [nzXs]="24">
+                                    <input nz-input placeholder="Purchase order no." formControlName="purchaseorderNo"
+                                        id="purchaseorderNo" />
+                                </nz-form-control>
+                            </nz-form-item>
+                            <nz-form-item class="-mt-2">
+                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="remarks">Remarks</nz-form-label>
+                                <nz-form-control [nzXs]="24">
+                                    <textarea rows="4" placeholder="Remarks" nz-input formControlName="remarks"
+                                        id="remarks"></textarea>
+                                </nz-form-control>
+                            </nz-form-item>
+        
+                            <div>
+                                <nz-form-control>
+                                    <button nz-button nzType="primary" type="submit" class="w-full" (click)="onSaveAll()">
+                                        <span nz-icon nzType="save" nzTheme="outline"></span>
+                                        Save
+                                    </button>
+                                </nz-form-control>
+        
+                            </div>
+        
+                        </form>
+                    </div>
+                    <div class="flex-auto">
+                        <div class="h-auto">
+                            <form nz-form [formGroup]="validateFormDetail" id="validateFormDetail">
+                                <div class="flex flex-col gap-2">
+                                    <nz-form-item class="-mt-4 w-80">
+                                        <nz-form-label nzErrorTip="Please select item!" nzLabelAlign="left" nzRequired
+                                            [nzXs]="24">Select Item</nz-form-label>
+                                        <nz-form-control [nzXs]="24" nzHasFeedback>
+                                            <nz-select #selectItem nzShowSearch nzAllowClear nzStatus="error" nzAllowClear
+                                                nzPlaceHolder="Select item" formControlName="selectedItem" id="selectedItem">
+                                                <nz-option *ngFor="let o of listOfItem" [nzValue]="o"
+                                                    [nzLabel]="o.itemName"></nz-option>
+                                            </nz-select>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                    <div class="flex flex-row gap-2">
+        
+                                        <div class="grid grid-cols-2 gap-x-2 -mt-4">
+        
+                                            <nz-form-item>
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="expirationDate"
+                                                    nzLabelWrap nzTooltipTitle="Expiration Date">EXP.
+                                                    Date</nz-form-label>
+                                                <nz-form-control [nzXs]="24">
+                                                    <nz-date-picker formControlName="expirationDate"
+                                                        id="expirationDate"></nz-date-picker>
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item>
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24"
+                                                    nzFor="barcodeNo">Barcode</nz-form-label>
+                                                <nz-form-control [nzXs]="24">
+                                                    <input nz-input formControlName="barcodeNo" id="barcodeNo"
+                                                        placeholder="Barcode" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzLabelAlign="left" nzHasFeedback [nzXs]="24" nzFor="subitemCode"
+                                                    nzLabelWrap>SubItem
+                                                    Code</nz-form-label>
+                                                <nz-form-control [nzXs]="24">
+                                                    <input nz-input placeholder="Sub Item code" formControlName="subitemCode"
+                                                        id="subitemCode" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzErrorTip="Please input your SubItem Name!" nzLabelAlign="left"
+                                                    [nzXs]="24" nzRequired nzFor="subitemName" nzLabelWrap>SubItem
+                                                    Name</nz-form-label>
+                                                <nz-form-control nzHasFeedback [nzXs]="24">
+                                                    <input nz-input placeholder="Sub Item name" formControlName="subitemName"
+                                                        id="subitemName" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+        
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzErrorTip="Please input your Unit!" nzLabelAlign="left"
+                                                    nzHasFeedback nzRequired [nzXs]="24" nzFor="unitId">Unit</nz-form-label>
+                                                <nz-form-control [nzXs]="24" nzHasFeedback>
+                                                    <nz-select nzShowSearch nzAllowClear nzStatus="error" nzAllowClear
+                                                        nzPlaceHolder="Select a unit" formControlName="unitId" id="unitId">
+                                                        <nz-option *ngFor="let o of optionList" [nzValue]="o.id"
+                                                            [nzLabel]="o.unitAcro"></nz-option>
+                                                    </nz-select>
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="brandName"
+                                                    nzLabelWrap>Brand
+                                                    Name</nz-form-label>
+                                                <nz-form-control [nzXs]="24" nzFlex="auto">
+                                                    <input nz-input formControlName="brandName" id="brandName"
+                                                        placeholder="Brand name" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <div>
+                                            </div>
+                                            <div class=" py-4 -mt-4 mb-2">
+                                                <span class="font-bold text-base px-1">
+        
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-x-2 -mt-4">
+                                            <nz-form-item>
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="lotNo" nzLabelWrap
+                                                    nzRequired>Lot
+                                                    no.</nz-form-label>
+                                                <nz-form-control [nzXs]="24" nzHasFeedback>
+                                                    <input nz-input formControlName="lotNo" id="lotNo" placeholder="Lot. no" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item>
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="batchNo" nzLabelWrap>Batch
+                                                    no.</nz-form-label>
+                                                <nz-form-control [nzXs]="24">
+                                                    <input nz-input formControlName="batchNo" id="batchNo"
+                                                        placeholder="Batch no." />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzLabelAlign="left" nzErrorTip="Please input Cost!" nzRequired
+                                                    [nzXs]="24" nzFor="cost" onchange="onComputeCost">Cost</nz-form-label>
+                                                <nz-form-control [nzXs]="24" nzHasFeedback>
+                                                    <nz-space nzDirection="vertical" class="w-full">
+                                                        <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
+                                                            <nz-input-number formControlName="cost" id="cost"
+                                                                [nzStep]="1"></nz-input-number>
+                                                        </nz-input-number-group>
+                                                    </nz-space>
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="qty" nzRequired
+                                                    nzErrorTip="Please input Quantity!">Quantity</nz-form-label>
+                                                <nz-form-control [nzXs]="24" nzHasFeedback>
+                                                    <input nz-input formControlName="qty" type="number" id="qty" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+        
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="markup"
+                                                    onchange="onComputeMarkup">Markup</nz-form-label>
+                                                <nz-form-control [nzXs]="24">
+                                                    <input nz-input formControlName="markup" type="number" id="markup" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item class="-mt-2">
+                                                <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="price"
+                                                    nzErrorTip="Please input Price!">Price</nz-form-label>
+                                                <nz-form-control [nzXs]="24" nzHasFeedback>
+                                                    <nz-space nzDirection="vertical" class="w-full">
+                                                        <nz-input-number-group *nzSpaceItem nzPrefix="₱" class="w-full">
+                                                            <nz-input-number formControlName="price" id="price"
+                                                                [nzStep]="1"></nz-input-number>
+                                                        </nz-input-number-group>
+                                                    </nz-space>
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <div>
+                                            </div>
+                                            <div class=" py-4 -mt-4 mb-2">
+                                                <span class="font-bold text-base px-1">
+                                                    Total cost: {{totalCost() | currency : 'PHP' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <nz-form-control>
+                                                <button class="w-full" nz-button nzType="primary" (click)="addItem()"
+                                                    type="submit">
+                                                    Add Item
+                                                    <span nz-icon nzType="double-right" nzTheme="outline"></span>
+                                                </button>
+                                            </nz-form-control>
+                                        </div>
+                                    </div>
+                                    <nz-card nzTitle="Receiving list" class="w-[100%]">
+                                        <div *ngIf="!model.loading; else isLoading">
+                                            <nz-table nzOuterBordered nzShowSizeChanger #fixedTable [nzData]="itemDataList()"
+                                                [nzSize]="'default'" [nzScroll]="{ y: '450px' }" [nzFooter]="renderFooter"
+                                                (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="1" nzAlign="center">Item Name</th>
+                                                        <th colspan="5"></th>
+        
+                                                    </tr>
+                                                    <tr>
+                                                        <th rowspan="1" nzAlign="center"> <span class="text-gray-400" style="-webkit-transform: scaleX(-1);
+                                                            transform: scaleX(-1);" nz-icon nzType="enter"></span>
+                                                        </th>
+                                                        <th rowspan="1">Expiration Date</th>
+                                                        <th rowspan="1" nzAlign="center">Quantity</th>
+                                                        <th rowspan="1" nzAlign="right">Cost</th>
+                                                        <th rowspan="1" nzAlign="right">Total Cost</th>
+                                                        <th rowspan="1" nzWidth="80px" nzAlign="center">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody *ngFor="let group of fixedTable.data">
+                                                    <tr>
+                                                        <td nzAlign="center">
+                                                            <span class="font-semibold">
+                                                                {{group?.itemData?.itemName}}</span>
+                                                        </td>
+                                                        <td nzAlign="left" colspan="4">
+                                                        </td>
+                                                        <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+        
+                                                            <span class="pointer" nz-icon nzType="delete" nzTheme="outline"
+                                                                style="color: red" nz-popconfirm
+                                                                (nzOnConfirm)="removeFromHeaderList(group)"
+                                                                nzPopconfirmTitle="Are you sure you want to delete {{ group?.itemData?.itemName }}"></span>
+                                                        </td>
+                                                    </tr>
+        
+                                                    <tr *ngFor="let data of group.itemDetails">
+                                                        <td nzAlign="center"><span class="text-gray-400" style="-webkit-transform: scaleX(-1);
+                                                            transform: scaleX(-1);" nz-icon nzType="enter"></span></td>
+                                                        <td>
+                                                            <span class="text-sm">{{
+                                                                data?.expirationDate |
+                                                                date : 'LLL/dd/YYYY'}}</span>
+                                                        </td>
+                                                        <td class="text-center text-sm">{{ data?.qty }}</td>
+                                                        <td nzEllipsis class="text-right text-sm">{{ data?.cost |
+                                                            currency :
+                                                            'PHP'
+                                                            }}</td>
+                                                        <td nzEllipsis class="text-right text-sm">{{
+                                                            data?.costAmount | currency
+                                                            : 'PHP'
+                                                            }}</td>
+                                                        <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+                                                            <span [hidden]="group.loadNow" class="pointer" nz-icon
+                                                                nzType="delete" nzTheme="outline" style="color: red"
+                                                                nz-popconfirm (nzOnConfirm)="removeFromDetailList(group, data)"
+                                                                nzPopconfirmTitle="Are you sure you want to delete {{ group?.itemData?.itemName }} - Exp.{{data?.expirationDate | date: 'shortDate'}}/Lot no. {{data?.lotNo}}"></span>
+                                                            <span *ngIf="group.loadNow" nz-icon nzType="loading"
+                                                                class="text-blue-500" nzTheme="outline"></span>
+                                                            <span *ngIf="group.loadNow === false" class="text-green-400" nz-icon
+                                                                nzType="check-circle" nzTheme="outline"></span>
+                                                            <span *ngIf="group.loadNow === 'ERROR'" class="text-red-500" nz-icon
+                                                                nzType="close-circle" nzTheme="outline"></span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </nz-table>
+                                        </div>
+                                    </nz-card>
+                                </div>
+                            </form>
+                        </div>
+        
+                    </div>
+                </div>
+            </nz-card>
+        
+            <ng-template #renderFooter>
+                <div class="w-full text-right">
+                    <p class="font-bold">Total cost: {{this.totalCostAmount() | currency
+                        : 'PHP'}}</p>
+                </div>
+            </ng-template>
+        
+            <ng-template #forcustom>
+                <div>sample</div>
+            </ng-template>
+        
+            <ng-template #renderTemplate>
+                <nz-divider></nz-divider>
+                <span class="text-xs px-2 text-gray-600">Add new warehouse</span>
+                <div class="flex flex-row space-x-2 items-center justify-center p-2">
+                    <div class="space-y-2 border">
+        
+                        <input required type="text" [(ngModel)]="warehouse.whName" nz-input placeholder="Name" />
+                        <input required type="text" placeholder="Acro" [(ngModel)]="warehouse.whAcro" nz-input />
+                    </div>
+                    <a class="flex text-xs items-center justify-center text-center space-x-2" (click)="saveNewWh()"
+                        type="submit">
+                        <span class="text-sm px-1" nz-icon nzType="plus"></span>
+                        Warehouse
+                    </a>
+                </div>
+            </ng-template>
+        
+            <ng-template #renderTemplateSupplier>
+                <nz-divider></nz-divider>
+                <span class="text-xs px-2 text-gray-500">Add new supplier</span>
+                <div class="flex flex-row space-x-2 items-center justify-center p-2">
+                    <div class="space-y-2 border">
+                        <input type="text" [(ngModel)]="supplier.supplierName" nz-input placeholder="Name" />
+                    </div>
+                    <a class="flex text-xs items-center justify-center text-center space-x-2" type="button"
+                        (click)="saveNewSupplier()">
+                        <span class="text-xs px-1" nz-icon nzType="plus"></span>
+                        Supplier
+                    </a>
+                </div>
+            </ng-template>
+        
+            <ng-template #renderTemplateMode>
+                <nz-divider></nz-divider>
+                <span class="text-xs px-2 text-gray-500">Add new receive mode</span>
+                <div class="flex flex-row space-x-2 items-center justify-center p-2">
+                    <div class="space-y-2 border">
+                        <input type="text" nz-input placeholder="Mode" [(ngModel)]="newRecvMode.recvMode" />
+                    </div>
+                    <a class="flex text-xs items-center justify-center text-center space-x-2" type="button"
+                        (click)="saveNewRecvMode()">
+                        <span class="text-xs px-1" nz-icon nzType="plus"></span>
+                        Mode
+                    </a>
+                </div>
+            </ng-template>
+        
+            <ng-template #options>
+        
+            </ng-template>
+        
+            <ng-template #isLoading>
+                <div style="padding: 24px">
+                    <nz-skeleton [nzActive]="true"></nz-skeleton>
+                    <nz-skeleton [nzActive]="true"></nz-skeleton>
+                </div>
+            </ng-template>
+            </nz-layout>
+    </div> -->

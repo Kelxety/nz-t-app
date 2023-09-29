@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -348,8 +349,8 @@ model ScmItemDtl {
   entryDate             DateTime               @map("entry_date") @db.Date
   itemId                String                 @map("item_id") @db.VarChar(36)
   parentId              String?                @map("parent_id") @db.VarChar(36)
-  subitemCode           String?                @unique() @map("subitem_code") @db.VarChar(50)
-  subitemName           String                 @unique() @map("subitem_name") @db.VarChar(255)
+  subitemCode           String?                @map("subitem_code") @db.VarChar(50)
+  subitemName           String                 @map("subitem_name") @db.VarChar(255)
   barcode               String?                @unique() @db.VarChar(36)
   unitId                String?                @map("unit_id") @db.VarChar(36)
   brandName             String?                @map("brand_name") @db.VarChar(150)
@@ -360,7 +361,8 @@ model ScmItemDtl {
   price                 Float?
   markup                Float?
   balanceQty            Int?                   @map("balance_qty")
-  rrMode                String?                @map("rr_mode") @db.VarChar(50)
+  rrMode                ScmReceiveMode?        @relation(fields: [rrModeId], references: [id], onUpdate: Restrict, map: "scm_receive_mode_ibfk_1")
+  rrModeId              String?
   state                 String?                @db.VarChar(20)
   remarks               String?                @db.VarChar(255)
   createdBy             String?                @map("created_by") @db.VarChar(50)
@@ -457,9 +459,9 @@ model ScmLedgerCode {
 
 model ScmReceive {
   id                String          @id @default(uuid())
-  fyCode            Int             @map("fy_code")
+  fyCode            Int?            @map("fy_code")
   rcvDate           DateTime        @map("rcv_date") @db.Date
-  rcvRefno          String          @map("rcv_refno") @db.VarChar(30)
+  rcvRefno          String?         @map("rcv_refno") @db.VarChar(30)
   warehouseId       String          @map("warehouse_id") @db.VarChar(36)
   supplierId        String          @map("supplier_id") @db.VarChar(36)
   receivemodeId     String          @map("receivemode_id") @db.VarChar(36)
@@ -483,6 +485,7 @@ model ScmReceive {
   @@index([receivemodeId], map: "receivemode_id")
   @@index([supplierId], map: "supplier_id")
   @@index([warehouseId], map: "warehouse_id")
+  @@fulltext([rcvRefno, purchaserequestNo, deliveryreceiptNo, purchaseorderNo])
   @@map("scm_receive")
 }
 
@@ -496,7 +499,7 @@ model ScmReceiveDtl {
   lotNo          String?     @map("lot_no") @db.VarChar(50)
   batchNo        String?     @map("batch_no") @db.VarChar(50)
   expirationDate DateTime?   @map("expiration_date") @db.Date
-  barcodeNo      String?     @map("barcode_no") @db.VarChar(50)
+  barcodeNo      String?     @unique() @map("barcode_no") @db.VarChar(50)
   scmReceive     ScmReceive? @relation(fields: [receiveId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_1")
   scmItemDtl     ScmItemDtl? @relation(fields: [itemdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_2")
 
@@ -515,6 +518,7 @@ model ScmReceiveMode {
   updatedAt    DateTime      @updatedAt @map("updated_at") @db.DateTime(0)
   scmReceives  ScmReceive[]
   scmSuppliers ScmSupplier[]
+  scmItemDtl   ScmItemDtl[]
 
   @@map("scm_receive_mode")
 }

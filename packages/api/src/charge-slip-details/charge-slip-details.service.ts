@@ -8,7 +8,7 @@ import { UpdateChargeSlipDetailDto } from './dto/update-charge-slip-detail.dto';
 
 @Injectable()
 export class ChargeSlipDetailsService {
-  constructor(private role: RoleService, private prisma: PrismaService) {}
+  constructor(private role: RoleService, private prisma: PrismaService) { }
   async create(createChargeSlipDetailDto: CreateChargeSlipDetailDto) {
     return await this.prisma.scmChargeslipDtl.create({
       data: createChargeSlipDetailDto,
@@ -23,7 +23,7 @@ export class ChargeSlipDetailsService {
     order,
   }: PaginateOptions<
     Prisma.ScmChargeslipDtlWhereInput,
-    Prisma.ScmChargeslipOrderByWithRelationInput
+    Prisma.ScmChargeslipDtlOrderByWithAggregationInput
   >): Promise<ScmChargeslipDtl[] | any> {
     if (!pagination) {
       return this.prisma.scmChargeslipDtl.findMany({
