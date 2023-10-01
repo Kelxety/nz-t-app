@@ -9,22 +9,24 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(uuid())
-  name          String?       @db.VarChar(255)
-  accountName   String        @map("account_name") @db.VarChar(50)
-  firstName     String        @map("first_name") @db.VarChar(50)
-  middleName    String?       @map("middle_name") @db.VarChar(50)
-  lastName      String        @map("last_name") @db.VarChar(50)
+  id            String           @id @default(uuid())
+  name          String?          @db.VarChar(255)
+  accountName   String           @map("account_name") @db.VarChar(50)
+  firstName     String           @map("first_name") @db.VarChar(50)
+  middleName    String?          @map("middle_name") @db.VarChar(50)
+  lastName      String           @map("last_name") @db.VarChar(50)
   gender        Gender?
-  status        String        @default("active")
+  status        String           @default("active")
   description   String?
-  username      String        @unique
+  username      String           @unique
   image         String?
   password      String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
   refresh_token RefreshToken?
-  role          Role[]        @relation("system_user_role")
+  departmentId  String?          @map("department_id")
+  department    Department?      @relation(fields: [departmentId], references: [id])
+  role          SystemUserRole[]
 
   @@map("system_user")
 }
@@ -876,35 +878,85 @@ model RefreshToken {
 }
 
 model Role {
-  id          String       @id @default(uuid())
-  user        User[]       @relation("system_user_role")
-  permission  Permission[]
-  name        String       @unique
-  description String?
-  status      String       @default("active")
-  createdBy   String?      @map("created_by") @db.VarChar(50)
-  createdAt   DateTime     @default(now()) @map("created_at") @db.DateTime(0)
-  updatedBy   String?      @map("updated_by") @db.VarChar(50)
-  updatedAt   DateTime     @updatedAt @map("updated_at") @db.DateTime(0)
+  id         String              @id @default(uuid())
+  roleName   String              @unique @map("role_name") @db.VarChar(50)
+  roleDesc   String?             @map("role_desc") @db.VarChar(255)
+  user       SystemUserRole[]
+  permission PermissionOnRoles[]
 
   @@map("system_role")
 }
 
 model Permission {
-  id        String   @id @default(uuid())
-  url       String
-  urlCode   String?
-  Role      Role?    @relation(fields: [roleId], references: [id])
-  roleId    String?
-  createdBy String?  @map("created_by") @db.VarChar(50)
-  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
-  updatedBy String?  @map("updated_by") @db.VarChar(50)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+  id        String              @id @default(uuid())
+  menuName  String              @unique @map("menu_name") @db.VarChar(50)
+  code      String              @unique @db.VarChar(100)
+  fatherId  String?             @map("father_id")
+  orderNum  Int                 @default(0)
+  path      String?             @map("path") @db.VarChar(200)
+  menuType  String?             @map("menu_type") @db.Char(1)
+  visible   String              @db.Char(1)
+  status    PermissionStatus    @default(ACTIVE)
+  isNewLink Boolean?            @map("is_new_link")
+  alIcon    String?             @map("al_icon") @db.VarChar(100)
+  icon      String?             @db.VarChar(100)
+  role      PermissionOnRoles[]
+  createdBy String?             @map("created_by") @db.VarChar(50)
+  createdAt DateTime            @default(now()) @map("created_at") @db.DateTime(0)
+  updatedBy String?             @map("updated_by") @db.VarChar(50)
+  updatedAt DateTime            @updatedAt @map("updated_at") @db.DateTime(0)
 
   @@map("system_permission")
+}
+
+model PermissionOnRoles {
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       String // relation scalar field (used in the `@relation` attribute above)
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId String // relation scalar field (used in the `@relation` attribute above)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.DateTime(0)
+  assignedBy   String
+
+  @@id([roleId, permissionId])
+  @@map("system_permission_role")
+}
+
+model SystemUserRole {
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  role   Role   @relation(fields: [roleId], references: [id])
+  roleId String
+
+  @@id([userId, roleId])
+  @@map("system_user_role")
+}
+
+model Department {
+  id             String       @id @default(uuid())
+  departmentName String       @map("department_name") @db.VarChar(255)
+  status         normalStatus @default(ACTIVE)
+  fatherId       Int          @default(0) @map("father_id")
+  orderNum       Int          @default(0) @map("order_num")
+  createdBy      String?      @map("created_by") @db.VarChar(50)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.DateTime(0)
+  updatedBy      String?      @map("updated_by") @db.VarChar(50)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.DateTime(0)
+  user           User[]
+
+  @@map("system_department")
 }
 
 enum Gender {
   MALE
   FEMALE
+}
+
+enum normalStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PermissionStatus {
+  ACTIVE
+  INACTIVE
 }
