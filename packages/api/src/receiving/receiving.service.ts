@@ -63,6 +63,8 @@ export class ReceivingService {
     return returnData;
   }
 
+
+
   async findOne(id: string) {
     const data = await this.prisma.scmReceive.findUnique({
       where: { id },
@@ -107,5 +109,56 @@ export class ReceivingService {
 
   async count() {
     return this.prisma.scmReceive.count();
+  }
+
+  async search({
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmReceiveWhereInput,
+    Prisma.ScmReceiveOrderByWithAggregationInput
+  >): Promise<ScmReceive[] | any> {
+    if (!pagination) {
+      return this.prisma.scmReceive.findMany({
+        include: {
+          scmWarehouse: true,
+          scmReceiveMode: true,
+          scmSupplier: true
+        },
+        where: {
+          deliveryreceiptNo: data.deliveryreceiptNo,
+          purchaseorderNo: data.purchaseorderNo,
+          purchaserequestNo: data.purchaserequestNo,
+          rcvRefno: data.rcvRefno
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmReceive.count({
+        where: data,
+      }),
+      this.prisma.scmReceive.findMany({
+        include: {
+          scmWarehouse: true,
+          scmReceiveMode: true,
+          scmSupplier: true
+        },
+        where: {
+          deliveryreceiptNo: data.deliveryreceiptNo,
+          purchaseorderNo: data.purchaseorderNo,
+          purchaserequestNo: data.purchaserequestNo,
+          rcvRefno: data.rcvRefno
+        },
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+
+    return returnData;
   }
 }

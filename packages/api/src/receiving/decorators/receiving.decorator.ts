@@ -25,6 +25,16 @@ export const CustomReceivingDecoratorFindAll = () => {
     };
 };
 
+export const CustomReceivingDecoratorSearch = () => {
+    return (target: any, key?: string, descriptor?: PropertyDescriptor) => {
+        ApiBearerAuth()(target, key, descriptor);
+        UseGuards(JwtAuthGuard, RoleGuard)(target, key, descriptor);
+        ApiOkResponse({ type: ReceivingEntity, isArray: true })(target, key, descriptor);
+        // Roles('SUPERADMIN');
+        // SetMetadata('roles', ['SUPERADMIN'])(target, key, descriptor);
+    };
+};
+
 export const CustomRecevingDecoratorGet = () => {
     return (target: any, key?: string, descriptor?: PropertyDescriptor) => {
         ApiBearerAuth()(target, key, descriptor);

@@ -1,5 +1,6 @@
 import { formatDate } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, ViewChild, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmReceiveMode, ScmSupplier, ScmWarehouse } from '@prisma/client';
@@ -7,6 +8,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { SpinService } from '../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../shared';
+import { ModalBtnStatus } from '../../widget/base-modal';
 import { ItemCatergoryServices } from '../configuration/Services/item-category/item-category.service';
 import { ItemDetailServices } from '../configuration/Services/item-detail/item-detail.service';
 import { ItemServices } from '../configuration/Services/item/item.service';
@@ -16,6 +18,8 @@ import { StockReceivingDtlServices } from '../configuration/Services/stock-recev
 import { SupplierServices } from '../configuration/Services/supplier/supplier.service';
 import { UnitServices } from '../configuration/Services/unit/unit.service';
 import { WarehouseServices } from '../configuration/Services/warehouse/warehouse.service';
+import { TableModalService } from './table-modal/table-modal.service';
+
 interface dataModel {
   list: any;
   filteredList: any[];
@@ -73,9 +77,10 @@ export class ReceivingComponent {
   newRecvMode: any = { recvMode: null, state: 'Active' }
 
   isLoading = false;
-
+  isVisible = false;
   duplicated = false
   newDataGroup = false
+  destroyRef = inject(DestroyRef);
 
   selectedValue = 'Active';
 
@@ -103,6 +108,7 @@ export class ReceivingComponent {
     private itemDetailServices: ItemDetailServices,
     private stockReceivingServices: StockReceivingServices,
     private stockReceivingDtlServices: StockReceivingDtlServices,
+    private modalService: TableModalService,
     private modal: NzModalService,
     private router: Router,
     private cd: ChangeDetectorRef) {
@@ -833,6 +839,30 @@ export class ReceivingComponent {
 
   onTransactionList() {
     this.router.navigate(['/default/receiving-transaction-list']);
+  }
+
+  onView(): void {
+    this.modalService
+      .show({ nzTitle: 'Receiving list' }, this.itemDataList())
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(res => {
+        if (!res || res.status === ModalBtnStatus.Cancel) {
+          return;
+        }
+        // this.tableLoading(true);
+        // this.addEditData(res.modalValue, 'addAccount');
+      });
+  }
+
+  onClearForm1() {
+    this.validateForm.reset()
+    this.validateForm.patchValue(
+      {
+        rcvDate: new Date(),
+      }
+    )
   }
 
 }
