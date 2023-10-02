@@ -86,7 +86,7 @@ export class JudgeAuthGuardService {
     // No menu found, go directly to the login page
 
     if (!this.selMenu) {
-      return this.getResult(fnGetUUID(), this.authCodeArray);
+      return this.getResult(route.data['key'], this.authCodeArray);
     }
     const selMenuCode = this.selMenu.code;
     this.selMenu = null;
