@@ -10,7 +10,7 @@
                 </nz-breadcrumb-item>
             </nz-breadcrumb>
         </nz-card>
-        <nz-card class="m-4" nzTitle="Receiving transaction list" [nzExtra]="options">
+        <nz-card class="m-4" [nzTitle]="switchValue ? 'Posting list' : 'Transaction list'" [nzExtra]="options">
             <div class="loc-content" *ngIf="!model.loading; else isLoading">
                 <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzSize]="'default'"
                     [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
@@ -80,7 +80,8 @@
                         nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip>
                         <span nz-icon nzType="reload" nzTheme="outline"></span>
                     </button>
-                    <nz-switch [(ngModel)]="switchValue" class="items-center px-1 mt-1" nzCheckedChildren="For Posting"
+                    <nz-switch [(ngModel)]="switchValue" (ngModelChange)="onPosting(switchValue)"
+                        class="items-center px-1 mt-1" nzCheckedChildren="For Posting"
                         nzUnCheckedChildren="Transaction"></nz-switch>
                 </nz-button-group>
             </div>

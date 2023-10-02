@@ -7,8 +7,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { SpinService } from '../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../shared';
 import { StockReceivingServices } from '../configuration/Services/stock-receiving/stock-receiving.service';
+import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { ViewDetailListComponent } from './view-detail-list/view-detail-list.component';
-
 interface ReceiveData {
   id: string;
   fyCode: number;
@@ -110,6 +110,41 @@ export class ReceivingTransactionListComponent {
     this.refreshCheckedStatus();
   }
 
+  onPosting(event: any) {
+    let model: any = this.model;
+    model.loading = true;
+
+    let order: any = [
+      {
+        sortColumn: 'itemCode',
+        sortDirection: 'asc'
+      }
+    ];
+    if (event) {
+      this.stockReceivingServices.list({ order: order, pagination: false, filteredObject: JSON.stringify({ isPosted: !event }) }).subscribe({
+        next: (res: any) => {
+          const list = signal(res.data)
+          list.mutate(res => {
+            model.list.push(...res)
+            model.filteredList.push(...res)
+          })
+          this.cd.detectChanges()
+          // model.list = list;
+          // model.filteredList = list;
+        },
+        error: (err: any) => {
+          console.log(err);
+        },
+        complete: () => {
+          model.loading = false;
+          this.cd.detectChanges();
+        }
+      });
+    } else {
+      this.loadData()
+    }
+  }
+
   onAllChecked(value: boolean): void {
     this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
     this.refreshCheckedStatus();
@@ -155,13 +190,6 @@ export class ReceivingTransactionListComponent {
     });
   }
 
-  onAdd() {
-    this.router.navigate(['/default/configuration/item-modal']);
-  }
-
-  onEdit(data: any): void {
-    this.router.navigate(['/default/configuration/item-edit-modal', data]);
-  }
 
   handleOk(): void {
     this.isConfirmLoading = true;
@@ -225,8 +253,9 @@ export class ReceivingTransactionListComponent {
   onRowClick(data: any) {
     this.selectedRow = data;
     const dialogRef = this.modalService.create({
-      nzTitle: 'Detail list',
+      nzTitle: 'Items list',
       nzContent: ViewDetailListComponent,
+      nzWidth: 1320,
       nzData: {
         actionType: 'View',
         data: this.selectedRow
@@ -246,7 +275,22 @@ export class ReceivingTransactionListComponent {
 
   onEditClick(event: MouseEvent, data: any) {
     event.stopPropagation(); // Prevent the click event from propagating to the row
-    // Add your edit logic here
+    const dialogRef = this.modalService.create({
+      nzTitle: 'Edit Receive',
+      nzContent: EditModalComponent,
+      nzWidth: 720,
+      nzData: {
+        id: data,
+        actionType: 'Edit'
+      },
+    });
+
+    dialogRef.componentInstance?.statusData.subscribe(
+      ($e) => {
+        this.loadData();
+        this.cd.detectChanges();
+      },
+    );
   }
 
   onDeleteClick(event: MouseEvent, data: any) {

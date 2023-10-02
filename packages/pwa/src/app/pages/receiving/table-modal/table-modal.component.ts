@@ -69,7 +69,6 @@ export class TableModalComponent {
   }
 
   protected getCurrentValue(): Observable<NzSafeAny> {
-
     return of(this.itemDataList());
   }
 

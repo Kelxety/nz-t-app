@@ -49,7 +49,6 @@ export class CreateEditModalComponent {
 
   ngOnInit() {
     if (this.actionType === 'Edit') {
-
       this.getData();
     }
   }
@@ -58,7 +57,7 @@ export class CreateEditModalComponent {
     if (this.actionType === 'Create') {
       this.submitCreate()
     } else {
-
+      this.submitEdit()
     }
   }
 

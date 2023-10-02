@@ -150,7 +150,7 @@ export class ReceivingComponent {
 
   ngOnInit(): void {
     // this.loadAccount()
-    const promise = [Promise.resolve(this.loadUnitData()), Promise.resolve(this.loadWarehouse())]
+    const promise = [Promise.resolve(this.loadUnitData()), Promise.resolve(this.loadWarehouse()), Promise.resolve(this.loadSupplier()), Promise.resolve(this.loadRm()), Promise.resolve(this.loadItems())]
     Promise.all(promise)
     this.spinService.setCurrentGlobalSpinStore(false);
     // this.validateFormDetail.disable()
@@ -271,7 +271,7 @@ export class ReceivingComponent {
       },
       complete: () => {
         this.isLoading = false
-        this.loadSupplier()
+
         this.cd.detectChanges();
       }
     });
@@ -290,7 +290,6 @@ export class ReceivingComponent {
       },
       complete: () => {
         this.isLoading = false
-        this.loadRm()
         this.cd.detectChanges();
       }
     });
@@ -309,7 +308,6 @@ export class ReceivingComponent {
       },
       complete: () => {
         this.isLoading = false
-        this.loadItems()
         this.cd.detectChanges();
       }
     });
@@ -860,7 +858,7 @@ export class ReceivingComponent {
   viewTable(): void {
 
     this.modalService
-      .show({ nzTitle: 'Receiving list' }, this.itemDataList())
+      .show({ nzTitle: 'Receiving list', nzMask: false }, this.itemDataList())
       .pipe(
         finalize(() => {
           // this.tableLoading(false);
