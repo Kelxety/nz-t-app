@@ -16,7 +16,7 @@ model User {
   middleName    String?          @map("middle_name") @db.VarChar(50)
   lastName      String           @map("last_name") @db.VarChar(50)
   gender        Gender?
-  status        String           @default("active")
+  status        UserStatus       @default(ACTIVE)
   description   String?
   username      String           @unique
   image         String?
@@ -959,4 +959,10 @@ enum normalStatus {
 enum PermissionStatus {
   ACTIVE
   INACTIVE
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
 }
