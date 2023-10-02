@@ -111,8 +111,8 @@ export class MenuComponent implements OnInit {
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
     const params: SearchCommonVO<any> = {
-      pageSize: this.tableConfig.pageSize,
-      page: this.tableConfig.pageIndex,
+      pageSize: e.pageSize,
+      page: e.pageIndex,
       pagination: true
     };
     this.dataService
@@ -196,26 +196,26 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  del(id: number): void {
+  del(id: string): void {
     this.modalSrv.confirm({
       nzTitle: 'Are you sure you want to delete it?',
       nzContent: 'Unrecoverable after deletion',
       nzOnOk: () => {
         this.tableLoading(true);
-        // this.dataService
-        //   .delMenus(id)
-        //   .pipe(
-        //     finalize(() => {
-        //       this.tableLoading(false);
-        //     }),
-        //     takeUntilDestroyed(this.destroyRef)
-        //   )
-        //   .subscribe(() => {
-        //     if (this.dataList.length === 1) {
-        //       this.tableConfig.pageIndex--;
-        //     }
-        //     this.getDataList();
-        //   });
+        this.dataService
+          .delMenus(id)
+          .pipe(
+            finalize(() => {
+              this.tableLoading(false);
+            }),
+            takeUntilDestroyed(this.destroyRef)
+          )
+          .subscribe(() => {
+            if (this.dataList.length === 1) {
+              this.tableConfig.pageIndex--;
+            }
+            this.getDataList();
+          });
       }
     });
   }

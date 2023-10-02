@@ -133,7 +133,16 @@ export class PermissionService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    const newDelete = await this.findOne(id);
+    const findEno = await this.prisma.permissionOnRoles.delete({
+      where: {
+        roleId_permissionId: {
+          permissionId: id,
+          roleId: newDelete.role[0].roleId,
+        },
+      },
+    });
+    // const permissionDelete = this.prisma.permissionOnRoles.
 
     const deletedData = this.prisma.permission.delete({
       where: {
