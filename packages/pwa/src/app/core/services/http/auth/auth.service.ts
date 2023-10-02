@@ -6,13 +6,14 @@ import { MENU_TOKEN } from '@app/config/menu';
 import { Menu } from '../../types';
 import { BaseHttpService } from '../base-http.service';
 import { UserLogin } from '../login/login.service';
-import { MenusService } from '../system/menus.service';
+// import { MenusService } from '../system/menus.service';
+import { Prisma, Role, User } from '@prisma/client';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(public http: BaseHttpService, @Inject(MENU_TOKEN) public menus: Menu[], private menuService: MenusService) {}
+  constructor(public http: BaseHttpService, @Inject(MENU_TOKEN) public menus: Menu[]) {}
   public login(params: UserLogin): Observable<string> {
     return this.http.post('/api/auth/login_check', params);
   }

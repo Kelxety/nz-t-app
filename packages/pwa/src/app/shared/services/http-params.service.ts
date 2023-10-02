@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpParams, HttpClient, HttpHeaders  } from '@angular/common/http';
+import { HttpParams, HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class HttpParamsService {
-
-  constructor() { }
+  constructor() {}
 
   convert(options: any) {
     let params = new HttpParams();
@@ -14,10 +13,10 @@ export class HttpParamsService {
       if (key === 'filter') {
         if (options[key] instanceof Object) {
           for (const f in options[key]) {
-            if ((options[key][f] !== null) && (typeof options[key][f] !== 'undefined') && options[key][f] !== '') {
+            if (options[key][f] !== null && typeof options[key][f] !== 'undefined' && options[key][f] !== '') {
               if (options[key][f] instanceof Object) {
                 for (const ff in options[key][f]) {
-                  if ((options[key][f][ff] !== null) && (typeof options[key][f][ff] !== 'undefined') && options[key][f][ff] !== '') {
+                  if (options[key][f][ff] !== null && typeof options[key][f][ff] !== 'undefined' && options[key][f][ff] !== '') {
                     params = params.append(f + `[` + ff + `]`, options[key][f][ff]);
                   }
                 }
@@ -28,12 +27,24 @@ export class HttpParamsService {
           }
         }
       } else if (key === 'order') {
-          options[key].forEach((element: any) => {
-            params = params.append(`order[` + element?.sortColumn + `]`, element?.sortDirection);
-          });
+        options[key].forEach((element: any) => {
+          params = params.append(`order[` + element?.sortColumn + `]`, element?.sortDirection);
+        });
       } else {
-        if ((options[key] !== null) && (typeof options[key] !== 'undefined') && options[key] !== '') {
-          params = params.append(key, options[key]);
+        if (options[key] !== null && typeof options[key] !== 'undefined' && options[key] !== '') {
+          if (typeof options[key] === 'object') {
+            const value = options[key];
+            console.log('key', options[key]);
+            if (Array.isArray(value)) {
+              const jsonValue = JSON.stringify(value);
+              params = params.append(key, jsonValue);
+            } else if (value !== null && typeof value !== 'undefined' && value !== '') {
+              params = params.append(key, value);
+              console.log('not', value);
+            }
+          } else {
+            params = params.append(key, options[key]);
+          }
         }
       }
     }

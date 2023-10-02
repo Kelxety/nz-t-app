@@ -11,6 +11,7 @@ import { MessageService } from '@core/services/common/message.service';
 import { OptionsInterface, SearchCommonVO } from '@core/services/types';
 // import { User as UserType } from '@prisma/client';
 import { Prisma, User as UserType } from '@prisma/client';
+import { WaterMarkComponent } from '@pwa/src/app/shared/components/water-mark/water-mark.component';
 import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
 import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { RoleManageModalService } from '@pwa/src/app/widget/biz-widget/system/role-manage-modal/role-manage-modal.service';
@@ -24,6 +25,7 @@ import { ModalBtnStatus } from '@widget/base-modal';
 import { AccountModalService } from '@widget/biz-widget/system/account-modal/account-modal.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzWaveModule } from 'ng-zorro-antd/core/wave';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -34,6 +36,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 
 @Component({
@@ -43,6 +46,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
   standalone: true,
   imports: [
     CardTableWrapComponent,
+    WaterMarkComponent,
     PageHeaderComponent,
     NzGridModule,
     NzCardModule,
@@ -98,17 +102,16 @@ export class AccountComponent implements OnInit {
     this.getDataList();
   }
 
-  getDataList(e?: any): void {
+  getDataList(e?: NzTableQueryParams): void {
     const numberOfFilters = Object.keys(this.searchParam).length;
     this.tableConfig.loading = true;
     const params: QueryParams<Prisma.UserWhereInput> = {
       pageSize: this.tableConfig.pageSize!,
-      page: e?.page || this.tableConfig.pageIndex!,
+      page: this.tableConfig.pageIndex!,
       filteredObject: numberOfFilters > 0 ? JSON.stringify(this.searchParam) : null,
       orderBy: null,
-      // pagination: e.pagination || false
       sort: [],
-      pagination: false,
+      pagination: true,
       pageIndex: 0,
       filter: []
     };
@@ -121,10 +124,9 @@ export class AccountComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(res => {
-        console.log(res);
         if (res.statusCode === 200) {
           this.dataList = res.data;
-          this.tableConfig.total = res.total!;
+          this.tableConfig.total = res.totalItems!;
           this.tableConfig.pageIndex = 1;
           this.checkedCashArray = [...this.checkedCashArray];
         }
@@ -187,7 +189,6 @@ export class AccountComponent implements OnInit {
             if (status === ModalBtnStatus.Cancel) {
               return;
             }
-            console.log(modalValue);
             modalValue.id = id;
             this.tableLoading(true);
             this.addEditData(modalValue, 'editAccount');
@@ -208,14 +209,13 @@ export class AccountComponent implements OnInit {
         if (!res || res.status === ModalBtnStatus.Cancel) {
           return;
         }
-        console.log(res);
         const param = { ...res.modalValue };
         this.tableLoading(true);
         // this.addEditData(param, 'addRoles');
       });
   }
 
-  addEditData(param: UserType, methodName: 'editAccount' | 'addAccount'): void {
+  addEditData(param: UserType & { role: Array<{ label: string; value: string; checked: boolean }> | Array<{ id: string }> | null }, methodName: 'editAccount' | 'addAccount'): void {
     let method = '';
     if (methodName === 'editAccount') {
       method = 'patch';
@@ -223,7 +223,15 @@ export class AccountComponent implements OnInit {
       method = 'post';
     }
     if (method === '') return;
-    console.log(param);
+    const newParamRole: Array<{ id: string }> = [];
+    param?.role.forEach(role => {
+      if (typeof role === 'object' && role.value !== undefined) {
+        if (role.checked) {
+          newParamRole.push({ id: role.value });
+        }
+      }
+    });
+    param.role = newParamRole;
     this.dataService[method](param.id, param)
       .pipe(
         finalize(() => {
@@ -331,6 +339,11 @@ export class AccountComponent implements OnInit {
   ngOnInit(): void {
     this.statusOptions = [...MapPipe.transformMapToArray(MapSet.status, MapKeyType.Boolean)];
     this.initTable();
+  }
+
+  getUserStatus(status: 'true' | 'false'): boolean {
+    if (status === 'true') return true;
+    return false;
   }
 
   private initTable(): void {

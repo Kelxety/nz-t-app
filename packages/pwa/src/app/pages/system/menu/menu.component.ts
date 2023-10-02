@@ -7,7 +7,7 @@ import { finalize } from 'rxjs/operators';
 
 import { ActionCode } from '@app/config/actionCode';
 import { OptionsInterface, SearchCommonVO } from '@core/services/types';
-import { MenuListObj, MenusService } from '@services/system/menus.service';
+// import { MenuListObj, MenusService } from '@services/system/menus.service';
 import { AntTableConfig } from '@shared/components/ant-table/ant-table.component';
 import { CardTableWrapComponent } from '@shared/components/card-table-wrap/card-table-wrap.component';
 import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -17,7 +17,7 @@ import { AuthDirective } from '@shared/directives/auth.directive';
 import { MapKeyType, MapPipe, MapSet } from '@shared/pipes/map.pipe';
 import { fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList } from '@utils/treeTableTools';
 import { ModalBtnStatus } from '@widget/base-modal';
-import { MenuModalService } from '@widget/biz-widget/system/menu-modal/menu-modal.service';
+import { MenuModalService } from '@pwa/src/app/widget/biz-widget/system/permission-modal/permission-modal.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
@@ -31,6 +31,8 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { PermissionService } from '@pwa/src/app/core/services/http/system/menus.service';
+import { $Enums, Permission, PermissionStatus, Prisma } from '@prisma/client';
 
 interface SearchParam {
   menuName: number;
@@ -68,15 +70,15 @@ export class MenuComponent implements OnInit {
   @ViewChild('aliIconTpl', { static: true }) aliIconTpl!: TemplateRef<NzSafeAny>;
   @ViewChild('operationTpl', { static: true }) operationTpl!: TemplateRef<NzSafeAny>;
   @ViewChild('visibleTpl', { static: true }) visibleTpl!: TemplateRef<NzSafeAny>;
-  @ViewChild('newLinkFlag', { static: true }) newLinkFlag!: TemplateRef<NzSafeAny>;
+  @ViewChild('isNewLink', { static: true }) isNewLink!: TemplateRef<NzSafeAny>;
 
   ActionCode = ActionCode;
   searchParam: Partial<SearchParam> = {};
   destroyRef = inject(DestroyRef);
   tableConfig!: AntTableConfig;
   pageHeaderInfo: Partial<PageHeaderType> = {
-    title: '菜单管理(数据库每10分钟从备份恢复一次),新增完菜单记得给对应角色添加刚刚新增的菜单权限，不然无法展示',
-    breadcrumb: ['Front page', '系统管理', '菜单管理']
+    title: 'Menu management. After adding a new menu, remember to add the newly added menu permissions to the corresponding role, otherwise it will not be displayed.',
+    breadcrumb: ['Front page', 'System Management', 'Menu Management']
   };
   dataList: TreeNodeInterface[] = [];
   visibleOptions: OptionsInterface[] = [];
@@ -84,7 +86,7 @@ export class MenuComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private menuModalService: MenuModalService,
-    private dataService: MenusService,
+    private dataService: PermissionService,
     private modalSrv: NzModalService,
     public message: NzMessageService,
     private router: Router,
@@ -92,13 +94,11 @@ export class MenuComponent implements OnInit {
   ) {}
 
   reloadTable(): void {
-    this.message.info('已经刷新了');
+    this.message.info('Already refreshed');
     this.getDataList();
   }
 
-  // 触发表格变更检测
   tableChangeDectction(): void {
-    // 改变引用触发变更检测。
     this.dataList = [...this.dataList];
     this.cdr.detectChanges();
   }
@@ -110,11 +110,10 @@ export class MenuComponent implements OnInit {
 
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
-    this.tableConfig.loading = true;
     const params: SearchCommonVO<any> = {
-      pageSize: 0
-      // pageNum: 0,
-      // filters: this.searchParam
+      pageSize: this.tableConfig.pageSize,
+      page: this.tableConfig.pageIndex,
+      pagination: true
     };
     this.dataService
       .getMenuList(params)
@@ -125,21 +124,25 @@ export class MenuComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(menuList => {
-        const target = fnFlatDataHasParentToTree(menuList.list, 'fatherId');
-        this.dataList = fnFlattenTreeDataByDataList(target);
+        if (!menuList.data) return;
+        this.dataList = menuList.data;
+        this.tableConfig.total = menuList.totalItems!;
+        // const target = fnFlatDataHasParentToTree(menuList.data, 'fatherId');
+        // console.log(target);
+        // this.dataList = fnFlattenTreeDataByDataList(target);
+        // console.log(this.dataList);
         this.tableLoading(false);
       });
   }
 
-  /*重置*/
   resetForm(): void {
     this.searchParam = {};
     this.getDataList();
   }
 
-  add(fatherId: number): void {
+  add(fatherId: string): void {
     this.menuModalService
-      .show({ nzTitle: '新增' })
+      .show({ nzTitle: 'New' })
       .pipe(
         finalize(() => {
           this.tableLoading(false);
@@ -157,51 +160,78 @@ export class MenuComponent implements OnInit {
       });
   }
 
-  addEditData(param: MenuListObj, methodName: 'editMenus' | 'addMenus'): void {
-    this.dataService[methodName](param)
-      .pipe(
-        finalize(() => {
-          this.tableLoading(false);
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        this.getDataList();
-      });
+  addEditData(param: string & Permission, methodName: 'editMenus' | 'addMenus'): void {
+    if (methodName === 'addMenus') {
+      if (param.status) {
+        param.status = $Enums.PermissionStatus.ACTIVE;
+      } else {
+        param.status = $Enums.PermissionStatus.INACTIVE;
+      }
+      if (param.visible) {
+        param.visible = '1';
+      } else {
+        param.visible = '0';
+      }
+      this.dataService[methodName](param)
+        .pipe(
+          finalize(() => {
+            this.tableLoading(false);
+          }),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(() => {
+          this.getDataList();
+        });
+    } else {
+      this.dataService[methodName](param.id, param)
+        .pipe(
+          finalize(() => {
+            this.tableLoading(false);
+          }),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(() => {
+          this.getDataList();
+        });
+    }
   }
 
   del(id: number): void {
     this.modalSrv.confirm({
-      nzTitle: '确定要删除吗？',
-      nzContent: '删除后不可恢复',
+      nzTitle: 'Are you sure you want to delete it?',
+      nzContent: 'Unrecoverable after deletion',
       nzOnOk: () => {
         this.tableLoading(true);
-        this.dataService
-          .delMenus(id)
-          .pipe(
-            finalize(() => {
-              this.tableLoading(false);
-            }),
-            takeUntilDestroyed(this.destroyRef)
-          )
-          .subscribe(() => {
-            if (this.dataList.length === 1) {
-              this.tableConfig.pageIndex--;
-            }
-            this.getDataList();
-          });
+        // this.dataService
+        //   .delMenus(id)
+        //   .pipe(
+        //     finalize(() => {
+        //       this.tableLoading(false);
+        //     }),
+        //     takeUntilDestroyed(this.destroyRef)
+        //   )
+        //   .subscribe(() => {
+        //     if (this.dataList.length === 1) {
+        //       this.tableConfig.pageIndex--;
+        //     }
+        //     this.getDataList();
+        //   });
       }
     });
   }
 
-  // 修改
-  edit(id: number, fatherId: number): void {
+  edit(id: string, fatherId: number): void {
     this.dataService
       .getMenuDetail(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
-        this.menuModalService
-          .show({ nzTitle: '编辑' }, res)
+        if (res.status) {
+          res.status = PermissionStatus.ACTIVE;
+        } else {
+          res.status = PermissionStatus.INACTIVE;
+        }
+        return this.menuModalService
+          .show({ nzTitle: 'Edit' }, res)
           .pipe(
             finalize(() => {
               this.tableLoading(false);
@@ -220,7 +250,6 @@ export class MenuComponent implements OnInit {
       });
   }
 
-  // 修改一页几条
   changePageSize(e: number): void {
     this.tableConfig.pageSize = e;
   }
@@ -229,65 +258,65 @@ export class MenuComponent implements OnInit {
     this.tableConfig = {
       headers: [
         {
-          title: '菜单名称',
+          title: 'menu name',
           width: 230,
           field: 'menuName'
         },
         {
-          title: 'zorro图标',
+          title: 'zorro icon',
           field: 'icon',
           width: 100,
           tdTemplate: this.zorroIconTpl
         },
         {
-          title: '阿里图标',
+          title: 'ali icon',
           field: 'alIcon',
           width: 100,
           tdTemplate: this.aliIconTpl
         },
         {
-          title: '权限码',
+          title: 'code',
           field: 'code',
           width: 300
         },
         {
-          title: '路由地址',
+          title: 'path',
           field: 'path',
           width: 300
         },
         {
-          title: '排序',
+          title: 'sort',
           field: 'orderNum',
           width: 80
         },
         {
-          title: '状态',
+          title: 'status',
           field: 'status',
           pipe: 'available',
           width: 100
         },
         {
-          title: '展示',
+          title: 'show',
           field: 'visible',
           pipe: 'isOrNot',
           tdTemplate: this.visibleTpl,
           width: 100
         },
         {
-          title: '外链',
-          field: 'newLinkFlag',
+          title: 'external link',
+          field: 'isNewLink',
           pipe: 'isOrNot',
-          tdTemplate: this.newLinkFlag,
+          tdTemplate: this.isNewLink,
           width: 100
         },
         {
-          title: '创建时间',
-          field: 'createTime',
+          title: 'creation time',
+          field: 'createdAt',
           pipe: 'date:yyyy-MM-dd HH:mm',
           width: 180
         },
         {
-          title: '操作',
+          title: 'action',
           tdTemplate: this.operationTpl,
           width: 180,
           fixed: true,

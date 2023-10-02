@@ -5,16 +5,11 @@ export class CreateRoleDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ required: true })
-  name: string;
+  roleName: string;
 
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ required: false, nullable: true })
-  description?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ required: true })
-  status: string;
+  roleDesc: string | null;
 }

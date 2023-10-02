@@ -6,11 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { concatMap } from 'rxjs/operators';
 
 import { Menu } from '@core/services/types';
-import { MenusService } from '@services/system/menus.service';
+import { PermissionService } from '@services/system/menus.service';
 import { PutPermissionParam, RoleService } from '@services/system/role.service';
 import { FooterSubmitComponent } from '@shared/components/footer-submit/footer-submit.component';
 import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
-import { fnAddTreeDataGradeAndLeaf, fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList } from '@utils/treeTableTools';
+import { fnAddTreeDataGradeAndLeaf, fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList, fnStringFlatDataHasParentToTree } from '@utils/treeTableTools';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -19,6 +19,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzResultModule } from 'ng-zorro-antd/result';
+import { Permission } from '@prisma/client';
 
 @Component({
   selector: 'app-set-role',
@@ -46,10 +47,11 @@ import { NzResultModule } from 'ng-zorro-antd/result';
 })
 export class SetRoleComponent implements OnInit {
   pageHeaderInfo: Partial<PageHeaderType> = {
-    title: '设置权限',
-    desc: '当前角色：',
-    breadcrumb: ['Front page', '用户管理', '角色管理', '设置权限']
+    title: 'Settings permissions',
+    desc: 'Current role:',
+    breadcrumb: ['Front page', 'User Management', 'Role Management', 'Settings permissions']
   };
+  currentRole: any = [];
   authCodeArr: string[] = [];
   permissionList: Array<Menu & { isOpen?: boolean; checked?: boolean }> = [];
   roleName!: string;
@@ -59,39 +61,44 @@ export class SetRoleComponent implements OnInit {
   constructor(
     private dataService: RoleService,
     private cdr: ChangeDetectorRef,
-    private menusService: MenusService,
+    private menusService: PermissionService,
     private routeInfo: ActivatedRoute,
     private router: Router,
     public message: NzMessageService
   ) {}
 
-  // initPermission(): void {
-  //   this.dataService
-  //     .getPermissionById(this.id)
-  //     .pipe(
-  //       concatMap(authCodeArr => {
-  //         this.authCodeArr = authCodeArr;
-  //         return this.menusService.getMenuList({ page: 0, pageSize: 0 });
-  //       }),
-  //       takeUntilDestroyed(this.destroyRef)
-  //     )
-  //     .subscribe(response => {
-  //       const menuArray: Array<Menu & { isOpen?: boolean; checked?: boolean }> = response.list;
-  //       menuArray.forEach(item => {
-  //         item.isOpen = false;
-  //         item.checked = this.authCodeArr.includes(item.code!);
-  //       });
-  //       this.permissionList = fnAddTreeDataGradeAndLeaf(fnFlatDataHasParentToTree(menuArray));
-  //       this.cdr.markForCheck();
-  //     });
-  // }
+  initPermission(): void {
+    this.dataService
+      .getRolesDetail(this.id)
+      .pipe(
+        concatMap(authCodeArr => {
+          const tempArr: string[] = [];
+          authCodeArr?.data?.permission?.forEach(permission => {
+            tempArr.push(permission.permission.code);
+          });
+          this.authCodeArr = tempArr;
+          return this.menusService.getMenuList({ page: 0, pageSize: 0, pagination: false });
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(response => {
+        const menuArray: Array<Permission & { isOpen?: boolean; checked?: boolean }> = response.data;
+        menuArray.forEach(item => {
+          item.isOpen = false;
+          item.checked = this.authCodeArr.includes(item.code!);
+        });
+        this.permissionList = fnAddTreeDataGradeAndLeaf(fnStringFlatDataHasParentToTree(menuArray));
+        this.cdr.markForCheck();
+      });
+  }
 
   getRoleName(): void {
     this.dataService
       .getRolesDetail(this.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(({ data }) => {
-        this.pageHeaderInfo = { ...this.pageHeaderInfo, ...{ desc: `current role：${data.name}` } };
+        this.currentRole = data;
+        this.pageHeaderInfo = { ...this.pageHeaderInfo, ...{ desc: `current role: ${data.roleName}` } };
         this.cdr.markForCheck();
       });
   }
@@ -111,14 +118,14 @@ export class SetRoleComponent implements OnInit {
     });
     const param: PutPermissionParam = {
       permissionIds: seledAuthArray,
-      roleId: +this.id
+      roleId: this.id
     };
-    // this.dataService
-    //   .updatePermission(param)
-    //   .pipe(takeUntilDestroyed(this.destroyRef))
-    //   .subscribe(() => {
-    //     this.message.success('设置成功，重新登录后生效');
-    //   });
+    this.dataService
+      .updatePermission(param)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.message.success('The setting is successful and will take effect after logging in again.');
+      });
   }
 
   _onReuseInit(): void {
@@ -127,6 +134,6 @@ export class SetRoleComponent implements OnInit {
 
   ngOnInit(): void {
     this.getRoleName();
-    // this.initPermission();
+    this.initPermission();
   }
 }

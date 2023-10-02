@@ -231,7 +231,7 @@ export class NavBarComponent implements OnInit {
     menus.forEach(item => {
       item.selected = false;
       item.open = false;
-      if (routePath.includes(item.path) && !item.newLinkFlag) {
+      if (routePath.includes(item.path) && !item.isNewLink) {
         item.selected = true;
         item.open = true;
       }
@@ -271,7 +271,7 @@ export class NavBarComponent implements OnInit {
   }
 
   changeRoute(e: MouseEvent, menu: Menu): void {
-    if (menu.newLinkFlag) {
+    if (menu.isNewLink) {
       fnStopMouseEvent(e);
       window.open(menu.path, '_blank');
       return;

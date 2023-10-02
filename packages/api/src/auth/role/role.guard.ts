@@ -16,7 +16,7 @@ export class RoleGuard implements CanActivate {
     }
 
     for (const userRole of userRoles) {
-      if (roles.includes(userRole.name)) {
+      if (roles.includes(userRole.roleName)) {
         return true;
       }
     }
@@ -33,6 +33,11 @@ export class RoleGuard implements CanActivate {
     const rolesType = await this.usersService.findOne(request.user.id);
     console.log(rolesType.role);
     // const user: UserEntity = request.user.role;
-    return this.matchRoles(roles, rolesType.role);
+    const tempArr: Role[] = [];
+    if (rolesType.role.length === 0) return false;
+    rolesType.role.forEach((role) => {
+      tempArr.push(role.role);
+    });
+    return this.matchRoles(roles, tempArr);
   }
 }

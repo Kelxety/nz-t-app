@@ -1,6 +1,7 @@
 <app-page-header [pageHeaderInfo]="pageHeaderInfo" />
 
 <div class="normal-table-wrap">
+  <app-water-mark />
   <div nz-col [nzLg]="6" [nzMd]="24" [nzSm]="24" [nzXl]="6" [nzXs]="24" [nzXXl]="6">
     <!-- <app-dept-tree #deptTree (deptIdEven)="searchDeptIdUser($event)"></app-dept-tree> -->
   </div>
@@ -70,6 +71,7 @@
         [checkedCashArrayFromComment]="checkedCashArray"
         [tableConfig]="tableConfig"
         [tableData]="dataList"
+        (changePageNum)="getDataList($event)"
         (changePageSize)="changePageSize($event)"
         (selectedChange)="selectedChecked($event)"
       ></app-ant-table>
@@ -85,12 +87,8 @@
 
   <ng-template #viewTpl let-id="id" let-role="role">
     <div *ngFor="let item of role">
-      <nz-tag [nzColor]="'blue'">{{ item.name }}</nz-tag>
+      <nz-tag [nzColor]="'blue'">{{ item.role.roleName }}</nz-tag>
     </div>
-    <!-- <span class="operate-text" (click)="view(id)">
-      <i nz-icon nzType="expand-alt" nzTheme="outline"></i>
-      View
-    </span> -->
   </ng-template>
 
   <ng-template #tableBtns>
@@ -104,7 +102,7 @@
     </button>
   </ng-template>
 
-  <ng-template #statusFlag let-available="status" let-id="id">
-    <nz-switch [nzControl]="true" [ngModel]="available" [nzDisabled]="true" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
+  <ng-template #statusFlag let-statis="status" let-id="id">
+    <nz-switch [nzControl]="true" [ngModel]="getUserStatus(statis)" [nzDisabled]="true" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
   </ng-template>
 </div>

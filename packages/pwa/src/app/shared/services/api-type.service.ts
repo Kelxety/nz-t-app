@@ -24,8 +24,7 @@ export class ApiTypeService {
 
   post<T>(path: string, params: object = {}): Observable<T> {
     let headers = new HttpHeaders();
-    console.log('post');
-    if (!(params instanceof FormData)) {
+    if (params instanceof FormData) {
       headers = headers.append('Content-Type', 'application/ld+json');
       headers = headers.append('Accept', 'application/ld+json');
     }
@@ -39,7 +38,7 @@ export class ApiTypeService {
   put<T>(path: string, params: object = {}): Observable<T> {
     let headers = new HttpHeaders();
 
-    if (!(params instanceof FormData)) {
+    if (params instanceof FormData) {
       headers = headers.append('Content-Type', 'application/ld+json');
       headers = headers.append('Accept', 'application/ld+json');
     }
@@ -52,7 +51,6 @@ export class ApiTypeService {
 
   patch<T>(path: string, params: object = {}): Observable<T> {
     let headers = new HttpHeaders();
-
     if (params instanceof FormData) {
       headers = headers.append('Content-Type', 'application/ld+json');
       headers = headers.append('Accept', 'application/ld+json');

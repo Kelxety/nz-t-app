@@ -27,6 +27,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTableFilterValue, NzTableQueryParams, NzTableSortOrder } from 'ng-zorro-antd/table';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 
 interface SearchParam {
   roleName: string;
@@ -51,16 +52,18 @@ interface SearchParam {
     CardTableWrapComponent,
     AntTableComponent,
     AuthDirective,
-    NzCardModule
+    NzCardModule,
+    NzTagModule
   ]
 })
 export class RoleManageComponent implements OnInit {
   @ViewChild('operationTpl', { static: true }) operationTpl!: TemplateRef<any>;
+  @ViewChild('viewTpl', { static: true }) viewTpl!: TemplateRef<any>;
   searchParam: Partial<SearchParam> = {};
   tableConfig!: AntTableConfig;
   pageHeaderInfo: Partial<PageHeaderType> = {
-    title: '角色管理(数据库每10分钟从备份恢复一次)',
-    breadcrumb: ['Front page', '用户管理', '角色管理']
+    title: 'Role Management',
+    breadcrumb: ['Front page', 'User Management', 'role management']
   };
   dataList: Role[] = [];
   checkedCashArray = [];
@@ -87,11 +90,12 @@ export class RoleManageComponent implements OnInit {
     this.getDataList();
   }
 
-  getDataList(e?: QueryParams<Prisma.RoleWhereInput>): void {
+  getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
     const params: SearchParams<any> = {
       pageSize: this.tableConfig.pageSize!,
-      page: e?.page || this.tableConfig.pageIndex!
+      pagination: true,
+      page: this.tableConfig.pageIndex!
     };
     this.dataService
       .getRoles(params)
@@ -102,23 +106,19 @@ export class RoleManageComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(res => {
-        const { data, total } = res;
+        const { data, totalItems } = res;
         this.dataList = [...data];
-        this.tableConfig.total = total!;
-        this.tableConfig.pageIndex = total!;
+        this.tableConfig.total = totalItems!;
         this.tableLoading(false);
         this.checkedCashArray = [...this.checkedCashArray];
       });
   }
 
-  // 设置权限
   setRole(id: number): void {
     this.router.navigate(['/default/system/role-manager/set-role'], { queryParams: { id: id } });
   }
 
-  // 触发表格变更检测
   tableChangeDectction(): void {
-    // 改变引用触发变更检测。
     this.dataList = [...this.dataList];
     this.cdr.detectChanges();
   }
@@ -130,7 +130,7 @@ export class RoleManageComponent implements OnInit {
 
   add(): void {
     this.modalService
-      .show({ nzTitle: '新增' })
+      .show({ nzTitle: 'New' })
       .pipe(
         finalize(() => {
           this.tableLoading(false);
@@ -148,11 +148,10 @@ export class RoleManageComponent implements OnInit {
   }
 
   reloadTable(): void {
-    this.message.info('刷新成功');
+    this.message.info('Refresh succesful');
     this.getDataList();
   }
 
-  // 修改
   edit(id: string): void {
     this.dataService
       .getRolesDetail(id)
@@ -200,8 +199,8 @@ export class RoleManageComponent implements OnInit {
   del(id: string): void {
     const ids: string[] = [id];
     this.modalSrv.confirm({
-      nzTitle: '确定要删除吗？',
-      nzContent: '删除后不可恢复',
+      nzTitle: 'You sure you want to delete it?',
+      nzContent: 'Date will delete forever',
       nzOnOk: () => {
         this.tableLoading(true);
         this.dataService
@@ -221,7 +220,6 @@ export class RoleManageComponent implements OnInit {
       }
     });
   }
-  // 修改一页几条
 
   changePageSize(e: number): void {
     this.tableConfig.pageSize = e;
@@ -229,27 +227,31 @@ export class RoleManageComponent implements OnInit {
 
   ngOnInit(): void {
     this.initTable();
+    this.getDataList();
   }
+
+  allDel() {}
 
   private initTable(): void {
     this.tableConfig = {
       showCheckbox: false,
       headers: [
         {
-          title: '角色名称',
+          title: 'Role Name',
           field: 'roleName',
           width: 100
         },
         {
-          title: '备注',
+          title: 'Role Description',
           width: 100,
           field: 'roleDesc'
         },
         {
-          title: '操作',
+          title: 'Actions',
           tdTemplate: this.operationTpl,
-          width: 150,
-          fixed: true
+          width: 120,
+          fixed: true,
+          fixedDir: 'right'
         }
       ],
       total: 0,

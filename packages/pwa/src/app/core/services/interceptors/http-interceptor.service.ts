@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 
-import { TokenKey } from '@config/constant';
+import { TokenKey, TokenPre } from '@config/constant';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -18,7 +18,7 @@ interface CustomHttpConfig {
 
 @Injectable()
 export class HttpInterceptorService implements HttpInterceptor {
-  constructor(private windowServe: WindowService, public message: NzMessageService, private loginOutService: LoginInOutService, private authService: AuthService, private router: Router) { }
+  constructor(private windowServe: WindowService, public message: NzMessageService, private loginOutService: LoginInOutService, private authService: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<NzSafeAny>, next: HttpHandler): Observable<HttpEvent<NzSafeAny>> {
     const token = this.windowServe.getSessionStorage(TokenKey);
@@ -53,7 +53,7 @@ export class HttpInterceptorService implements HttpInterceptor {
     return this.authService.refresh(token).pipe(
       switchMap((newToken: string) => {
         if (newToken) {
-          this.windowServe.removeSessionStorage(token);
+          this.windowServe.setSessionStorage(TokenKey, TokenPre + newToken);
           const updatedRequest = this.attachTokenToRequest(request, newToken);
           return next.handle(updatedRequest);
         } else {
@@ -99,20 +99,18 @@ export class HttpInterceptorService implements HttpInterceptor {
       errMsg = `The request was redirected by the server with a status code of ${status}`;
     }
     if (status >= 400 && status < 500) {
-
       // errMsg = `An error occurred on the client side, it may be that the sent data is wrong, the status code is ${status}`;
       if (status === 401) {
         errMsg = `Invalid credential`;
         // this.loginOutService.loginOut().then();
       }
-
     }
     if (status >= 500) {
       errMsg = `An error occurred on the server with status code ${status}`;
     }
 
     return throwError(() => {
-      return error
+      return error;
     });
   }
 }

@@ -1,4 +1,4 @@
-import { DestroyRef, inject, Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router, CanActivateChild, CanActivateChildFn } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -23,6 +23,7 @@ export class JudgeAuthGuardService {
   selMenu: Menu | null = null;
   menuNavList: Menu[] = [];
   destroyRef = inject(DestroyRef);
+  retry = 0;
 
   constructor(
     private windowSrc: WindowService,
@@ -55,6 +56,7 @@ export class JudgeAuthGuardService {
   }
 
   getResult(code: string, authCodeArray: string[]): boolean | UrlTree {
+    console.log('code', code, authCodeArray);
     if (authCodeArray.includes(code)) {
       return true;
     } else {
@@ -78,16 +80,19 @@ export class JudgeAuthGuardService {
     }
 
     // If it is a button on the menu, go below
-    this.getMenu(this.menuNavList, state.url);
+    if (!!this.menuNavList) {
+      this.getMenu(this.menuNavList, state.url);
+    }
     // No menu found, go directly to the login page
-    // if (!this.selMenu) {
-    //   return this.getResult(fnGetUUID(), this.authCodeArray);
-    // }
-    const selMenuCode = this.selMenu?.code;
+
+    if (!this.selMenu) {
+      return this.getResult(fnGetUUID(), this.authCodeArray);
+    }
+    const selMenuCode = this.selMenu.code;
     this.selMenu = null;
     // If the menu is found, but the user does not have the permission code of the menu, then jump to the login page
-    // return this.getResult(selMenuCode!, this.authCodeArray);
-    return true;
+    return this.getResult(selMenuCode!, this.authCodeArray);
+    // return true;
   }
 }
 

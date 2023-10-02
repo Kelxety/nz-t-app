@@ -47,9 +47,11 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect!');
     }
-    const roles = user.role.map((individualRole: Role) => {
-      return individualRole;
-    });
+    const roles = user.role.map(
+      (individualRole: { userId: string; roleId: string }) => {
+        return individualRole;
+      },
+    );
 
     const accessToken = this.jwtService.sign({
       userId: user.id,
@@ -96,7 +98,11 @@ export class AuthService {
           ...signupAuthDto,
           role: {
             create: {
-              name: 'SUPERADMIN',
+              role: {
+                create: {
+                  roleName: 'SUPERADMIN',
+                },
+              },
             },
           },
         },
@@ -117,9 +123,11 @@ export class AuthService {
     if (!getUser.role) {
       throw new Error('Error getting role');
     }
-    const roles = getUser.role.map((individualRole: Role) => {
-      return individualRole;
-    });
+    const roles = getUser.role.map(
+      (individualRole: { userId: string; roleId: string }) => {
+        return individualRole;
+      },
+    );
     const accessToken = this.jwtService.sign({
       userId: getUser.id,
       username: getUser.username,
@@ -209,6 +217,7 @@ export class AuthService {
 
     return this.usersService.update(id, {
       refreshToken: undefined,
+      role: null,
     });
   }
 
@@ -283,14 +292,15 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-    console.log(user.refresh_token?.validity, new Date());
     if (!user.refresh_token?.validity) {
       return;
     }
     if (user.refresh_token.validity > new Date()) {
-      const roles = user.role.map((individualRole: Role) => {
-        return individualRole;
-      });
+      const roles = user.role.map(
+        (individualRole: { userId: string; roleId: string }) => {
+          return individualRole;
+        },
+      );
       const accessToken = this.jwtService.sign({
         userId: user.id,
         username: user.username,

@@ -20,11 +20,14 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({
       include: {
         refresh_token: true,
-        role: true,
+        role: {
+          include: {
+            role: true,
+          },
+        },
       },
       where: { username: createUserDto.username },
     });
-    console.log('conflict', user);
     if (!user) {
       throw new ConflictException(
         `User with username of ${createUserDto.username}`,
@@ -35,7 +38,15 @@ export class UsersService {
     return this.prisma.user.create({
       data: {
         ...createUserDto,
-        role: {},
+        role: {
+          create: {
+            role: {
+              create: {
+                roleName: 'SUPERADMIN',
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -54,7 +65,19 @@ export class UsersService {
       return this.prisma.user.findMany({
         include: {
           refresh_token: true,
-          role: true,
+          role: {
+            include: {
+              role: {
+                include: {
+                  permission: {
+                    include: {
+                      permission: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
         where: data,
         orderBy: order,
@@ -71,7 +94,19 @@ export class UsersService {
         orderBy: order,
         include: {
           refresh_token: true,
-          role: true,
+          role: {
+            include: {
+              role: {
+                include: {
+                  permission: {
+                    include: {
+                      permission: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       }),
     ]);
@@ -82,7 +117,19 @@ export class UsersService {
     const data = await this.prisma.user.findUnique({
       include: {
         refresh_token: true,
-        role: true,
+        role: {
+          include: {
+            role: {
+              include: {
+                permission: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       where: { id },
     });
@@ -94,7 +141,19 @@ export class UsersService {
     const data = this.prisma.user.findUnique({
       include: {
         refresh_token: true,
-        role: true,
+        role: {
+          include: {
+            role: {
+              include: {
+                permission: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       where: {
         username: username,
@@ -104,15 +163,10 @@ export class UsersService {
     return data;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    const roleConnections = [];
-
-    for (const roleId of updateUserDto?.role) {
-      roleConnections.push({ id: roleId });
-    }
-    // Iterate through each role ID in updateUserDto.role
-    console.log('1,2', roleConnections);
-
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto & { role: string | null },
+  ) {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist.`);
@@ -131,27 +185,36 @@ export class UsersService {
         updateUserDto.password,
         roundsOfHashing,
       );
-
+      if (typeof updateUserDto.role === 'string') {
+        return this.prisma.user.update({
+          where: { id },
+          data: {
+            password: updateUserDto.password,
+            ...updateUserDto,
+            role: {
+              deleteMany: {},
+              create: JSON.parse(updateUserDto.role).map((t: string) => ({
+                role: { connect: { id: t } },
+              })),
+            },
+          },
+        });
+      }
+    }
+    if (typeof updateUserDto.role === 'string') {
       return this.prisma.user.update({
         where: { id },
         data: {
-          password: updateUserDto.password,
           ...updateUserDto,
           role: {
-            connect: roleConnections,
+            deleteMany: {},
+            create: JSON.parse(updateUserDto.role).map((t: { id: string }) => ({
+              role: { connect: { id: t.id } },
+            })),
           },
         },
       });
     }
-    return this.prisma.user.update({
-      where: { id },
-      data: {
-        ...updateUserDto,
-        role: {
-          connect: roleConnections,
-        },
-      },
-    });
   }
 
   async changePassword(id: string, updatePassword: ChangePasswordDto) {
@@ -174,8 +237,14 @@ export class UsersService {
         roundsOfHashing,
       );
     }
-    console.log(updatePassword.newPassword);
     return this.prisma.user.update({
+      include: {
+        role: {
+          include: {
+            role: true,
+          },
+        },
+      },
       where: { id },
       data: {
         password: updatePassword.newPassword,

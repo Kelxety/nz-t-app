@@ -1,14 +1,14 @@
-/*配置权限码*/
+/*Configure permission code*/
 export const ActionCode = {
-  /*标签页操作打开详情*/
+  /*Tab operation opens details*/
   TabsDetail: 'default:feat:tabs:example-detail',
-  /*查询表格 打开查看*/
+  /*Inquiry form Open to view*/
   SearchTableDetail: 'default:page-demo:search-table:example-detail',
 
-  /*系统管理*/
-  AccountAdd: 'default:system:account:add', // 账号管理新增
-  AccountEdit: 'default:system:account:edit', // 账号管理编辑
-  AccountDel: 'default:system:account:del', // 账号管理删除
+  /*System Management*/
+  AccountAdd: 'default:system:account:add', // Account management added
+  AccountEdit: 'default:system:account:edit', // Account management edit
+  AccountDel: 'default:system:account:del', // Account management delete
 
   /*角色管理*/
   RoleManagerAdd: 'default:system:role-manager:add', // 角色管理新增

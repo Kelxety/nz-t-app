@@ -15,6 +15,7 @@ export class DynamicComponent {
 export interface OptionsInterface {
   value: number | string;
   label: string;
+  checked?: boolean;
 }
 
 // 列表搜索
@@ -77,6 +78,6 @@ export interface Menu {
   selected?: boolean; // 是否选中
   children?: Menu[];
   code?: string; // 权限码
-  newLinkFlag?: 0 | 1; // 是否是新页
+  isNewLink?: 0 | 1; // 是否是新页
   data?: any;
 }

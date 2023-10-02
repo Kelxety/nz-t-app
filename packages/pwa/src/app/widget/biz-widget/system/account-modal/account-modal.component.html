@@ -61,6 +61,12 @@
       </nz-select>
     </nz-form-control>
   </nz-form-item>
+
+  <div style="border-bottom: 1px solid rgb(233, 233, 233)">
+    <label nz-checkbox formControlName="role" (ngModelChange)="updateAllChecked()" [nzIndeterminate]="indeterminate">Check all</label>
+  </div>
+  <br />
+  <nz-checkbox-group formControlName="role" (ngModelChange)="updateSingleChecked()"></nz-checkbox-group>
 </form>
 <ng-template #combineTpl let-control>
   <ng-container *ngIf="control.hasError('message')">{{ control.errors.message }}</ng-container>

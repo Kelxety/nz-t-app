@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { finalize, map, takeUntil } from 'rxjs/operators';
@@ -10,21 +10,23 @@ import { SimpleReuseStrategy } from '@core/services/common/reuse-strategy';
 import { TabService } from '@core/services/common/tab.service';
 import { WindowService } from '@core/services/common/window.service';
 import { Menu } from '@core/services/types';
+import { Permission, Prisma, Role, User } from '@prisma/client';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { LoginService } from '@services/login/login.service';
 import { MenuStoreService } from '@store/common-store/menu-store.service';
 import { UserInfo, UserInfoService } from '@store/common-store/userInfo.service';
 import { getDeepReuseStrategyKeyFn } from '@utils/tools';
-import { fnFlatDataHasParentToTree } from '@utils/treeTableTools';
+import { fnStringFlatDataHasParentToTree } from '@utils/treeTableTools';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 import { AuthService } from '../http/auth/auth.service';
-import { User } from '@prisma/client';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginInOutService {
   private ngUnsubscribe = new Subject<void>();
+  currentUserSignal = signal<Prisma.UserGetPayload<{ include: { role: { include: { role: true } } } }>>(null);
   constructor(
     private msg: NzMessageService,
     private activatedRoute: ActivatedRoute,
@@ -39,7 +41,7 @@ export class LoginInOutService {
     private authService: AuthService
   ) {}
 
-  getMenuByUserId(userId: number): Observable<Menu[]> {
+  getMenuByUserId(userId: number): Observable<ResType<Array<Permission & { open?: boolean; selected?: boolean }>>> {
     return this.loginService.getMenuByUserId(userId);
   }
 
@@ -52,38 +54,37 @@ export class LoginInOutService {
 
       data$.pipe().subscribe({
         next: (o: any) => {
-          let id = parseInt(o.id);
+          let id = o.id;
           let auth: any[] = [];
           this.userInfoService.setUserName(o.accountName);
           this.userInfoService.setUserPhotoUrl(o.photoUrl);
-
-          for (const rolePermission of o.role) {
-            auth.push(rolePermission.name);
+          this.currentUserSignal.set(o);
+          for (const role of o.role) {
+            if (role.role.permission.length === 0) return;
+            role.role.permission.forEach(menu => {
+              auth.push(menu.permission.code);
+            });
           }
           const userInfo: UserInfo = { userId: id, authCode: auth };
-          userInfo.authCode.push('default:dashboard');
-          userInfo.authCode.push('default:dashboard:analysis');
-          userInfo.authCode.push('default:system');
-          userInfo.authCode.push('default:system:account');
-          userInfo.authCode.push('default:system:role-manager');
-          userInfo.authCode.push('default:system:menu');
-          userInfo.authCode.push('default:system:dept');
           this.userInfoService.setUserInfo(userInfo);
-          // this.cd.detectChanges();
-          // resolve();
           this.getMenuByUserId(userInfo.userId)
             .pipe(
               finalize(() => {
                 resolve();
               })
             )
-            .subscribe(menus => {
-              menus = menus.filter(item => {
+            .subscribe((menus: ResType<Array<Permission & { open?: boolean; selected?: boolean }>>) => {
+              console.log('menus', menus);
+              let menuData = menus.data;
+              menuData = menuData.filter((item: Permission & { open?: boolean; selected?: boolean }) => {
                 item.selected = false;
                 item.open = false;
                 return item.menuType === 'C';
               });
-              const temp = fnFlatDataHasParentToTree(menus);
+              menuData.sort((a, b) => {
+                return a.orderNum - b.orderNum;
+              });
+              const temp = fnStringFlatDataHasParentToTree(menuData);
               this.menuService.setMenuArrayStore(temp);
               resolve();
             });
@@ -157,7 +158,7 @@ export class LoginInOutService {
     );
   }
 
-  getClass() {
+  getClass(): any {
     return this.acctService.list({ pagination: false }).pipe(
       map((res: any) => {
         return res;
@@ -167,7 +168,6 @@ export class LoginInOutService {
 
   getRefreshToken(): Observable<any> {
     // const data = this.authService.refresh();
-    // console.log(data);
     return of();
   }
 

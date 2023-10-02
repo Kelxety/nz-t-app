@@ -68,6 +68,7 @@ export class WarehouseController {
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }

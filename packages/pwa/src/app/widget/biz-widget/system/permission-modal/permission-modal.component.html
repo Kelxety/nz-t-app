@@ -1,0 +1,102 @@
+<form nz-form [formGroup]="validateForm">
+  <nz-form-item>
+    <nz-form-label nzFor="menuName" nzRequired [nzSm]="6" [nzXs]="24">Menu name</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <input id="menuName" formControlName="menuName" nz-input placeholder="name" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <!-- <nz-form-item>
+    <nz-form-label nzFor="role" nzRequired [nzSm]="6" [nzXs]="24">User role</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <nz-select formControlName="role" nzPlaceHolder="Role">
+        <nz-option *ngFor="let option of roleOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item> -->
+
+  <nz-form-item>
+    <nz-form-label nzFor="menuType" nzRequired [nzSm]="6" [nzXs]="24">type</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <nz-radio-group formControlName="menuType" (ngModelChange)="changeMenuType($event)">
+        <label nz-radio [nzValue]="'C'">menu</label>
+        <label nz-radio [nzValue]="'F'">button</label>
+      </nz-radio-group>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="menuType === 'C'">
+    <nz-form-label nzFor="fatherId" [nzSm]="6" [nzXs]="24">Father ID</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input id="fatherId" formControlName="fatherId" nz-input placeholder="Father ID" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="menuType === 'C'">
+    <nz-form-label nzFor="icon" [nzSm]="6" [nzXs]="24">zorro icon</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <nz-input-group [nzAddOnAfter]="selIcon">
+        <input formControlName="icon" nz-input />
+      </nz-input-group>
+      <ng-template #selIcon>
+        <app-icon-sel [visible]="selIconVisible" (selIcon)="seledIcon($event)"></app-icon-sel>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="menuType === 'C'">
+    <nz-form-label nzFor="alIcon" [nzSm]="6" [nzXs]="24">Ali Icon</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input id="alIcon" formControlName="alIcon" nz-input placeholder="Ali Icon" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label nzFor="code" nzRequired [nzSm]="6" [nzXs]="24">Permission Code</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <input id="code" formControlName="code" nz-input placeholder="Permission Code" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="menuType === 'C'">
+    <nz-form-label nzFor="path" nzRequired [nzSm]="6" [nzXs]="24">Routing Address</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <input id="path" formControlName="path" nz-input placeholder="Routing Address" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzFor="orderNum" nzRequired [nzSm]="6" [nzXs]="24">sort</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <nz-input-number formControlName="orderNum" [nzMin]="1" [nzStep]="1"></nz-input-number>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzFor="status" nzRequired [nzSm]="6" [nzXs]="24">status</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <nz-switch formControlName="status" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="menuType === 'C'">
+    <nz-form-label nzFor="visible" nzRequired [nzSm]="6" [nzXs]="24">visible</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
+      <nz-radio-group formControlName="visible">
+        <label nz-radio [nzValue]="true">yes</label>
+        <label nz-radio [nzValue]="false">no</label>
+      </nz-radio-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item *ngIf="menuType === 'C'">
+    <nz-form-label nzFor="isNewLink" [nzSm]="6" [nzXs]="24">External link</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <nz-radio-group formControlName="isNewLink">
+        <label nz-radio [nzValue]="true">yes</label>
+        <label nz-radio [nzValue]="false">no</label>
+      </nz-radio-group>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+<ng-template #combineTpl let-control>
+  <ng-container *ngIf="control.hasError('message')">{{ control.errors.message }}</ng-container>
+  <ng-container *ngIf="control.hasError('required')">Required fields</ng-container>
+</ng-template>

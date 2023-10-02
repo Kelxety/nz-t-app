@@ -13,7 +13,6 @@ export class AuthGuardTs implements CanActivate {
     if (roles?.length) {
       const request = context.switchToHttp().getRequest();
       const token = request.headers?.authorization?.split('Bearer ')[1];
-      console.log(token);
       try {
         return true;
       } catch (error) {

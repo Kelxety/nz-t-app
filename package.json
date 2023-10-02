@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Hospital Monitoring Inventory System, inventory for all Hospitals in Palawan.",
   "main": "index.js",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@angular/animations": "^16.1.6",

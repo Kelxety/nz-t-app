@@ -3,8 +3,10 @@ import { delay, Observable, of } from 'rxjs';
 
 import { MENU_TOKEN } from '@config/menu';
 import { Menu } from '@core/services/types';
+import { Permission } from '@prisma/client';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { BaseHttpService } from '@services/base-http.service';
-import { MenusService } from '@services/system/menus.service';
+import { PermissionService } from '@services/system/menus.service';
 
 export interface UserLogin {
   username: string | null;
@@ -17,15 +19,22 @@ export interface UserLogin {
   providedIn: 'root'
 })
 export class LoginService {
-  constructor(public http: BaseHttpService, @Inject(MENU_TOKEN) public menus: Menu[], private menuService: MenusService) {}
+  constructor(
+    public http: BaseHttpService,
+    //@Inject(MENU_TOKEN) public menus: Menu[],
+    private menuService: PermissionService
+  ) {}
 
   public login(params: UserLogin): Observable<string> {
     return this.http.post('/api/auth/login_check', params);
   }
 
-  public getMenuByUserId(userId: number): Observable<Menu[]> {
+  public getMenuByUserId(userId: number): Observable<ResType<Array<Permission & { isOpen?: boolean; selected?: boolean }>>> {
     // If it is a static menu, release the comment below
-    return of(this.menus);
-    // return this.http.get(`/sysPermission/menu/${userId}`);
+    // return of(this.menus);
+    return this.menuService.getMenuList({
+      pageSize: 0,
+      pagination: false
+    });
   }
 }

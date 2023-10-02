@@ -10,6 +10,7 @@ import { DeptService } from '@services/system/dept.service';
 import { RoleService } from '@services/system/role.service';
 import { fnCheckForm } from '@utils/tools';
 import { fnAddTreeDataGradeAndLeaf, fnFlatDataHasParentToTree } from '@utils/treeTableTools';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzTreeNodeOptions } from 'ng-zorro-antd/core/tree';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -26,16 +27,18 @@ import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
   templateUrl: './account-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [FormsModule, NzFormModule, ReactiveFormsModule, NzGridModule, NzInputModule, NgIf, NzRadioModule, NzSwitchModule, NzTreeSelectModule, NzSelectModule, NgFor]
+  imports: [FormsModule, NzFormModule, ReactiveFormsModule, NzCheckboxModule, NzGridModule, NzInputModule, NgIf, NzRadioModule, NzSwitchModule, NzTreeSelectModule, NzSelectModule, NgFor]
 })
 export class AccountModalComponent implements OnInit {
   addEditForm!: FormGroup;
-  readonly nzModalData: User & { role: Role[] } = inject(NZ_MODAL_DATA);
+  readonly nzModalData: User & { role: Array<{ role: Role; roleId: string; userId: string }> } = inject(NZ_MODAL_DATA);
   roleOptions: OptionsInterface[] = [];
   isEdit = false;
   value?: string;
   roleOfUser = [];
   deptNodes: NzTreeNodeOptions[] = [];
+  indeterminate = true;
+  allChecked = false;
 
   constructor(private modalRef: NzModalRef, private fb: FormBuilder, private validatorsService: ValidatorsService, private roleService: RoleService, private deptService: DeptService) {}
 
@@ -53,11 +56,11 @@ export class AccountModalComponent implements OnInit {
   getRoleList(): Promise<void> {
     return new Promise<void>(resolve => {
       this.roleService.getRoles({ page: 0, pageSize: 0, pagination: false }).subscribe(({ data }) => {
-        this.roleOptions = [];
-        data.forEach(({ id, name }) => {
+        data.forEach(({ id, roleName }) => {
           const obj: OptionsInterface = {
-            label: name,
-            value: id!
+            label: roleName,
+            value: id!,
+            checked: false
           };
           this.roleOptions.push(obj);
         });
@@ -68,15 +71,46 @@ export class AccountModalComponent implements OnInit {
 
   getStatusOfUser(value: string): boolean {
     if (!value || value === 'inactive') return false;
-    if (value.toLocaleLowerCase() === 'active') return true;
+    if (value.toLocaleLowerCase() === 'active' || value.toLocaleLowerCase() === 'true') return true;
     return false;
   }
 
-  getRolesForUser(role: Role[]): string[] {
-    role.forEach(role => {
-      this.roleOfUser.push(role.id);
+  getRolesForUser(role: Array<{ roleId: string; userId: string; role: Role }>): OptionsInterface[] {
+    this.roleOptions.forEach((rolling, id) => {
+      role.forEach(role => {
+        if (rolling.value === role.role.id) {
+          this.roleOptions[id].checked = true;
+        }
+      });
     });
-    return this.roleOfUser;
+    return this.roleOptions;
+  }
+
+  updateAllChecked(): void {
+    this.indeterminate = false;
+    if (this.allChecked) {
+      this.roleOptions = this.roleOptions.map(item => ({
+        ...item,
+        checked: true
+      }));
+    } else {
+      this.roleOptions = this.roleOptions.map(item => ({
+        ...item,
+        checked: false
+      }));
+    }
+  }
+
+  updateSingleChecked(): void {
+    if (this.roleOptions.every(item => !item.checked)) {
+      this.allChecked = false;
+      this.indeterminate = false;
+    } else if (this.roleOptions.every(item => item.checked)) {
+      this.allChecked = true;
+      this.indeterminate = false;
+    } else {
+      this.indeterminate = true;
+    }
   }
 
   initForm(): void {
@@ -91,7 +125,7 @@ export class AccountModalComponent implements OnInit {
       telephone: [null, [this.validatorsService.telephoneValidator()]],
       mobile: [null, [this.validatorsService.mobileValidator()]],
       email: [null, [this.validatorsService.emailValidator()]],
-      role: [this.roleOfUser, [Validators.required]]
+      role: [this.roleOptions, [Validators.required]]
     });
   }
 

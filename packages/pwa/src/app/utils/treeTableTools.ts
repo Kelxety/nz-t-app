@@ -73,6 +73,39 @@ const fnFlatDataHasParentToTree = function translateDataToTree(data: any[], fath
   return parents;
 };
 
+const fnStringFlatDataHasParentToTree = function translateDataToTree(data: any[], fatherId = 'fatherId'): any {
+  // We believe that the data with fatherId=0 is first-level data.
+  // No data for parent node
+  let parents = data.filter(value => value[fatherId] === null);
+
+  // There is data from the parent node
+  let children = data.filter(value => value[fatherId] !== null);
+
+  // Define the concrete implementation of the conversion method
+  let translator = (parents: any[], children: any[]): any => {
+    // Traverse parent node data
+    parents.forEach(parent => {
+      // Traverse child node data
+      children.forEach((current, index) => {
+        // At this time, a child node corresponding to the parent node is found.
+        if (current[fatherId] === parent.id) {
+          // Perform deep copy of child node data. Only some types of data deep copy are supported here. Children's boots who are not familiar with deep copy can learn about deep copy first.
+          let temp = JSON.parse(JSON.stringify(children));
+          // Let the current child node be removed from temp, and temp be used as the new child node data. This is to reduce the number of child node traversals during recursion. The more levels of the parent-child relationship, the more advantageous it will be.
+          temp.splice(index, 1);
+          // Let the current child node be the only parent node and recursively search for its corresponding child node.
+          translator([current], temp);
+          // Put the found child node into the children attribute of the parent node
+          typeof parent.children !== 'undefined' ? parent.children.push(current) : (parent.children = [current]);
+        }
+      });
+    });
+  };
+  // Call conversion method
+  translator(parents, children);
+  return parents;
+};
+
 // 将树状结构数据添加层级以及是否是根节点的标记，根节点isLeaf为true，层级由level表示
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const fnAddTreeDataGradeAndLeaf = function AddTreeDataGradeAndLeaf(array: any[], levelName = 'level', childrenName = 'children') {
@@ -111,4 +144,4 @@ const fnGetFlattenTreeDataByMap = function getFlattenTreeData(mapOfExpandedData:
   return targetArray;
 };
 
-export { fnTreeDataToMap, fnAddTreeDataGradeAndLeaf, fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList, fnGetFlattenTreeDataByMap };
+export { fnTreeDataToMap, fnAddTreeDataGradeAndLeaf, fnStringFlatDataHasParentToTree, fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList, fnGetFlattenTreeDataByMap };

@@ -23,26 +23,25 @@ export const enum MapKeyType {
 
 export const MapSet = {
   sex: {
-    0: '女',
-    1: '男'
+    0: 'Female',
+    1: 'Male'
   },
   available: {
-    true: '可用',
-    false: '禁用'
+    true: 'Available',
+    false: 'Disable'
   },
   isOrNot: {
-    true: '是',
-    false: '否'
+    true: 'YES',
+    false: 'NO'
   },
   visible: {
-    true: '展示',
-    false: '隐藏'
+    true: 'VISIBLE',
+    false: 'HIDE'
   },
   status: {
     true: 'ACTIVE',
     false: 'INACTIVE'
   }
-
 };
 
 export interface MapItem {

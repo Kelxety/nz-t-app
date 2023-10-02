@@ -67,11 +67,16 @@ export class UsersController {
       data: returnUsers,
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }
@@ -107,17 +112,13 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('SUPERADMIN')
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: UserEntity })
+  @CustomGlobalDecorator(null, false, UserEntity)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 
   @Patch('changepass/:id')
   @CustomGlobalDecorator(null, false, UserEntity)
-  @ApiOkResponse({ type: UserEntity })
   async changePassword(
     @Param('id') id: string,
     @Body()

@@ -1,5 +1,8 @@
+import { PermissionEntity } from '@api/permission/entities/permission.entity';
+import { UserEntity } from '@api/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { Role, Permission, User, Prisma } from '@prisma/client';
+import { PermissionOnRole } from './permission-on-roll.entity';
 
 export class RoleEntity implements Role {
   constructor(partial: Partial<RoleEntity>) {
@@ -9,23 +12,14 @@ export class RoleEntity implements Role {
   id: string;
 
   @ApiProperty()
-  name: string;
+  roleName: string;
 
   @ApiProperty()
-  description: string | null;
+  roleDesc: string | null;
 
-  @ApiProperty()
-  status: string;
+  @ApiProperty({ type: UserEntity, isArray: true })
+  user: User[];
 
-  @ApiProperty()
-  createdBy: string | null;
-
-  @ApiProperty()
-  createdAt: Date;
-
-  @ApiProperty()
-  updatedBy: string | null;
-
-  @ApiProperty()
-  updatedAt: Date;
+  @ApiProperty({ type: PermissionEntity, isArray: true })
+  permission?: PermissionOnRole[];
 }
