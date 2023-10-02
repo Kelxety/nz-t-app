@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { User } from '@prisma/client';
+import { Observable } from 'rxjs';
+
+import { ModalWrapService } from '@widget/base-modal';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { ModalOptions } from 'ng-zorro-antd/modal';
-import { Observable } from 'rxjs';
-import { ModalWrapService } from '../../../widget/base-modal';
 import { TableModalComponent } from './table-modal.component';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class TableModalService {
     return TableModalComponent;
   }
 
-  public show(modalOptions: ModalOptions = {}, modalData?: User): Observable<NzSafeAny> {
+  public show(modalOptions: ModalOptions = {}, modalData?: any): Observable<NzSafeAny> {
     return this.modalWrapService.show(this.getContentComponent(), modalOptions, modalData);
   }
 

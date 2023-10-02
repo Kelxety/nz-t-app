@@ -1,14 +1,16 @@
 import { NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, Renderer2, RendererFactory2, inject, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
+import { NZ_MODAL_DATA, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
+import { Observable, of } from 'rxjs';
 import { SharedModule } from '../../../shared';
 
 @Component({
@@ -19,6 +21,7 @@ import { SharedModule } from '../../../shared';
   imports: [FormsModule, NzFormModule, ReactiveFormsModule, NzGridModule, NzInputModule, NgIf, NzRadioModule, NzSwitchModule, NzTreeSelectModule, NzSelectModule, NgFor, SharedModule]
 })
 export class TableModalComponent {
+  protected bsModalService: NzModalService;
   readonly nzModalData: any = inject(NZ_MODAL_DATA);
   model: any = {
     list: [],
@@ -26,7 +29,7 @@ export class TableModalComponent {
     isSubmitting: false,
     loading: false
   };
-
+  private renderer: Renderer2;
   isLoading = false;
 
   itemDataList = signal<any>([])
@@ -36,12 +39,38 @@ export class TableModalComponent {
   refNo = signal<any>('')
 
   constructor(
+    private baseInjector: Injector,
+    private modalRef: NzModalRef,
+    rendererFactory: RendererFactory2,
+    private cd: ChangeDetectorRef) {
+    this.bsModalService = this.baseInjector.get(NzModalService);
+    this.renderer = rendererFactory.createRenderer(null, null);
 
-    private cd: ChangeDetectorRef) { }
+  }
 
   async ngOnInit(): Promise<void> {
     console.log(this.nzModalData)
     this.itemDataList.set(this.nzModalData)
+    this.fullScreenIconClick(true)
+  }
+
+  fullScreenIconClick(fullStatus: boolean): void {
+    this.bsModalService.openModals.forEach(modal => {
+      if (fullStatus) {
+        this.renderer.addClass(modal.containerInstance['host'].nativeElement, 'fullscreen-modal');
+      } else {
+        this.renderer.removeClass(modal.containerInstance['host'].nativeElement, 'fullscreen-modal');
+      }
+    });
+  }
+
+  protected getAsyncFnData(modalValue: NzSafeAny): Observable<NzSafeAny> {
+    return of(modalValue);
+  }
+
+  protected getCurrentValue(): Observable<NzSafeAny> {
+
+    return of(this.itemDataList());
   }
 
   onCurrentPageDataChange($event: readonly any[]): void {

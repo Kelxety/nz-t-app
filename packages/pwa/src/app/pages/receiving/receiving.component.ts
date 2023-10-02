@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmReceiveMode, ScmSupplier, ScmWarehouse } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { finalize } from 'rxjs/operators';
 import { SpinService } from '../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../shared';
 import { ModalBtnStatus } from '../../widget/base-modal';
@@ -109,7 +110,7 @@ export class ReceivingComponent {
     private stockReceivingServices: StockReceivingServices,
     private stockReceivingDtlServices: StockReceivingDtlServices,
     private modalService: TableModalService,
-    private modal: NzModalService,
+    private modalSrv: NzModalService,
     private router: Router,
     private cd: ChangeDetectorRef) {
     this.validateForm = this.fb.group({
@@ -812,7 +813,7 @@ export class ReceivingComponent {
   }
 
   success(): void {
-    this.modal.success({
+    this.modalSrv.success({
       nzTitle: 'Reference No.',
       nzContent: this.refNo(),
       nzCentered: true,
@@ -852,7 +853,31 @@ export class ReceivingComponent {
           return;
         }
         // this.tableLoading(true);
-        // this.addEditData(res.modalValue, 'addAccount');
+        this.itemDataList.set(res)
+      });
+  }
+
+  viewTable(): void {
+
+    this.modalService
+      .show({ nzTitle: 'Receiving list' }, this.itemDataList())
+      .pipe(
+        finalize(() => {
+          // this.tableLoading(false);
+
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(res => {
+        if (!res || res.status === ModalBtnStatus.Cancel) {
+          return;
+        }
+        // console.log(res);
+        const param = { ...res.modalValue };
+        this.itemDataList.set(res.modalValue)
+        console.log(param)
+        // this.tableLoading(true);
+        // this.addEditData(param, 'addRoles');
       });
   }
 
