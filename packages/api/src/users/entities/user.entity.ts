@@ -32,7 +32,7 @@ export class UserEntity implements User {
   updatedAt: Date;
 
   @ApiProperty()
-  status: string;
+  status: $Enums.UserStatus;
 
   @ApiProperty({ type: RoleEntity, isArray: true })
   role?: UserRole[];

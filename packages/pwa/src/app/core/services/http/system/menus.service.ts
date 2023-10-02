@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 import { Menu, PageInfo, SearchCommonVO } from '@core/services/types';
 import { BaseHttpService } from '@services/base-http.service';
-import { Permission } from '@prisma/client';
+import { Permission, UserStatus } from '@prisma/client';
 import { ApiTypeService } from '@pwa/src/app/shared/services/api-type.service';
 import { HttpParamsService } from '@pwa/src/app/shared';
 import { ResType } from '@pwa/src/app/utils/types/return-types';
@@ -17,7 +17,7 @@ export interface MenuListObj {
   menuType: 'C' | 'F' | string;
   path: string;
   visible: 0 | 1 | string;
-  status: string;
+  status: UserStatus;
   isNewLink: true | false;
 }
 

@@ -13,7 +13,7 @@ import { AuthEntity } from './entity/auth.entity';
 import * as bcrypt from 'bcrypt';
 import { SignupDto } from './dto/signup.dto';
 import { roundsOfHashing, UsersService } from '@api/users/users.service';
-import { Role, User } from '@prisma/client';
+import { Role, User, UserStatus } from '@prisma/client';
 import { LoginEntity } from './entity/login.entity';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class AuthService {
         refresh_token: true,
         role: true,
       },
-      where: { username: createAuthDto.username },
+      where: { username: createAuthDto.username, status: UserStatus.ACTIVE },
     });
 
     if (!user) {

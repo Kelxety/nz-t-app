@@ -248,7 +248,7 @@ export class AccountComponent implements OnInit {
     this.tableConfig.loading = true;
     const people: Partial<UserType> = {
       id,
-      status: '!e'
+      status: 'ACTIVE'
     };
     this.dataService
       .editAccount(people as UserType)

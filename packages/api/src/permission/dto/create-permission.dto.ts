@@ -46,8 +46,9 @@ export class CreatePermissionDto {
   status: $Enums.PermissionStatus;
 
   @ApiProperty()
+  @IsOptional()
   @IsBoolean()
-  isNewLink: boolean;
+  isNewLink?: boolean;
 
   @ApiProperty()
   @IsOptional()
