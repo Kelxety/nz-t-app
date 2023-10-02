@@ -24,9 +24,9 @@ export class RoleService {
     const creatorName = await this.getRequesterName(token);
     return this.prisma.role.create({
       data: {
-        createdBy: creatorName.accountName,
         ...createRoleDto,
         user: {},
+        permission: {},
       },
     });
   }
@@ -44,6 +44,13 @@ export class RoleService {
     if (!pagination) {
       return await this.prisma.role.findMany({
         where: data,
+        include: {
+          permission: {
+            include: {
+              permission: true,
+            },
+          },
+        },
         orderBy: order,
       });
     }
@@ -53,6 +60,13 @@ export class RoleService {
       }),
       this.prisma.role.findMany({
         where: data,
+        include: {
+          permission: {
+            include: {
+              permission: true,
+            },
+          },
+        },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
         orderBy: order,
@@ -62,7 +76,16 @@ export class RoleService {
   }
 
   async findOne(id: string) {
-    const role = await this.prisma.role.findUnique({ where: { id } });
+    const role = await this.prisma.role.findUnique({
+      where: { id },
+      include: {
+        permission: {
+          include: {
+            permission: true,
+          },
+        },
+      },
+    });
 
     if (!role) {
       throw new NotFoundException(`Role with id ${id} does not exist.`);
@@ -77,13 +100,27 @@ export class RoleService {
     if (!role)
       throw new NotFoundException(`Role with id ${id} does not exist.`);
 
-    return this.prisma.role.update({
-      where: { id },
-      data: {
-        ...updateRoleDto,
-        updatedBy: creatorName.accountName,
-      },
-    });
+    if (typeof updateRoleDto.permission === 'string') {
+      return this.prisma.role.update({
+        where: { id },
+        include: {
+          permission: {
+            include: {
+              permission: true,
+            },
+          },
+        },
+        data: {
+          ...updateRoleDto,
+          permission: {
+            deleteMany: {},
+            create: JSON.parse(updateRoleDto.permission).map((t: string) => ({
+              permission: { connect: { id: t } },
+            })),
+          },
+        },
+      });
+    }
   }
 
   async remove(id: string) {

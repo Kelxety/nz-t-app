@@ -1,10 +1,15 @@
-<form nz-form>
-  <h1>Hello</h1>
-  <div *ngFor="let choice of checks; let i = index" class="col-md-2">
-    <label>
-      <input type="checkbox" [value]="choice.value" (change)="onCheckChange($event)" />
-      {{ choice.description }}
-    </label>
-  </div>
-  {{ checks[0].description }}
+<form nz-form [formGroup]="addEditForm">
+  <nz-form-item>
+    <nz-form-label nzFor="roleName" nzRequired [nzSm]="4" [nzXs]="24">Role name</nz-form-label>
+    <nz-form-control nzErrorTip="Please enter a role name" [nzSm]="18" [nzXs]="24">
+      <input id="roleName" name="roleName" formControlName="roleName" nz-input placeholder="Please enter a role name" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label nzFor="roleDesc" [nzSm]="4" [nzXs]="24">Description</nz-form-label>
+    <nz-form-control [nzSm]="18" [nzXs]="24">
+      <input id="roleDesc" name="roleDesc" formControlName="roleDesc" nz-input placeholder="Please enter a description" />
+    </nz-form-control>
+  </nz-form-item>
 </form>

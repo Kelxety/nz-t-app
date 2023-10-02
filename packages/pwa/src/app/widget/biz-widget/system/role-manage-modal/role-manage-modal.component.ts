@@ -3,13 +3,16 @@ import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/cor
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 
-import { Role } from '@prisma/client';
+import { Permission, Role } from '@prisma/client';
+import { PermissionService } from '@pwa/src/app/core/services/http/system/menus.service';
+import { OptionsInterface } from '@pwa/src/app/core/services/types';
 import { fnCheckForm } from '@utils/tools';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { MenuService } from 'ng-zorro-antd/menu';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
 
 @Component({
@@ -17,59 +20,37 @@ import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
   templateUrl: './role-manage-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [FormsModule, NzFormModule, ReactiveFormsModule, NgFor, NzGridModule, NzInputModule, NzCheckboxModule]
+  imports: [FormsModule, NzFormModule, ReactiveFormsModule, NzGridModule, NzInputModule]
 })
 export class RoleManageModalComponent implements OnInit {
-  readonly nzModalData: Role = inject(NZ_MODAL_DATA);
+  readonly nzModalData: Role & { permission: Permission[] } = inject(NZ_MODAL_DATA);
 
-  myForm: any;
-  checks: any = [
-    { description: 'descr1', value: 'value1' },
-    { description: 'descr2', value: 'value2' },
-    { description: 'descr3', value: 'value3' }
-  ];
+  addEditForm!: FormGroup;
 
   constructor(private modalRef: NzModalRef, private fb: FormBuilder) {}
 
-  initRoleForm(): FormGroup {
-    return this.fb.group({
-      otherControls: [''],
-      myChoices: new FormArray([])
+  initForm(): void {
+    this.addEditForm = this.fb.group({
+      roleName: [null, [Validators.required]],
+      roleDesc: [null]
     });
-  }
-
-  onCheckChange(event): void {
-    const formArray: FormArray = this.myForm.get('myChoices') as FormArray;
-
-    if (event.target.checked) {
-      // Add a new control in the arrayForm
-      formArray.push(new FormControl(event.target.value));
-    } else {
-      /* unselected */
-      // find the unselected element
-      let i = 0;
-
-      formArray.controls.forEach(ctrl => {
-        if (ctrl.value == event.target.value) {
-          // Remove the unselected element from the arrayForm
-          formArray.removeAt(i);
-          return;
-        }
-
-        i++;
-      });
-    }
   }
 
   protected getAsyncFnData(modalValue: NzSafeAny): Observable<NzSafeAny> {
     return of(modalValue);
   }
 
-  ngOnInit(): void {
-    this.initRoleForm();
+  protected getCurrentValue(): Observable<NzSafeAny> {
+    if (!fnCheckForm(this.addEditForm)) {
+      return of(false);
+    }
+    return of(this.addEditForm.value);
   }
 
-  log(value: object[]): void {
-    console.log(value);
+  async ngOnInit(): Promise<void> {
+    this.initForm();
+    if (!!this.nzModalData) {
+      this.addEditForm.patchValue(this.nzModalData);
+    }
   }
 }

@@ -9,13 +9,13 @@ export default [
   {
     path: '',
     component: RoleManageComponent,
-    data: { title: '角色管理', key: 'role-manage' }
+    data: { title: 'role management', key: 'role-manage' }
   },
   {
     path: 'set-role',
     component: SetRoleComponent,
     data: {
-      title: '角色管理',
+      title: 'role management',
       key: 'set-role',
       authCode: ActionCode.RoleManagerSetRole
     }

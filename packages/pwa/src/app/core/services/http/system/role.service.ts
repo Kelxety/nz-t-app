@@ -11,25 +11,21 @@ import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { PageInfo, SearchCommonVO } from '../../types';
 import { BaseHttpService } from '../base-http.service';
 
-/*
- *  权限
- * */
 export interface Permission {
   hasChildren: boolean;
   menuName: string;
   code: string;
-  fatherId: number;
-  id: number;
-  menuGrade: number; // 级别
+  fatherId: string;
+  id: string;
+  menuGrade: number;
   permissionVo: Permission[];
-  isOpen?: boolean; // 是否折叠
+  isOpen?: boolean;
   checked: boolean;
 }
 
-// 更新权限参数接口
 export interface PutPermissionParam {
   permissionIds: string[];
-  roleId: number;
+  roleId: string;
 }
 
 @Injectable({
@@ -38,7 +34,7 @@ export interface PutPermissionParam {
 export class RoleService {
   private _roles = signal<Role[]>([]);
   roles = this._roles.asReadonly();
-  public baseUrl = '/api/role';
+  public baseUrl = '/api/roles';
   constructor(private apiService: ApiTypeService, private httpParams: HttpParamsService) {}
 
   public getRoles(param: SearchParams<Prisma.RoleWhereInput>): Observable<ResType<Role[]>> {
@@ -46,7 +42,7 @@ export class RoleService {
     return this.apiService.get<ResType<Role[]>>(this.baseUrl, parameters);
   }
 
-  public getRolesDetail(id: string): Observable<ResType<Role>> {
+  public getRolesDetail(id: string): Observable<ResType<Role & { permission: { permissionId: string; roleId: string; permission: Permission }[] }>> {
     const url = `${this.baseUrl}/${id}`;
     return this.apiService.get(url);
   }
@@ -54,6 +50,11 @@ export class RoleService {
   public addRoles(data: Role): Observable<ResType<Role>> {
     this._roles.mutate(res => res.push(data));
     return this.apiService.post(this.baseUrl, data);
+  }
+
+  public getPermissionById(id: string): Observable<ResType<Permission[]>> {
+    const url = `/api/permissions/${id}`;
+    return this.apiService.get<ResType<Permission[]>>(url);
   }
 
   public delRoles(ids: string[]): Observable<void> {
@@ -66,5 +67,9 @@ export class RoleService {
     this._roles.update(res => res.filter(datas => datas.id === id));
     const url = `${this.baseUrl}/${id}`;
     return this.apiService.patch(url, data);
+  }
+
+  public updatePermission(param: PutPermissionParam): Observable<NzSafeAny> {
+    return this.apiService.patch(`/api/permissions/users/${param.roleId}`, param.permissionIds);
   }
 }

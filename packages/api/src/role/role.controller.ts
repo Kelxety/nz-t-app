@@ -20,7 +20,7 @@ import { toBoolean } from '@api/lib/helper/cast.helper';
 import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
 import { Prisma } from '@prisma/client';
 
-@Controller('role')
+@Controller('roles')
 @ApiTags('system_roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
@@ -49,11 +49,16 @@ export class RoleController {
       data: data,
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }
@@ -63,10 +68,10 @@ export class RoleController {
   @Get(':id')
   @CustomGlobalDecorator(Prisma.RoleScalarFieldEnum, false, RoleEntity)
   async findOne(@Param('id') id: string) {
-    const userCreated = await this.roleService.findOne(id);
+    const user = await this.roleService.findOne(id);
     return {
-      message: `Role successfuly created`,
-      data: new RoleEntity(userCreated),
+      message: `Role successfuly fetch`,
+      data: new RoleEntity(user),
     };
   }
 
