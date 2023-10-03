@@ -25,7 +25,7 @@ export default [
       },
       {
         path: 'receiving-transaction-list',
-        data: { title: 'Receiving Transaction List', key: 'receiving-transaction-list' },
+        data: { title: 'Receiving Transaction List', key: 'default:receiving-transaction-list' },
         loadComponent: () => import('../../pages/receiving-transaction-list/receiving-transaction-list.component').then(m => m.ReceivingTransactionListComponent)
       },
       {
