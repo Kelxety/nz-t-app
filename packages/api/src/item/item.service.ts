@@ -12,7 +12,7 @@ import { UpdateItemDto } from './dto/update-item.dto';
 
 @Injectable()
 export class ItemService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) { }
 
   async create(createItemDto: CreateItemDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
@@ -24,14 +24,6 @@ export class ItemService {
     });
     if (find) {
       throw new ConflictException(find.itemName);
-    }
-    const find2 = await this.prisma.scmItem.findUnique({
-      where: {
-        itemCode: createItemDto.itemCode,
-      },
-    });
-    if (find2) {
-      throw new ConflictException(find2.itemCode);
     }
     return await this.prisma.scmItem.create({
       data: { ...createItemDto, createdBy: creatorName.accountName },

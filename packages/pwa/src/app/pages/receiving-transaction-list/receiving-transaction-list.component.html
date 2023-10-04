@@ -10,15 +10,25 @@
                 </nz-breadcrumb-item>
             </nz-breadcrumb>
         </nz-card>
-        <nz-card class="m-4" [nzTitle]="switchValue ? 'Posting list' : 'Transaction list'" [nzExtra]="options">
-            <div class="loc-content" *ngIf="!model.loading; else isLoading">
+        <nz-card class="m-4 space-y-2" [nzTitle]="switchValue ? 'Posting list' : 'Transaction list'"
+            [nzExtra]="options">
+            <div class="flex flex-row space-x-2 items-center" *ngIf="switchValue">
+                <button [disabled]="setOfCheckedId.size === 0" [nzLoading]="loading" nz-button nzType="primary"
+                    (click)="sendRequest()" type="submit" class="my-2">
+                    POST
+                    <span nz-icon nzType="send" nzTheme="outline"></span>
+                </button>
+                <span>Selected {{ setOfCheckedId.size }} items</span>
+            </div>
+
+            <div *ngIf="!model.loading; else isLoading">
                 <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzSize]="'default'"
                     [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
                     (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
                     <thead>
                         <tr>
-                            <th *ngIf="switchValue" [nzSelections]="listOfSelection" [(nzChecked)]="checked"
-                                [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+                            <th *ngIf="switchValue" [nzChecked]="checked" [nzIndeterminate]="indeterminate"
+                                (nzCheckedChange)="onAllChecked($event)"></th>
                             <th>Date</th>
                             <th>Ref No.</th>
                             <th>Receive mode</th>
@@ -27,14 +37,14 @@
                             <th>PO No.</th>
                             <th nzAlign="center">Posting</th>
                             <th nzWidth="110px" nzAlign="center">Status</th>
-                            <th nzWidth="80px" class="text-right">Action</th>
+                            <th *ngIf="!switchValue" nzWidth="80px" class="text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let data of fixedTable.data" (click)="onRowClick(data)"
                             [class.active]="selectedRow === data">
                             <td *ngIf="switchValue" [nzChecked]="setOfCheckedId.has(data.id)"
-                                (nzCheckedChange)="onItemChecked(data.id, $event)"></td>
+                                [nzDisabled]="data.disabled" (nzCheckedChange)="onItemChecked(data.id, $event)"></td>
                             <td nzEllipsis>{{ data?.rcvDate |
                                 date : 'MM/dd/YYYY' }}</td>
                             <td nzEllipsis>{{ data?.rcvRefno }}</td>
@@ -49,7 +59,8 @@
                                     [nzColor]="data.state === 'Active' ? 'green' : 'red'"
                                     [nzText]="data?.state"></nz-badge>
                             </td>
-                            <td [nzRight]="true" class="text-right" style="padding-top: 2px; padding-bottom: 2px">
+                            <td *ngIf="!switchValue" [nzRight]="true" class="text-right"
+                                style="padding-top: 2px; padding-bottom: 2px">
                                 <span type="button" (click)="onEditClick($event, data)" class="cursor-pointer" nz-icon
                                     nzType="edit" nzTheme="outline"></span>
                                 <nz-divider nzType="vertical"></nz-divider>
