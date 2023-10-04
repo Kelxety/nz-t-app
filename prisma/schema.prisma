@@ -324,6 +324,7 @@ model ScmItem {
 
   @@index([itemcategoryId], map: "itemcategory_id")
   @@index([unitId], map: "unit_id")
+  @@fulltext([itemCode, barcode, itemName])
   @@map("scm_item")
 }
 
@@ -520,6 +521,7 @@ model ScmReceiveMode {
   scmSuppliers ScmSupplier[]
   scmItemDtl   ScmItemDtl[]
 
+  @@fulltext([recvMode])
   @@map("scm_receive_mode")
 }
 
@@ -784,6 +786,7 @@ model ScmSupplier {
   scmReceiveMode  ScmReceiveMode? @relation(fields: [receivemodeId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_supplier_ibfk_1")
 
   @@index([receivemodeId], map: "receivemode_id")
+  @@fulltext([supplierName, supplierAddress, contactPerson, contactNo])
   @@map("scm_supplier")
 }
 
@@ -833,6 +836,7 @@ model ScmUnit {
   scmItems    ScmItem[]
   scmItemDtls ScmItemDtl[]
 
+  @@fulltext([unitName, unitAcro])
   @@map("scm_unit")
 }
 
@@ -859,6 +863,7 @@ model ScmWarehouse {
   scmStockInventories                              ScmStockInventory[]
   scmStockLedgers                                  ScmStockLedger[]
 
+  @@fulltext([whName, whAcro])
   @@map("scm_warehouse")
 }
 

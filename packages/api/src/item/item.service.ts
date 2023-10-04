@@ -84,6 +84,354 @@ export class ItemService {
     return returnData;
   }
 
+  async fulltextSearch({
+    searchData,
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmItemWhereInput,
+    Prisma.ScmItemOrderByWithAggregationInput
+  >): Promise<ScmItem[] | any> {
+    if (!pagination) {
+      return this.prisma.scmItem.findMany({
+        where: {
+          OR: [
+            {
+              barcode: {
+                contains: searchData
+              }
+            },
+            {
+              itemCode: {
+                contains: searchData
+              }
+            },
+            {
+              itemName: {
+                contains: searchData
+              }
+            },
+            {
+              scmItemCategory: {
+                catAcro: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItemCategory: {
+                catName: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  subitemName: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  brandName: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  subitemCode: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  lotNo: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  barcode: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  scmUnit: {
+                    unitAcro: {
+                      contains: searchData
+                    }
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  scmUnit: {
+                    unitName: {
+                      contains: searchData
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        include: {
+          scmItemCategory: true,
+          scmItemDtl: {
+            where: {
+              balanceQty: {
+                gt: 0,
+              },
+            },
+          },
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmItem.count({
+        where: {
+          OR: [
+            {
+              barcode: {
+                contains: searchData
+              }
+            },
+            {
+              itemCode: {
+                contains: searchData
+              }
+            },
+            {
+              itemName: {
+                contains: searchData
+              }
+            },
+            {
+              scmItemCategory: {
+                catAcro: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItemCategory: {
+                catName: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  subitemName: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  brandName: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  subitemCode: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  lotNo: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  barcode: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  scmUnit: {
+                    unitAcro: {
+                      contains: searchData
+                    }
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  scmUnit: {
+                    unitName: {
+                      contains: searchData
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+      }),
+      this.prisma.scmItem.findMany({
+        where: {
+          OR: [
+            {
+              barcode: {
+                contains: searchData
+              }
+            },
+            {
+              itemCode: {
+                contains: searchData
+              }
+            },
+            {
+              itemName: {
+                contains: searchData
+              }
+            },
+            {
+              scmItemCategory: {
+                catAcro: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItemCategory: {
+                catName: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  subitemName: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  brandName: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  subitemCode: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  lotNo: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  barcode: {
+                    contains: searchData
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  scmUnit: {
+                    unitAcro: {
+                      contains: searchData
+                    }
+                  }
+                }
+              }
+            },
+            {
+              scmItemDtl: {
+                every: {
+                  scmUnit: {
+                    unitName: {
+                      contains: searchData
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        include: {
+          scmItemCategory: true,
+          scmItemDtl: {
+            where: {
+              balanceQty: {
+                gt: 0,
+              },
+            },
+          },
+        },
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
+  }
+
   async findOne(id: string) {
     const data = await this.prisma.scmItem.findUnique({
       where: { id },
