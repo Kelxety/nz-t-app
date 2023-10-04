@@ -56,7 +56,6 @@ export class JudgeAuthGuardService {
   }
 
   getResult(code: string, authCodeArray: string[]): boolean | UrlTree {
-    console.log('code', code, authCodeArray);
     if (authCodeArray.includes(code)) {
       return true;
     } else {
@@ -76,6 +75,8 @@ export class JudgeAuthGuardService {
     }
     // If there is authCode, it means that clicking the button on the page jumps to the new route, not the route in the menu
     if (!!route.data['authCode']) {
+      // console.log('code route: ', route.data['authCode']);
+
       return this.getResult(route.data['authCode'], this.authCodeArray);
     }
 
@@ -86,10 +87,12 @@ export class JudgeAuthGuardService {
     // No menu found, go directly to the login page
 
     if (!this.selMenu) {
+      // console.log('key route: ', route.data['key'], this.authCodeArray);
       return this.getResult(route.data['key'], this.authCodeArray);
     }
     const selMenuCode = this.selMenu.code;
     this.selMenu = null;
+    // console.log('selMenuCode: ', selMenuCode);
     // If the menu is found, but the user does not have the permission code of the menu, then jump to the login page
     return this.getResult(selMenuCode!, this.authCodeArray);
     // return true;

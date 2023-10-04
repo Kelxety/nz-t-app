@@ -74,7 +74,6 @@ export class LoginInOutService {
               })
             )
             .subscribe((menus: ResType<Array<Permission & { open?: boolean; selected?: boolean }>>) => {
-              console.log('menus', menus);
               let menuData = menus.data;
               menuData = menuData.filter((item: Permission & { open?: boolean; selected?: boolean }) => {
                 item.selected = false;
@@ -99,7 +98,6 @@ export class LoginInOutService {
           // this.loading = false;
         }
       });
-
       // acctList$.pipe().subscribe({
       //   next: (o: any) => {
       //     this.acctService.dataList = o['hydra:member'];
@@ -146,7 +144,6 @@ export class LoginInOutService {
       //     this.menuService.setMenuArrayStore(temp);
       //     resolve();
       //   });
-      // resolve();
     });
   }
 
