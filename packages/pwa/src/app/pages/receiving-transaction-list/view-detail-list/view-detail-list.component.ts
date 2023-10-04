@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ScmReceive } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
@@ -41,7 +41,7 @@ export class ViewDetailListComponent {
     private msg: NzMessageService,
     private cd: ChangeDetectorRef,
   ) {
-    this.data = this.nzData.data.id;
+    this.data = this.nzData.data;
     this.actionType = this.nzData.actionType;
 
 
@@ -70,15 +70,15 @@ export class ViewDetailListComponent {
         sortDirection: 'asc'
       }
     ];
-    this.stockReceivingDtlServices.list({ order: order, pagination: false, filteredObject: JSON.stringify({ receiveId: this.data }) }).subscribe({
+    this.stockReceivingDtlServices.list({ order: order, pagination: false, filteredObject: JSON.stringify({ receiveId: this.data.id }) }).subscribe({
       next: (res: any) => {
-        const list = signal(res.data)
-        list.mutate(res => {
-          model.list.push(...res)
-          model.filteredList.push(...res)
-        })
-        // model.list = list;
-        // model.filteredList = list;
+        const list = res.data
+        // list.mutate(res => {
+        //   model.list.push(...res)
+        //   model.filteredList.push(...res)
+        // })
+        model.list = list;
+        model.filteredList = list;
       },
       error: (err: any) => {
         console.log(err);

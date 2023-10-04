@@ -108,6 +108,23 @@ export class ReceivingController {
     };
   }
 
+  @Patch('posting/:id')
+  @CustomReceivingDecorator()
+  async updatePosting(
+    @Request() request: Req,
+    @Param('id') id: string,
+    @Body() updateReceivingDto: UpdateReceivingDto) {
+    const data = await this.receivingService.updatePosting(
+      id,
+      updateReceivingDto,
+      request?.headers?.authorization?.split('Bearer ')[1],
+    );
+    return {
+      message: `${id} Data patched Succesfully`,
+      data: new ReceivingEntity(data),
+    };
+  }
+
   @Delete(':id')
   @CustomReceivingDecorator()
   async remove(@Param('id') id: string) {

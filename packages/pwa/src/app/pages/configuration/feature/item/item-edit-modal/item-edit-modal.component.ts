@@ -136,9 +136,7 @@ export class ItemEditModalComponent {
     });
 
     if (this.route.snapshot.params) {
-
       this.id = this.route.snapshot?.params;
-
     }
     this.setupFormChangeListeners();
   }
