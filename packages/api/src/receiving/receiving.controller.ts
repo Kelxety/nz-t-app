@@ -44,21 +44,28 @@ export class ReceivingController {
       data: data.map((res: Partial<ReceivingEntity>) => new ReceivingEntity(res)),
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }
     return resData;
   }
 
-  @Get('q=')
+  @Get('search')
   @CustomReceivingDecoratorSearch()
   async search(@Query() query: QueryT): Promise<ResponseT<ReceivingEntity[]>> {
-    const data = await this.receivingService.search({
+    console.log(query, 'query')
+    const data = await this.receivingService.searchFilterFulltext({
+      searchData: query.q,
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
       page: Number(query.page),
       pageSize: Number(query.pageSize),
@@ -70,11 +77,16 @@ export class ReceivingController {
       data: data.map((res: Partial<ReceivingEntity>) => new ReceivingEntity(res)),
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }

@@ -7,6 +7,7 @@ export interface Order {
 }
 
 export interface PaginateOptions<T, OrderType> {
+  searchData?: string
   data: T;
   page: number;
   pageSize: number;
@@ -15,6 +16,7 @@ export interface PaginateOptions<T, OrderType> {
 }
 
 export interface QueryT {
+  q?: string
   filteredObject?: string;
   page?: number;
   pageSize: number;
