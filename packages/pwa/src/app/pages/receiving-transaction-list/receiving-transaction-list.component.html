@@ -29,15 +29,16 @@
                         <tr>
                             <th *ngIf="switchValue" [nzChecked]="checked" [nzIndeterminate]="indeterminate"
                                 (nzCheckedChange)="onAllChecked($event)"></th>
-                            <th>Date</th>
-                            <th>Ref No.</th>
+                            <th nzWidth="120px">Date</th>
+                            <th nzWidth="200px">Ref No.</th>
                             <th>Receive mode</th>
+                            <th>Supplier</th>
                             <th>PR No.</th>
                             <th>DR No.</th>
                             <th>PO No.</th>
-                            <th nzAlign="center">Posting</th>
+                            <th nzAlign="center" nzWidth="100px">Posting</th>
                             <th nzWidth="110px" nzAlign="center">Status</th>
-                            <th *ngIf="!switchValue" nzWidth="80px" class="text-right">Action</th>
+                            <th *ngIf="!switchValue" nzWidth="110px" class="text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,10 +50,11 @@
                                 date : 'MM/dd/YYYY' }}</td>
                             <td nzEllipsis>{{ data?.rcvRefno }}</td>
                             <td nzEllipsis>{{ data?.scmReceiveMode?.recvMode }}</td>
+                            <td nzEllipsis>{{ data?.scmSupplier?.supplierName }}</td>
                             <td nzEllipsis>{{ data?.purchaserequestNo }}</td>
                             <td nzEllipsis>{{ data?.deliveryreceiptNo }}</td>
                             <td nzEllipsis>{{ data?.purchaseorderNo }}</td>
-                            <td nzEllipsis nzAlign="center"><nz-badge [nzColor]="data.isPosted ? 'green' : 'blue'"
+                            <td nzEllipsis nzAlign="left"><nz-badge [nzColor]="data.isPosted ? 'green' : 'blue'"
                                     [nzText]="data?.isPosted ? 'Posted' : 'For Posting'"></nz-badge>
                             </td>
                             <td nzEllipsis nzAlign="center"><nz-badge
@@ -61,11 +63,15 @@
                             </td>
                             <td *ngIf="!switchValue" [nzRight]="true" class="text-right"
                                 style="padding-top: 2px; padding-bottom: 2px">
+                                <span type="button" class="cursor-pointer" nz-icon nzType="printer"
+                                    (click)="onReprint($event, data)" nz-tooltip="Re-print" nzTheme="outline"></span>
+                                <nz-divider nzType="vertical"></nz-divider>
                                 <span type="button" (click)="onEditClick($event, data)" class="cursor-pointer" nz-icon
-                                    nzType="edit" nzTheme="outline"></span>
+                                    nz-tooltip="Edit" nzType="edit" nzTheme="outline"></span>
                                 <nz-divider nzType="vertical"></nz-divider>
                                 <span class="cursor-pointer" nz-icon nzType="delete" nzTheme="outline"
-                                    style="color: red" nz-popconfirm (click)="onDeleteClick($event, data)"></span>
+                                    nz-tooltip="Delete" style="color: red" nz-popconfirm
+                                    (click)="onDeleteClick($event, data)"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -80,20 +86,22 @@
         <ng-template #options>
             <div nz-space nzAlign="start">
                 <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch">
-                    <input type="text" nz-input placeholder="Search..." name="search" [ngModel]="search" />
+                    <input type="text" nz-input placeholder="Search..." name="search" [(ngModel)]="search"
+                        (keyup.enter)="onSearch()" />
                 </nz-input-group>
                 <nz-button-group *nzSpaceItem>
                     <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px"
-                        (click)="onReceive()" nzTooltipTitle="Add " nzTooltipPlacement="topLeft" nz-tooltip>
+                        (click)="onReceive()" nzTooltipPlacement="topLeft" nz-tooltip="Add">
                         <span nz-icon nzType="plus" nzTheme="outline"></span>
                     </button>
                     <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px"
                         nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip>
                         <span nz-icon nzType="reload" nzTheme="outline"></span>
                     </button>
-                    <nz-switch [(ngModel)]="switchValue" (ngModelChange)="onPosting(switchValue)"
+                    <!-- <nz-switch [(ngModel)]="switchValue" (ngModelChange)="onPosting(switchValue)"
                         class="items-center px-1 mt-1" nzCheckedChildren="For Posting"
-                        nzUnCheckedChildren="Transaction"></nz-switch>
+                        nzUnCheckedChildren="Transaction"></nz-switch> -->
+                    <nz-segmented [nzOptions]="gridList" (nzValueChange)="onPosting($event)"></nz-segmented>
                 </nz-button-group>
             </div>
         </ng-template>

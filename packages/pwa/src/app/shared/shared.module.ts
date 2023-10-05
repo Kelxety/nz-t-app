@@ -23,6 +23,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
@@ -59,6 +60,7 @@ const MODULES: any[] = [
   NzButtonModule,
   NzToolTipModule,
   NzDividerModule,
+  NzSegmentedModule,
   NzTabsModule,
   NzInputNumberModule,
   NgFor,
@@ -119,4 +121,4 @@ const PROVIDERS: any[] = [];
   declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES],
   providers: [...PROVIDERS]
 })
-export class SharedModule {}
+export class SharedModule { }

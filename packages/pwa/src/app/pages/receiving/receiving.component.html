@@ -432,7 +432,7 @@
                             nzType="reload" nzTheme="outline">
                         </span>
                     </div>
-                    <form nz-form [formGroup]="validateForm" id="validateForm">
+                    <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="onSubmit()">
 
                         <nz-form-item>
                             <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="entryDate" nzRequired nzLabelWrap>
@@ -517,7 +517,7 @@
 
                         <div>
                             <nz-form-control>
-                                <button nz-button nzType="primary" type="submit" class="w-full" (click)="onSaveAll()">
+                                <button nz-button nzType="primary" class="w-full">
                                     <span nz-icon nzType="save" nzTheme="outline"></span>
                                     Save
                                 </button>

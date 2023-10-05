@@ -7,7 +7,7 @@
                 [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" (click)="isCollapsed = !isCollapsed"></span>
         </nz-header>
 
-        <form nz-form [formGroup]="validateForm" id="validateForm">
+        <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="onUpdateItem()">
             <nz-card [hidden]="isCollapsed">
 
                 <nz-form-item>
@@ -42,8 +42,7 @@
                     <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
                 </nz-form-item>
                 <div class="float-right px-4">
-                    <button *ngIf="this.dataLabel === 'Edit'" nz-button nzType="primary" type="button"
-                        (click)="onUpdateItem()">
+                    <button *ngIf="this.dataLabel === 'Edit'" nz-button nzType="primary">
                         <span nz-icon nzType="save" nzTheme="outline"></span>
                         Update
                     </button>

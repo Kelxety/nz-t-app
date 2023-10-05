@@ -3,9 +3,10 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmItemCategory, ScmItemDtl } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { SpinService } from '../../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../../shared';
+import { fnCheckForm } from '../../../../../utils/tools';
 import { ResType } from '../../../../../utils/types/return-types';
 import { ItemCatergoryServices } from '../../../Services/item-category/item-category.service';
 import { ItemDetailServices } from '../../../Services/item-detail/item-detail.service';
@@ -344,35 +345,38 @@ export class ItemEditModalComponent {
     })
   }
 
+  onSubmit() {
+    console.log('submit')
+    if (!fnCheckForm(this.validateForm)) {
+      return of(false);
+    }
+
+    return this.onUpdateItem()
+
+  }
 
   onUpdateItem() {
-    let model: any = this.model;
-    model.loading = true;
-    if (this.validateFormDetail.valid) {
-      const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-      this.itemServices.patch(this.id.id, this.validateForm.getRawValue()).subscribe({
-        next: (res: any) => {
-          this.msg.success('Item updated successfully')
-          this.isCollapsed = true
+    // let model: any = this.model;
+    // model.loading = true;
 
-        },
-        error: (err: any) => {
+    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+    this.itemServices.patch(this.id.id, this.validateForm.value).subscribe({
+      next: (res: any) => {
+        this.msg.remove(id)
+        this.isCollapsed = true
 
-        },
-        complete: () => {
-          model.loading = false;
-          this.cd.detectChanges();
-        }
-      })
-    } else {
-      Object.values(this.validateFormDetail.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true })
-        }
-      });
+      },
+      error: (err: any) => {
 
-    }
+      },
+      complete: () => {
+        this.msg.success('Item updated successfully')
+        // model.loading = false;
+        this.cd.detectChanges();
+      }
+    })
+
+
   }
 
   onUpdateItemDetail() {

@@ -7,7 +7,7 @@
         [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" (click)="isCollapsed = !isCollapsed"></span>
     </nz-header>
 
-    <form nz-form [formGroup]="validateForm" id="validateForm">
+    <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="onSubmit()">
       <nz-card [hidden]="isCollapsed">
 
         <nz-form-item>
@@ -43,7 +43,7 @@
           <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
         </nz-form-item>
         <div class="float-right px-4">
-          <button nz-button nzType="primary" [disabled]="this.btnDisable" type="submit" (click)="onCreateItem()">
+          <button nz-button nzType="primary" [disabled]="this.btnDisable">
             <span nz-icon nzType="save" nzTheme="outline"></span>
             Save
           </button>

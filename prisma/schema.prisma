@@ -307,6 +307,7 @@ model ScmItem {
   id                  String               @id @default(uuid())
   itemCode            String?              @unique() @map("item_code") @db.VarChar(36)
   barcode             String?              @db.VarChar(50)
+  itemImage           String?              @db.VarChar(120)
   itemName            String?              @unique() @map("item_name") @db.VarChar(255)
   itemDescription     String?              @map("item_description") @db.VarChar(50)
   itemcategoryId      String?              @map("itemcategory_id") @db.VarChar(36)

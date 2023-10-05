@@ -130,7 +130,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   subitemName: {
                     contains: searchData
                   }
@@ -139,7 +139,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   brandName: {
                     contains: searchData
                   }
@@ -148,7 +148,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   subitemCode: {
                     contains: searchData
                   }
@@ -157,7 +157,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   lotNo: {
                     contains: searchData
                   }
@@ -166,31 +166,9 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   barcode: {
                     contains: searchData
-                  }
-                }
-              }
-            },
-            {
-              scmItemDtl: {
-                every: {
-                  scmUnit: {
-                    unitAcro: {
-                      contains: searchData
-                    }
-                  }
-                }
-              }
-            },
-            {
-              scmItemDtl: {
-                every: {
-                  scmUnit: {
-                    unitName: {
-                      contains: searchData
-                    }
                   }
                 }
               }
@@ -245,7 +223,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   subitemName: {
                     contains: searchData
                   }
@@ -254,7 +232,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   brandName: {
                     contains: searchData
                   }
@@ -263,7 +241,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   subitemCode: {
                     contains: searchData
                   }
@@ -272,7 +250,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   lotNo: {
                     contains: searchData
                   }
@@ -281,31 +259,9 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   barcode: {
                     contains: searchData
-                  }
-                }
-              }
-            },
-            {
-              scmItemDtl: {
-                every: {
-                  scmUnit: {
-                    unitAcro: {
-                      contains: searchData
-                    }
-                  }
-                }
-              }
-            },
-            {
-              scmItemDtl: {
-                every: {
-                  scmUnit: {
-                    unitName: {
-                      contains: searchData
-                    }
                   }
                 }
               }
@@ -347,7 +303,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   subitemName: {
                     contains: searchData
                   }
@@ -356,7 +312,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   brandName: {
                     contains: searchData
                   }
@@ -365,7 +321,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   subitemCode: {
                     contains: searchData
                   }
@@ -374,7 +330,7 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   lotNo: {
                     contains: searchData
                   }
@@ -383,35 +339,13 @@ export class ItemService {
             },
             {
               scmItemDtl: {
-                every: {
+                some: {
                   barcode: {
                     contains: searchData
                   }
                 }
               }
             },
-            {
-              scmItemDtl: {
-                every: {
-                  scmUnit: {
-                    unitAcro: {
-                      contains: searchData
-                    }
-                  }
-                }
-              }
-            },
-            {
-              scmItemDtl: {
-                every: {
-                  scmUnit: {
-                    unitName: {
-                      contains: searchData
-                    }
-                  }
-                }
-              }
-            }
           ]
         },
         include: {
