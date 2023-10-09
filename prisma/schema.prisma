@@ -388,6 +388,7 @@ model ScmItemDtl {
 
   @@index([itemId], map: "item_id")
   @@index([unitId], map: "unit_id")
+  @@fulltext([subitemCode, barcode, subitemName, brandName])
   @@map("scm_item_dtl")
 }
 

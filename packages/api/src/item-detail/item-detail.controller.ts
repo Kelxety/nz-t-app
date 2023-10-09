@@ -26,7 +26,7 @@ import { ItemDetailService } from './item-detail.service';
 @Controller('item-detail')
 @ApiTags('scm_item_detail')
 export class ItemDetailController {
-  constructor(private readonly itemDetailService: ItemDetailService) {}
+  constructor(private readonly itemDetailService: ItemDetailService) { }
 
   @Post()
   @CustomItemDetailDecorator()
@@ -66,6 +66,40 @@ export class ItemDetailController {
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
+  }
+
+  @Get('search')
+  @CustomItemDetailDecoratorFindAll()
+  async fulltextSearch(
+    @Query() query: QueryT,
+  ): Promise<ResponseT<ItemDetailEntity[]>> {
+    const data = await this.itemDetailService.fullTextSearch({
+      searchData: query.q,
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const resData = {
+      message: `List of data`,
+      data: data.map((res) => new ItemDetailEntity(res)),
+    };
+    if (!query.pagination) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }
