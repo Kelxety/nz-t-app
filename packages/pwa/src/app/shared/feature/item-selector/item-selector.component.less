@@ -1,0 +1,39 @@
+@import "mixin";
+.themeMixin({
+  :host {
+    .active-item {
+        border-left: 4px solid @primary-color!important;
+        font-weight: bold;
+    }
+
+    .clickable:hover {
+        color: @primary-color !important;
+    }
+
+    @base-color: @primary-color !important;
+
+    .bg-primary {
+      background-color: @primary-color !important;
+    }
+
+    .ant-card-body {
+      padding: 0px !important // number can be 0 onwards
+    }
+
+    .clickable {
+        cursor: pointer;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+      input[type=number] {
+        -moz-appearance: textfield;
+      }
+    }
+});
