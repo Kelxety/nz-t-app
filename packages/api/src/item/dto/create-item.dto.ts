@@ -19,6 +19,11 @@ export class CreateItemDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  itemImage: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   itemDescription: string;
 
   @ApiProperty()
