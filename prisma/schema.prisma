@@ -307,6 +307,7 @@ model ScmItem {
   id                  String               @id @default(uuid())
   itemCode            String?              @unique() @map("item_code") @db.VarChar(36)
   barcode             String?              @db.VarChar(50)
+  itemImage           String?              @db.VarChar(120)
   itemName            String?              @unique() @map("item_name") @db.VarChar(255)
   itemDescription     String?              @map("item_description") @db.VarChar(50)
   itemcategoryId      String?              @map("itemcategory_id") @db.VarChar(36)
@@ -324,6 +325,7 @@ model ScmItem {
 
   @@index([itemcategoryId], map: "itemcategory_id")
   @@index([unitId], map: "unit_id")
+  @@fulltext([itemCode, barcode, itemName])
   @@map("scm_item")
 }
 
@@ -485,10 +487,6 @@ model ScmReceive {
   @@index([receivemodeId], map: "receivemode_id")
   @@index([supplierId], map: "supplier_id")
   @@index([warehouseId], map: "warehouse_id")
-  @@fulltext([rcvRefno])
-  @@fulltext([purchaserequestNo])
-  @@fulltext([deliveryreceiptNo])
-  @@fulltext([purchaseorderNo])
   @@fulltext([rcvRefno, purchaserequestNo, deliveryreceiptNo, purchaseorderNo])
   @@map("scm_receive")
 }
@@ -524,6 +522,7 @@ model ScmReceiveMode {
   scmSuppliers ScmSupplier[]
   scmItemDtl   ScmItemDtl[]
 
+  @@fulltext([recvMode])
   @@map("scm_receive_mode")
 }
 
@@ -788,6 +787,7 @@ model ScmSupplier {
   scmReceiveMode  ScmReceiveMode? @relation(fields: [receivemodeId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_supplier_ibfk_1")
 
   @@index([receivemodeId], map: "receivemode_id")
+  @@fulltext([supplierName, supplierAddress, contactPerson, contactNo])
   @@map("scm_supplier")
 }
 
@@ -837,6 +837,7 @@ model ScmUnit {
   scmItems    ScmItem[]
   scmItemDtls ScmItemDtl[]
 
+  @@fulltext([unitName, unitAcro])
   @@map("scm_unit")
 }
 
@@ -863,6 +864,7 @@ model ScmWarehouse {
   scmStockInventories                              ScmStockInventory[]
   scmStockLedgers                                  ScmStockLedger[]
 
+  @@fulltext([whName, whAcro])
   @@map("scm_warehouse")
 }
 

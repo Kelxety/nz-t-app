@@ -39,6 +39,11 @@ export default [
         loadComponent: () => import('../../pages/price-update/price-update.component').then(m => m.PriceUpdateComponent)
       },
       {
+        path: 'item-inquiry',
+        data: { title: 'Item Inquiry', key: 'item-inquiry' },
+        loadComponent: () => import('../../pages/item-inquiry/item-inquiry.component').then(m => m.ItemInquiryComponent)
+      },
+      {
         path: 'configuration',
         loadChildren: () => import('../../pages/configuration/configuration-routing')
       },

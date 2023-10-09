@@ -95,7 +95,9 @@ export class LoginFormComponent implements OnInit {
         this.loginInOutService
           .loginIn(userToken)
           .then(() => {
-            this.router.navigateByUrl('default/dashboard/analysis');
+            setTimeout(() => {
+              this.router.navigateByUrl('default/dashboard/analysis');
+            }, 500);
           })
           .finally(() => {
             this.spinService.setCurrentGlobalSpinStore(false);
@@ -114,9 +116,5 @@ export class LoginFormComponent implements OnInit {
       });
   }
 
-
-
-
   ngOnInit(): void {}
-
 }

@@ -26,6 +26,7 @@ export class CreateItemDetailDto {
 
     @IsString()
     @ApiProperty()
+    @IsOptional()
     subitemCode: string;
 
     @IsString()

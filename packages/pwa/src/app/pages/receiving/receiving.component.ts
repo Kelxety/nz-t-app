@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
@@ -6,9 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmReceiveMode, ScmSupplier, ScmWarehouse } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { of } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { SpinService } from '../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../shared';
+import { fnCheckForm } from '../../utils/tools';
 import { ModalBtnStatus } from '../../widget/base-modal';
 import { ItemCatergoryServices } from '../configuration/Services/item-category/item-category.service';
 import { ItemDetailServices } from '../configuration/Services/item-detail/item-detail.service';
@@ -122,6 +123,7 @@ export class ReceivingComponent {
       purchaserequestNo: [null],
       deliveryreceiptNo: [null],
       purchaseorderNo: [null],
+      isPosted: [false],
       remarks: [null],
       state: ['Active']
     });
@@ -150,7 +152,11 @@ export class ReceivingComponent {
 
   ngOnInit(): void {
     // this.loadAccount()
-    const promise = [Promise.resolve(this.loadUnitData()), Promise.resolve(this.loadWarehouse()), Promise.resolve(this.loadSupplier()), Promise.resolve(this.loadRm()), Promise.resolve(this.loadItems())]
+    const promise = [Promise.resolve(this.loadUnitData()),
+    Promise.resolve(this.loadWarehouse()),
+    Promise.resolve(this.loadSupplier()),
+    Promise.resolve(this.loadRm()),
+    Promise.resolve(this.loadItems())]
     Promise.all(promise)
     this.spinService.setCurrentGlobalSpinStore(false);
     // this.validateFormDetail.disable()
@@ -542,19 +548,30 @@ export class ReceivingComponent {
     this.footerTotalCost()
   }
 
+  onSubmit() {
+
+    console.log('submit')
+    if (!fnCheckForm(this.validateForm)) {
+      return of(false);
+    }
+    if (this.itemDataList() === null || this.itemDataList().length === 0) {
+      return this.msg.info('Please add for receving items')
+    }
+    return this.onSaveAll()
+
+  }
+
   async onSaveAll() {
 
-    if (this.itemDataList() === null || this.itemDataList().length === 0) {
-      this.msg.info('Please add for receving items')
-      return
-    }
     if (this.validateForm.valid) {
       const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
       // this.validateForm.get('receivemodeId').setValue(this.validateForm.get('receivemodeId').value.id)
       this.stockReceivingServices.create(this.validateForm.getRawValue()).subscribe({
         next: (value: any) => {
           this.msg.remove(id)
-          this.updateRcvHdrForRefNo(value)
+          // this.updateRcvHdrForRefNo(value)
+          this.refNo.set(value.data.rcvRefno)
+          this.saveToItemDetail(value)
 
         }, error: (error: any) => {
           if (error) {
@@ -581,17 +598,17 @@ export class ReceivingComponent {
     }
   }
 
-  updateRcvHdrForRefNo(data: any) {
+  // updateRcvHdrForRefNo(data: any) {
 
-    let refNo = `${formatDate(this.validateForm.get('rcvDate').value, 'yyyy-MM', 'en-PH')}-${data.data.id.split('-').pop()}`
-    this.stockReceivingServices.patch(data.data.id, { rcvRefno: refNo }).subscribe({
-      next: (res: any) => {
-        console.log(res, 'ref')
-        this.refNo.set(res.data.rcvRefno)
-        this.saveToItemDetail(res)
-      }
-    })
-  }
+  //   let refNo = `${formatDate(this.validateForm.get('rcvDate').value, 'yyyy-MM', 'en-PH')}-${data.data.id.split('-').pop()}`
+  //   this.stockReceivingServices.patch(data.data.id, { rcvRefno: refNo }).subscribe({
+  //     next: (res: any) => {
+  //       console.log(res, 'ref')
+  //       this.refNo.set(res.data.rcvRefno)
+
+  //     }
+  //   })
+  // }
 
   saveToItemDetail(rcvData: any) {
     const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
@@ -599,51 +616,6 @@ export class ReceivingComponent {
     try {
       const updates = this.itemDataList.mutate(async (data) => {
 
-        //   data.map((res) => {
-        //     console.log(res)
-        //     res.loadNow = true
-        //     this.cd.detectChanges()
-        //  var res:any = Promise.all(res.itemDetails.map((newRes, i) => {
-
-        //       model = {}
-        //       model.balanceQty = newRes?.qty
-        //       model.barcode = newRes?.barcodeNo
-        //       model.batchNo = newRes?.batchNo
-        //       model.brandName = newRes?.brandName
-        //       model.cost = newRes?.cost
-        //       model.expirationDate = newRes?.expirationDate
-        //       model.entryDate = this.validateForm.get('rcvDate').value
-        //       model.itemId = newRes?.selectedItem.id
-        //       model.lotNo = newRes?.lotNo
-        //       model.markup = newRes?.markup
-        //       model.price = newRes?.price
-        //       // model.rrMode = this.validateForm.get('receivemodeId').value.recvMode
-        //       model.state = 'Active'
-        //       model.subitemCode = newRes?.subitemCode
-        //       model.subitemName = newRes?.subitemName
-        //       model.unitId = newRes?.unitId
-        //       console.log(model, 'model')
-        //       this.itemDetailServices.create(model).subscribe({
-        //         next: (res: any) => {
-        //           console.log(res, 'item res')
-        //           res.loadNow = false
-        //           this.cd.detectChanges()
-        //           this.saveToRcvDetail(newRes, rcvData.data.id, res.data.id)
-
-        //         }, error: (error) => {
-        //           if (error) {
-        //             if (typeof error) {
-        //               this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
-        //             }
-        //             res.loadNow = 'ERROR'
-        //             this.msg.error('Unsuccessfully saved')
-        //             this.cd.detectChanges()
-        //           }
-        //         }
-        //       })
-        //     }))
-
-        //   })
         const itemDetailPromises = [];
 
         for (const res of data) {
@@ -710,104 +682,40 @@ export class ReceivingComponent {
       this.msg.error('Error occurred during item creation.');
     }
 
-    // try {
-    //   const updatedData = this.itemDataList.mutate(async (data) => {
-    //     const itemDetailPromises = [];
-
-    //     for (const res of data) {
-    //       res.loadNow = true;
-    //       this.cd.detectChanges();
-
-    //       for (const newRes of res.itemDetails) {
-    //         const model = {
-    //           id: '',
-
-    //           balanceQty: newRes?.qty,
-    //           barcode: newRes?.barcodeNo,
-    //           batchNo: newRes?.batchNo,
-    //           brandName: newRes?.brandName,
-    //           cost: newRes?.cost,
-    //           expirationDate: newRes?.expirationDate,
-    //           entryDate: this.validateForm.get('rcvDate').value,
-    //           itemId: newRes?.selectedItem.id,
-    //           lotNo: newRes?.lotNo,
-    //           markup: newRes?.markup,
-    //           price: newRes?.price,
-    //           state: 'Active',
-    //           subitemCode: newRes?.subitemCode,
-    //           subitemName: newRes?.subitemName,
-    //           unitId: newRes?.unitId,
-    //         };
-
-    //         const itemDetailPromise = new Promise((resolve, reject) => {
-    //           this.itemDetailServices.create(model).subscribe({
-    //             next: (res: any) => {
-    //               res.loadNow = false;
-    //               this.cd.detectChanges();
-    //               this.saveToRcvDetail(newRes, rcvData.data.id, res.data.id);
-    //               resolve();
-    //             },
-    //             error: (error) => {
-    //               if (error) {
-    //                 if (typeof error) {
-    //                   this.msg.error(`${error.error.error} must be unique "${error.error.message}"`);
-    //                 }
-    //                 res.loadNow = 'ERROR';
-    //                 this.msg.error('Unsuccessfully saved');
-    //                 this.cd.detectChanges();
-    //               }
-    //               reject(error);
-    //             },
-    //           });
-    //         });
-
-    //         itemDetailPromises.push(itemDetailPromise);
-    //       }
-    //     }
-
-    //     await Promise.all(itemDetailPromises);
-    //     return data;
-    //   });
-
-    //   this.msg.remove(id);
-    //   this.msg.success('Item saved successfully!');
-    // } catch (error) {
-    //   console.error('An error occurred:', error);
-    //   this.msg.remove(id);
-    //   this.msg.error('Error occurred during item creation.');
-    // }
-
-
   }
 
-  async saveToRcvDetail(data: any, rcvId: any, rcvDtlId: any) {
-    let model: any = []
-    model = {}
-    model.barcodeNo = data?.barcodeNo
-    model.batchNo = data?.batchNo
-    model.cost = data?.cost
-    model.costAmount = data.costAmount
-    model.expirationDate = data?.expirationDate
-    model.itemdtlId = rcvDtlId
-    model.lotNo = data?.lotNo
-    model.qty = data?.qty
-    model.receiveId = rcvId
+  async saveToRcvDetail(data: any, rcvId: any, rcvDtlId: any): Promise<any> {
+    return new Promise((resolve, reject) => {
 
-    this.stockReceivingDtlServices.create(model).subscribe({
-      next: () => {
+      let model: any = []
+      model = {}
+      model.barcodeNo = data?.barcodeNo
+      model.batchNo = data?.batchNo
+      model.cost = data?.cost
+      model.costAmount = data.costAmount
+      model.expirationDate = data?.expirationDate
+      model.itemdtlId = rcvDtlId
+      model.lotNo = data?.lotNo
+      model.qty = data?.qty
+      model.receiveId = rcvId
 
+      this.stockReceivingDtlServices.create(model).subscribe({
+        next: (val) => {
+          resolve(val)
+        }, error: (error) => {
 
-      }, error: (error) => {
-        if (error) {
-          if (typeof error) {
-            this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
+          if (error) {
+            if (typeof error) {
+              this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
+            }
+
+            this.msg.error('Unsuccessfully saved')
+            this.cd.detectChanges()
           }
-
-          this.msg.error('Unsuccessfully saved')
-          this.cd.detectChanges()
+          reject(error)
         }
-      }
-    })
+      })
+    });
   }
 
   success(): void {
@@ -817,6 +725,10 @@ export class ReceivingComponent {
       nzCentered: true,
       // nzOnOk: () => { console.log('print') },
       nzFooter: [
+        {
+          label: 'Cancel',
+          type: 'default'
+        },
         {
           label: 'Print',
           type: 'primary',

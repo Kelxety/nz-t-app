@@ -23,6 +23,9 @@ export class ItemEntity implements ScmItem {
   itemDescription: string;
 
   @ApiProperty()
+  itemImage: string;
+
+  @ApiProperty()
   @Exclude()
   itemcategoryId: string;
 
@@ -57,4 +60,6 @@ export class ItemEntity implements ScmItem {
       this.itemDtls = new ItemDetailEntity(itemDtls);
     }
   }
+
+
 }

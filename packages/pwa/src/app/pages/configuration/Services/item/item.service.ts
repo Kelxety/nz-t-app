@@ -12,12 +12,18 @@ export class ItemServices {
   private _items = signal<ScmItem[]>([])
   items = this._items.asReadonly()
   public baseUrl = '/api/item';
+  public searchFulltext = '/api/item/search';
 
   constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
   list(params: object = {}): Observable<ResType<ScmItem[]>> {
     const parameters = this.httpParams.convert(params);
     return this.apiService.get(this.baseUrl, parameters);
+  }
+
+  fulltextFilter(params: object = {}): Observable<ResType<ScmItem[]>> {
+    const parameters = this.httpParams.convert(params);
+    return this.apiService.get(this.searchFulltext, parameters);
   }
 
   get(id: string): Observable<ResType<ScmItem>> {

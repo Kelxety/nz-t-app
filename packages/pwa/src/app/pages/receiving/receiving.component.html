@@ -406,7 +406,7 @@
 
         <div nz-space class=" justify-between py-1 items-center gap-1 px-1">
             <div class="font-bold items-center">
-                Ref No. - {{this.refNo()}}
+                <!-- Ref No. - {{this.refNo()}} -->
             </div>
             <nz-button-group *nzSpaceItem class="space-x-0.5 justify-end">
                 <button nz-button nzType="primary" class="items-center" nzTooltipTitle="List"
@@ -414,10 +414,10 @@
                     <span nz-icon nzType="container" nzTheme="outline"></span>
                     <span>TRANSACTION LIST</span>
                 </button>
-                <button nz-button nzType="primary" nzTooltipTitle="List" nzTooltipPlacement="topLeft" nz-tooltip>
+                <!-- <button nz-button nzType="primary" nzTooltipTitle="List" nzTooltipPlacement="topLeft" nz-tooltip>
                     <span nz-icon nzType="printer" nzTheme="outline"></span>
                     <span class="text-sm">RE-PRINT</span>
-                </button>
+                </button> -->
             </nz-button-group>
 
 
@@ -432,7 +432,7 @@
                             nzType="reload" nzTheme="outline">
                         </span>
                     </div>
-                    <form nz-form [formGroup]="validateForm" id="validateForm">
+                    <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="onSubmit()">
 
                         <nz-form-item>
                             <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="entryDate" nzRequired nzLabelWrap>
@@ -517,7 +517,7 @@
 
                         <div>
                             <nz-form-control>
-                                <button nz-button nzType="primary" type="submit" class="w-full" (click)="onSaveAll()">
+                                <button nz-button nzType="primary" class="w-full">
                                     <span nz-icon nzType="save" nzTheme="outline"></span>
                                     Save
                                 </button>
@@ -591,8 +591,9 @@
                                             <nz-form-control [nzXs]="24" nzHasFeedback>
                                                 <nz-select nzShowSearch nzAllowClear nzStatus="error" nzAllowClear
                                                     nzPlaceHolder="Select a unit" formControlName="unitId" id="unitId">
-                                                    <nz-option *ngFor="let o of optionList" [nzValue]="o.id"
-                                                        [nzLabel]="o.unitAcro"></nz-option>
+                                                    <nz-option [nzCustomContent]="true" *ngFor="let o of optionList"
+                                                        [nzValue]="o.id" [nzLabel]="o.unitAcro">{{o.unitAcro}} |
+                                                        {{o.unitName}}</nz-option>
                                                 </nz-select>
                                             </nz-form-control>
                                         </nz-form-item>
@@ -607,15 +608,6 @@
                                                     placeholder="Brand name" />
                                             </nz-form-control>
                                         </nz-form-item>
-                                        <!-- <div>
-                                        </div>
-                                        <div class=" py-4 -mt-4 mb-2">
-                                            <span class="font-bold text-base px-1">
-
-                                            </span>
-                                        </div> -->
-
-                                        <!-- <div class="grid grid-cols-2 gap-x-2 -mt-4"> -->
                                         <nz-form-item class="-mt-4">
                                             <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="lotNo" nzLabelWrap
                                                 nzRequired>Lot
@@ -635,7 +627,8 @@
                                             </nz-form-control>
                                         </nz-form-item>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-x-2 -mt-4 items-center bg-gray-100 px-2 shadow-md">
+                                    <div
+                                        class="grid grid-cols-2 gap-x-2 -mt-4 items-center bg-gray-100  dark:bg-black/40 px-2 shadow-md">
                                         <nz-form-item class="-mt-1">
                                             <nz-form-label nzLabelAlign="left" nzErrorTip="Please input Cost!"
                                                 nzRequired [nzXs]="24" nzFor="cost"
@@ -696,7 +689,7 @@
                                 </div>
                                 <div *ngIf="!model.loading; else isLoading">
                                     <nz-table nzOuterBordered nzShowSizeChanger #fixedTable [nzData]="itemDataList()"
-                                        [nzSize]="'default'" [nzScroll]="{ y: '300px' }" [nzFooter]="renderFooter"
+                                        [nzSize]="'default'" [nzScroll]="{ y: '305px' }" [nzFooter]="renderFooter"
                                         (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
                                         <thead>
                                             <tr>

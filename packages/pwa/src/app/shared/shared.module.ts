@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 
+import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -15,14 +16,17 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+import { NzPipesModule } from 'ng-zorro-antd/pipes';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
@@ -51,9 +55,13 @@ const MODULES: any[] = [
   NzIconModule,
   NzButtonModule,
   NzToolTipModule,
+  NzPipesModule,
+  NzAffixModule,
   NzDividerModule,
+  NzSegmentedModule,
   NzTabsModule,
   NzInputNumberModule,
+  NzImageModule,
   NgFor,
   NzBadgeModule,
   NzRadioModule,
@@ -105,4 +113,4 @@ const PROVIDERS: any[] = [];
   declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES, ItemSelectorComponent],
   providers: [...PROVIDERS]
 })
-export class SharedModule {}
+export class SharedModule { }

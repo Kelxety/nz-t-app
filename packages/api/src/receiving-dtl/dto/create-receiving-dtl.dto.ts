@@ -29,6 +29,7 @@ export class CreateReceivingDtlDto {
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     batchNo: string;
 
     @Transform(({ value }) => value && new Date(value))

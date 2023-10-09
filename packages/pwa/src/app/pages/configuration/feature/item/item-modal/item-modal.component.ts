@@ -3,9 +3,10 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmItemCategory, ScmItemDtl } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 import { SpinService } from '../../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../../shared';
+import { fnCheckForm } from '../../../../../utils/tools';
 import { ResType } from '../../../../../utils/types/return-types';
 import { ItemCatergoryServices } from '../../../Services/item-category/item-category.service';
 import { ItemDetailServices } from '../../../Services/item-detail/item-detail.service';
@@ -143,9 +144,9 @@ export class ItemModalComponent {
   }
 
   ngOnInit(): void {
+    const promise = [Promise.resolve(this.loadAccount()), Promise.resolve(this.loadUnitData())]
+    Promise.all(promise)
 
-    this.loadAccount()
-    this.loadUnitData()
     this.spinService.setCurrentGlobalSpinStore(false);
     // this.validateFormDetail.disable()
 
@@ -256,52 +257,64 @@ export class ItemModalComponent {
     });
   }
 
+  onSubmit() {
+    console.log('submit')
+    if (!fnCheckForm(this.validateForm)) {
+      return of(false);
+    }
+
+    return this.onCreateItem()
+
+  }
+
   onCreateItem() {
 
-    if (this.validateForm.valid) {
-      const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
-      this.btnDisable = true
-      this.itemServices.create(this.validateForm.getRawValue()).subscribe({
-        next: (res: any) => {
-          this.msg.remove(id)
-          this.validateFormDetail.get('markup').setValue(0)
-          console.log(res.data)
-          this.data = res.data
-          //  this.statusData.emit({status: 200, data: res})
-        },
-        error: (error: any) => {
-          // console.log(error.error)
-          if (error) {
-            if (typeof error) {
-              this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
-            }
-            this.msg.remove(id)
-            this.msg.error('Unsuccessfully saved')
-            this.btnDisable = false
-            this.cd.detectChanges()
+
+    // if (this.validateForm.valid) {
+    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
+    this.btnDisable = true
+    this.itemServices.create(this.validateForm.value).subscribe({
+      next: (res: any) => {
+        this.msg.remove(id)
+        this.validateFormDetail.get('markup').setValue(0)
+        console.log(res.data)
+        this.data = res.data
+        //  this.statusData.emit({status: 200, data: res})
+      },
+      error: (error: any) => {
+        console.log(error)
+        // console.log(error.error)
+        if (error) {
+          if (typeof error) {
+            this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
           }
-        },
-        complete: () => {
-          this.msg.success('Item saved successfully!');
+          this.msg.remove(id)
+          this.msg.error('Unsuccessfully saved')
           this.btnDisable = false
-          this.dtlBtn = false
-          this.isCollapsed = true
-          this.resetForm();
-          this.loadData()
           this.cd.detectChanges()
-
         }
-      });
-    } else {
-      Object.values(this.validateForm.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-          this.btnDisable = false
-        }
-      });
+      },
+      complete: () => {
+        this.msg.success('Item saved successfully!');
+        this.btnDisable = false
+        this.dtlBtn = false
+        this.isCollapsed = true
+        this.resetForm();
+        this.loadData()
+        this.cd.detectChanges()
 
-    }
+      }
+    });
+    // } else {
+    //   Object.values(this.validateForm.controls).forEach(control => {
+    //     if (control.invalid) {
+    //       control.markAsDirty();
+    //       control.updateValueAndValidity({ onlySelf: true });
+    //       this.btnDisable = false
+    //     }
+    //   });
+
+    // }
 
   }
 
