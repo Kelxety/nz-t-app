@@ -67,16 +67,10 @@ export class ItemDetailService {
   >): Promise<ScmItemDtl[] | any> {
     if (!pagination) {
       return this.prisma.scmItemDtl.findMany({
-        where:
-        {
+        where: {
           OR: [
             {
               barcode: {
-                contains: searchData
-              }
-            },
-            {
-              brandName: {
                 contains: searchData
               }
             },
@@ -91,40 +85,27 @@ export class ItemDetailService {
               }
             },
             {
-              scmItem: {
-                itemCode: {
-                  contains: searchData
-                }
-              }
-            },
-            {
-              scmItem: {
-                itemName: {
-                  contains: searchData
-                }
+              brandName: {
+                contains: searchData
               }
             }
-          ]
+          ],
+          balanceQty: {
+            gt: 0
+          }
         },
         include: {
           scmUnit: true,
-          scmItem: true
         },
         orderBy: order,
       });
     }
     const returnData = await this.prisma.$transaction([
-      this.prisma.scmItemDtl.aggregate({
-        where:
-        {
+      this.prisma.scmItemDtl.count({
+        where: {
           OR: [
             {
               barcode: {
-                contains: searchData
-              }
-            },
-            {
-              brandName: {
                 contains: searchData
               }
             },
@@ -139,33 +120,23 @@ export class ItemDetailService {
               }
             },
             {
-              scmItem: {
-                itemCode: {
-                  contains: searchData
-                }
-              }
-            },
-            {
-              scmItem: {
-                itemName: {
-                  contains: searchData
-                }
+              brandName: {
+                contains: searchData
               }
             }
-          ]
+          ],
+          balanceQty: {
+            gt: 0
+          }
         },
       }),
+
+
       this.prisma.scmItemDtl.findMany({
-        where:
-        {
+        where: {
           OR: [
             {
               barcode: {
-                contains: searchData
-              }
-            },
-            {
-              brandName: {
                 contains: searchData
               }
             },
@@ -180,30 +151,24 @@ export class ItemDetailService {
               }
             },
             {
-              scmItem: {
-                itemCode: {
-                  contains: searchData
-                }
-              }
-            },
-            {
-              scmItem: {
-                itemName: {
-                  contains: searchData
-                }
+              brandName: {
+                contains: searchData
               }
             }
-          ]
+          ],
+          balanceQty: {
+            gt: 0
+          }
         },
         include: {
           scmUnit: true,
-          scmItem: true,
         },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
         orderBy: order,
       }),
     ]);
+    console.log(returnData)
     return returnData;
   }
 
