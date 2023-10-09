@@ -11,7 +11,7 @@ import { ResType } from '@utils/types/return-types';
 export class ItemDetailServices {
     private _items = signal<ScmItemDtl[]>([])
     public baseUrl = '/api/item-detail';
-    public searchFulltext = '/api/item/search';
+    public searchFulltext = '/api/item-detail/search';
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
