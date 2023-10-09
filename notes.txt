@@ -1,2 +1,7 @@
-npx prisma migrate dev
-npx prisma generate
+npx prisma migrate dev //prisma to database
+npx prisma generate //prisma to code
+
+npx nest g r [name of api]
+* ent0ities
+    - add implement model (Sample :  implements ScmChargeslip) // control . click
+    - 
