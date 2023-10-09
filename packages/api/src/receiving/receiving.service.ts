@@ -75,56 +75,6 @@ export class ReceivingService {
     return returnData;
   }
 
-  async fulltextSearch(data: string) {
-
-    return this.prisma.scmReceive.findMany({
-      include: {
-        scmWarehouse: true,
-        scmReceiveMode: true,
-        scmSupplier: true
-      },
-      where: {
-        OR: [
-          {
-            rcvRefno: {
-              contains: data
-            },
-          },
-          {
-            purchaseorderNo: {
-              contains: data
-            },
-          },
-          {
-            deliveryreceiptNo: {
-              contains: data
-            },
-          },
-          {
-            purchaserequestNo: {
-              contains: data
-            }
-          },
-          {
-            scmSupplier: {
-              supplierName: {
-                contains: data
-              }
-            }
-          },
-          {
-            scmReceiveMode: {
-              recvMode: {
-                contains: data
-              }
-            }
-          }
-        ]
-
-      },
-    })
-  }
-
   async searchFilterFulltext({
     searchData,
     data,
