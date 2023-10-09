@@ -13,9 +13,16 @@ export class ReceivingService {
   async create(createReceivingDto: CreateReceivingDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Error in token');
+    const wh = await this.prisma.scmWarehouse.findUnique({
+      where: {
+        whAcro: 'SR'
+      }
+    })
+    console.log(wh)
     const createData = await this.prisma.scmReceive.create({
-      data: { ...createReceivingDto, createdBy: creatorName.accountName },
+      data: { ...createReceivingDto, warehouseId: wh.id, createdBy: creatorName.accountName },
       include: {
+        scmSupplier: true,
         scmWarehouse: true,
         scmReceiveMode: true
       },

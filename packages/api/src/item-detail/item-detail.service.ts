@@ -8,7 +8,7 @@ import { UpdateItemDetailDto } from './dto/update-item-detail.dto';
 
 @Injectable()
 export class ItemDetailService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) { }
 
   async create(createItemDetailDto: CreateItemDetailDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
@@ -45,6 +45,159 @@ export class ItemDetailService {
         where: data,
         include: {
           scmUnit: true,
+        },
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
+  }
+
+  async fullTextSearch({
+    searchData,
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmItemDtlWhereInput,
+    Prisma.ScmItemDtlOrderByWithAggregationInput
+  >): Promise<ScmItemDtl[] | any> {
+    if (!pagination) {
+      return this.prisma.scmItemDtl.findMany({
+        where:
+        {
+          OR: [
+            {
+              barcode: {
+                contains: searchData
+              }
+            },
+            {
+              brandName: {
+                contains: searchData
+              }
+            },
+            {
+              subitemCode: {
+                contains: searchData
+              }
+            },
+            {
+              subitemName: {
+                contains: searchData
+              }
+            },
+            {
+              scmItem: {
+                itemCode: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItem: {
+                itemName: {
+                  contains: searchData
+                }
+              }
+            }
+          ]
+        },
+        include: {
+          scmUnit: true,
+          scmItem: true
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmItemDtl.aggregate({
+        where:
+        {
+          OR: [
+            {
+              barcode: {
+                contains: searchData
+              }
+            },
+            {
+              brandName: {
+                contains: searchData
+              }
+            },
+            {
+              subitemCode: {
+                contains: searchData
+              }
+            },
+            {
+              subitemName: {
+                contains: searchData
+              }
+            },
+            {
+              scmItem: {
+                itemCode: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItem: {
+                itemName: {
+                  contains: searchData
+                }
+              }
+            }
+          ]
+        },
+      }),
+      this.prisma.scmItemDtl.findMany({
+        where:
+        {
+          OR: [
+            {
+              barcode: {
+                contains: searchData
+              }
+            },
+            {
+              brandName: {
+                contains: searchData
+              }
+            },
+            {
+              subitemCode: {
+                contains: searchData
+              }
+            },
+            {
+              subitemName: {
+                contains: searchData
+              }
+            },
+            {
+              scmItem: {
+                itemCode: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmItem: {
+                itemName: {
+                  contains: searchData
+                }
+              }
+            }
+          ]
+        },
+        include: {
+          scmUnit: true,
+          scmItem: true,
         },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
