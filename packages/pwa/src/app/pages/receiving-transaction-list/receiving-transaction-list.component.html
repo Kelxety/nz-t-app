@@ -54,8 +54,9 @@
                             <td nzEllipsis>{{ data?.purchaserequestNo }}</td>
                             <td nzEllipsis>{{ data?.deliveryreceiptNo }}</td>
                             <td nzEllipsis>{{ data?.purchaseorderNo }}</td>
-                            <td nzEllipsis nzAlign="left"><nz-badge [nzColor]="data.isPosted ? 'green' : 'blue'"
-                                    [nzText]="data?.isPosted ? 'Posted' : 'For Posting'"></nz-badge>
+                            <td nzEllipsis nzAlign="left"><nz-badge *ngIf="data.isPosted" nzStatus="success"
+                                    nzText="Posted"></nz-badge>
+                                <nz-badge *ngIf="!data.isPosted" nzStatus="processing" nzText="For Posting"></nz-badge>
                             </td>
                             <td nzEllipsis nzAlign="center"><nz-badge
                                     [nzColor]="data.state === 'Active' ? 'green' : 'red'"

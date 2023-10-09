@@ -1,49 +1,103 @@
-<nz-card nzTitle="Item list" [nzExtra]="options" class="m-2">
-    <nz-spin [nzSpinning]="isSpinning">
-        <div class="flex flex-row flex-wrap gap-4">
-            <div *ngFor="let item of itemCardData()">
-                <div (click)="onClick(item)"
-                    class="relative group cursor-pointer group overflow-hidden text-gray-50 h-56 w-52 hover:scale-105 hover:shadow-xl rounded-2xl hover:duration-700 duration-700">
-                    <div class="w-52 h-56 bg-gray-200 text-gray-800 dark:bg-gray-700">
-                        <div class="flex flex-row justify-between z-50 ">
-                            <svg class="fill-current stroke-current w-8 h-8 p-2 hover:bg-white rounded-full m-1 hover:duration-700 dark:fill-white"
-                                height="100" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100" width="100" x="0"
-                                xmlns="http://www.w3.org/2000/svg" y="0">
-                                <path class=""
-                                    d="M15.8,32.9V15.8m0,0H32.9m-17.1,0L37.2,37.2m47-4.3V15.8m0,0H67.1m17.1,0L62.8,37.2m-47,29.9V84.2m0,0H32.9m-17.1,0L37.2,62.8m47,21.4L62.8,62.8M84.2,84.2V67.1m0,17.1H67.1"
-                                    fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
-                                </path>
-                            </svg>
-                            <svg class="fill-current stroke-current w-8 h-8 p-2 m-1 hover:bg-white rounded-full hover:duration-700 dark:fill-white"
-                                height="100" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100" width="100" x="0"
-                                xmlns="http://www.w3.org/2000/svg" y="0">
-                                <path class="svg-stroke-primary"
-                                    d="M50,17.4h0M50,50h0m0,32.6h0M50,22a4.7,4.7,0,1,1,4.7-4.6A4.7,4.7,0,0,1,50,22Zm0,32.7A4.7,4.7,0,1,1,54.7,50,4.7,4.7,0,0,1,50,54.7Zm0,32.6a4.7,4.7,0,1,1,4.7-4.7A4.7,4.7,0,0,1,50,87.3Z"
-                                    fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
-                                </path>
-                            </svg>
+<nz-card nzTitle="Item list" [nzExtra]="options" class="m-2 h-[calc(100vh-115px)] overflow-auto">
+    <nz-content>
+        <nz-spin [nzSpinning]="isSpinning">
+            <div class="flex flex-row flex-wrap gap-4 items-center justify-center" *ngIf="!dataGridList">
+                <div *ngFor="let item of itemCardData()">
+                    <div (click)="onClick(item)" nz-infinite-scroll
+                        class="relative group cursor-pointer group overflow-hidden text-gray-50 h-56 w-52 hover:scale-105 hover:shadow-xl rounded-2xl hover:duration-700 duration-700">
+                        <div class="w-52 h-56 bg-gray-200 text-gray-800 dark:bg-gray-700">
+                            <div class="flex flex-row justify-between z-50 absolute top-0">
+                                <svg class="fill-current stroke-current w-8 h-8 p-2 dark:hover:bg-white hover:bg-gray-300 rounded-full m-1 hover:duration-700 "
+                                    height="100" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100" width="100"
+                                    x="0" xmlns="http://www.w3.org/2000/svg" y="0">
+                                    <path class=""
+                                        d="M15.8,32.9V15.8m0,0H32.9m-17.1,0L37.2,37.2m47-4.3V15.8m0,0H67.1m17.1,0L62.8,37.2m-47,29.9V84.2m0,0H32.9m-17.1,0L37.2,62.8m47,21.4L62.8,62.8M84.2,84.2V67.1m0,17.1H67.1"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+                                    </path>
+                                </svg>
+
+                                <!-- <svg nz-dropdown [nzDropdownMenu]="menu1" height="100"
+                                    preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100"
+                                    class="fill-current stroke-current w-8 h-8 p-2 m-1 hover:bg-white rounded-full hover:duration-700 dark:fill-white"
+                                    width="100" x="0" xmlns="http://www.w3.org/2000/svg" y="0">
+                                    <path class="svg-stroke-primary"
+                                        d="M50,17.4h0M50,50h0m0,32.6h0M50,22a4.7,4.7,0,1,1,4.7-4.6A4.7,4.7,0,0,1,50,22Zm0,32.7A4.7,4.7,0,1,1,54.7,50,4.7,4.7,0,0,1,50,54.7Zm0,32.6a4.7,4.7,0,1,1,4.7-4.7A4.7,4.7,0,0,1,50,87.3Z"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+                                    </path>
+                                </svg> -->
+
+
+                            </div>
+                            <img src="../../../assets//imgs//default_face.png" alt="Italian Trulli"
+                                class="opacity-50 z-0">
+                            <!-- <img nz-image width="200px" height="200px" nzSrc="error" [nzFallback]="fallback" alt="" /> -->
                         </div>
-                        <img src="../../../assets//imgs//default_face.png" alt="Italian Trulli" class="opacity-50 z-0">
-                    </div>
-                    <div
-                        class="absolute bg-gray-100/60 dark:bg-gray-600/60 dark:hover:bg-gray-600 hover:bg-gray-100 -bottom-24 w-56 p-3 flex flex-col gap-1 group-hover:-bottom-0 group-hover:duration-600 duration-500">
-                        <span
-                            class="text-black dark:text-white font-bold text-xs items-center mb-2 hover:underline underline-offset-1">{{item.itemName}}</span>
-                        <span class="text-gray-800 dark:text-white font-bold text-2xl">{{item.itemCode}}</span>
-                        <p class="text-neutral-800 dark:text-white">Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit.
-                        </p>
+                        <div
+                            class="absolute bg-gray-200/60 dark:bg-gray-600/60 dark:hover:bg-gray-600 hover:bg-gray-100 -bottom-24 w-56 p-3 flex flex-col gap-1 group-hover:-bottom-0 group-hover:duration-600 duration-500">
+                            <span
+                                class="text-black dark:text-white font-bold text-xs items-center mb-6 hover:underline underline-offset-1 uppercase">{{item.itemName}}</span>
+                            <span
+                                class="text-gray-800 dark:text-white font-bold text-xl uppercase hover:underline underline-offset-1">{{item.itemCode}}</span>
+                            <p class="text-neutral-800 dark:text-white text-xs">Lorem ipsum dolor sit amet, consectetur
+                                adipiscing
+                                elit.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </nz-spin>
+            <div *ngIf="dataGridList" nz-infinite-scroll>
+                <nz-list nzItemLayout="vertical">
+                    <nz-list-item *ngFor="let item of data">
+                        <nz-list-item-meta>
+                            <nz-list-item-meta-avatar [nzSrc]="item.avatar"></nz-list-item-meta-avatar>
+                            <nz-list-item-meta-title>
+                                <a href="{{ item.href }}">{{ item.title }}</a>
+                            </nz-list-item-meta-title>
+                            <nz-list-item-meta-description>
+                                {{ item.description }}
+                            </nz-list-item-meta-description>
+                        </nz-list-item-meta>
+                        {{ item.content }}
+                        <ul nz-list-item-actions>
+                            <nz-list-item-action>
+                                <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
+                                156
+                            </nz-list-item-action>
+                            <nz-list-item-action>
+                                <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
+                                156
+                            </nz-list-item-action>
+                            <nz-list-item-action>
+                                <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
+                                2
+                            </nz-list-item-action>
+                        </ul>
+                        <nz-list-item-extra>
+                            <img nz-image width="200px" height="200px" nzSrc="error" [nzFallback]="fallback" alt="" />
+                            <!-- <img width="100px" height="150px" alt="logo"
+                                src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png" /> -->
+                        </nz-list-item-extra>
+                    </nz-list-item>
+                </nz-list>
+            </div>
+        </nz-spin>
+    </nz-content>
+
 </nz-card>
+
+<nz-dropdown-menu #menu1="nzDropdownMenu">
+    <ul nz-menu>
+        <li nz-menu-item>menu1 1st menu item</li>
+        <li nz-menu-item>menu1 2nd menu item</li>
+        <li nz-menu-item>menu1 3rd menu item</li>
+    </ul>
+</nz-dropdown-menu>
 
 <ng-template #suffixIconSearch>
     <span nz-icon nzType="search"></span>
 </ng-template>
-<ng-template #options>
+<ng-template #options class="stick" #target>
     <div nz-space nzAlign="start" class="flex-row-reverse gap-x-2">
         <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch" nzSearch [nzAddOnAfter]="suffixIconButton">
             <input type="text" nz-input placeholder="Search..." name="search" [(ngModel)]="search"
@@ -53,7 +107,7 @@
             <button nz-button nzType="primary" (click)="onClear()"><span nz-icon nzType="clear" nz-tooltip="Clear"
                     nzTheme="outline"></span></button>
         </ng-template>
-        <nz-segmented [nzOptions]="gridList"></nz-segmented>
+        <nz-segmented [nzOptions]="gridList" (nzValueChange)="onChangeList($event)"></nz-segmented>
     </div>
 </ng-template>
 
