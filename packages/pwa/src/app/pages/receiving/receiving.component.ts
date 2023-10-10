@@ -117,7 +117,7 @@ export class ReceivingComponent {
     this.validateForm = this.fb.group({
       rcvDate: [new Date(), [Validators.required]],
       rcvRefno: [null],
-      warehouseId: [null, [Validators.required]],
+      // warehouseId: [null, [Validators.required]],
       supplierId: [null, [Validators.required]],
       receivemodeId: [null, [Validators.required]],
       purchaserequestNo: [null],
