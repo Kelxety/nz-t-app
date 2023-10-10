@@ -50,6 +50,7 @@ export class CreateIssuanceDto {
     @IsDate()
     postedAt: Date;
     
+    id: string;
     createdBy: string;
     createdAt: Date;
     updatedBy: string;

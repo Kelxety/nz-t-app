@@ -2,7 +2,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ScmIssuance } from '@prisma/client';
 
-export class Issuance implements ScmIssuance {
+export class IssuanceEntity implements ScmIssuance {
+    constructor(partial: Partial<IssuanceEntity>) {
+        Object.assign(this, partial);
+    }
+
     @ApiProperty()
     id: string;
     

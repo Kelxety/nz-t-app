@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ItemDetailServices } from '@pwa/src/app/pages/configuration/Services/item-detail/item-detail.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-item-selector',
@@ -9,7 +10,9 @@ import { ItemDetailServices } from '@pwa/src/app/pages/configuration/Services/it
 export class ItemSelectorComponent implements OnInit {
 
   @Input() view: string = 'grid';
-  @Input() search: string = '';
+  @Input() showCost: boolean = false;
+  @Input() showPrice: boolean = false;
+  @Input() search: Subject<any>;
   @Input() listOfSelectedItem: any[] = [];
 
   @Output() newItemEvent = new EventEmitter();
@@ -21,184 +24,9 @@ export class ItemSelectorComponent implements OnInit {
       
     }
   }
+  
   isLoading: boolean = false;
-  listOfItems: any[] = [
-    {
-      id: 1,
-      itemName: 'Atorvastatin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Levothyroxine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Metformin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Lisinopril',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Amlodipine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Atorvastatin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Levothyroxine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Metformin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Lisinopril',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Amlodipine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Atorvastatin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Levothyroxine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Metformin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Lisinopril',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Amlodipine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Atorvastatin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Levothyroxine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Metformin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Lisinopril',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Amlodipine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Atorvastatin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Levothyroxine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Metformin',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Lisinopril',
-      qty: 100,
-      price: 100,
-      cost: 80
-    },
-    {
-      id: 1,
-      itemName: 'Amlodipine',
-      qty: 100,
-      price: 100,
-      cost: 80
-    }
-  ];
+  listOfItems: any[] = [];
 
   constructor (
     private cd: ChangeDetectorRef,
@@ -206,13 +34,21 @@ export class ItemSelectorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadData('%');
+
+    this.search.subscribe(v => { 
+      this.loadData(v.data);
+    });
   }
 
-  loadData() {
-    this.itemDetailServices.list({}).subscribe({
+  loadData(q: string) {
+    if (q === '') {
+      q='%';
+    }
+    this.itemDetailServices.fulltextFilter({q: q}).subscribe({
       next: (res: any) => {
         this.listOfItems = res.data;
+        this.defaultQty();
         console.log('ITEMS', this.listOfItems);
         this.isLoading = true
         this.cd.detectChanges();
@@ -236,8 +72,15 @@ export class ItemSelectorComponent implements OnInit {
 
   }
 
+  defaultQty() {
+    this.listOfItems.map((d:any) => {
+      d.qty = 1;
+    });
+  }
+
   addNewItem(value: any) {
     console.log('ss', value);
     this.newItemEvent.emit(value);
+    this.defaultQty();
   }
 }
