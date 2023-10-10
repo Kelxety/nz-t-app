@@ -108,7 +108,7 @@ export class AccountComponent implements OnInit {
     const params: SearchParams<Prisma.UserWhereInput> = {
       pageSize: this.tableConfig.pageSize!,
       page: this.tableConfig.pageIndex!,
-      filteredObject: numberOfFilters > 0 ? JSON.stringify(this.searchParam) : null,
+      filteredObject: numberOfFilters > 0 ? this.searchParam : null,
       orderBy: null,
       pagination: true
     };

@@ -43,7 +43,7 @@ export class ApiTypeService {
       headers = headers.append('Accept', 'application/ld+json');
     }
 
-    return this.http.put<T>(path, JSON.stringify(params), { headers }).pipe(
+    return this.http.put<T>(path, params, { headers }).pipe(
       tap((data: T) => console.log(`updated`)),
       catchError(this.handleError<T>('error'))
     );
