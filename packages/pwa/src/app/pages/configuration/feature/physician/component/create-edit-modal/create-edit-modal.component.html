@@ -1,0 +1,56 @@
+<form nz-form [formGroup]="addEditForm">
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="physicianName" nzRequired>Physician Name</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="physicianName" formControlName="physicianName" nz-input placeholder="Physician name" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="designation" nzRequired>Designation</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="designation" formControlName="designation" nz-input placeholder="Designation" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="specialty" nzRequired>Specialty</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="specialty" formControlName="specialty" nz-input placeholder="Specialty" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="prcNo" nzRequired>PRC No</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="prcNo" formControlName="prcNo" nz-input placeholder="PRC No" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="prcValidity" nzRequired>PRC Validity</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="prcValidity" formControlName="prcValidity" nz-input placeholder="PRC Validity" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="state" nzRequired="">Status</nz-form-label>
+    <nz-form-control [nzSpan]="15" [nzErrorTip]="combineTpl">
+      <nz-select [nzOptions]="listOfOption" formControlName="state"></nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="remarks" nzRequired>Remarks</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="remarks" formControlName="remarks" nz-input placeholder="Remarks" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <br />
+</form>
+<ng-template #combineTpl let-control>
+  <ng-container *ngIf="control.hasError('message')">{{ control.errors.message }}</ng-container>
+  <ng-container *ngIf="control.hasError('required')">Required fields</ng-container>
+</ng-template>

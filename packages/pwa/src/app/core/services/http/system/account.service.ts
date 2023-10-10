@@ -48,7 +48,6 @@ export class AccountService {
   }
 
   patch(id: string, data: object): Observable<ResType<User[]>> {
-    console.log('param', data);
     const parameters = this.httpParams.convert(data);
     this._user.update(res => res.filter(datas => datas.id === id));
     const url = `${this.baseUrl}/${id}`;

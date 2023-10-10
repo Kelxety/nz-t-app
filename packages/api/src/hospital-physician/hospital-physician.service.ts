@@ -95,7 +95,12 @@ export class HospitalPhysicianService {
 
   async remove(id: string) {
     await this.findOne(id);
-    const deletedData = this.prisma.hospitalPhysician.delete({ where: { id } });
+    const deletedData = this.prisma.hospitalPhysician.update({
+      where: { id },
+      data: {
+        state: 'INACTIVE',
+      },
+    });
     return deletedData;
   }
 }

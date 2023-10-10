@@ -9,7 +9,6 @@ import { NzFormatEmitEvent } from 'ng-zorro-antd/tree';
 import { NzTreeFlatDataSource, NzTreeFlattener } from 'ng-zorro-antd/tree-view';
 import { Subject, takeUntil } from 'rxjs';
 import { SharedModule } from '../../../../shared';
-import { TmsAccountModalComponent } from '../../../../shared/feature/tms-account-modal/tms-account-modal.component';
 import { ResType } from '../../../../utils/types/return-types';
 import { ItemCatergoryServices } from '../../Services/item-category/item-category.service';
 interface TreeNode {
@@ -333,92 +332,4 @@ export class ItemCategoryComponent {
     this.ngUnsubscribe.complete();
   }
 
-  onCreate() {
-    const dialogRef = this.modalService.create({
-      nzTitle: `Add Account of`,
-      nzContent: TmsAccountModalComponent,
-      nzData: {
-        actionType: 'create'
-      },
-    });
-  }
-
-  action(actionType: string, data: FlatNode) {
-    const parentNode = this.flatNodeMap.get(data);
-    if (actionType === 'create') {
-      const dialogRef = this.modalService.create({
-        nzTitle: `Add Account of ${data.name}`,
-        nzContent: TmsAccountModalComponent,
-        nzData: {
-          actionType: 'create',
-          parent: data.key
-        },
-      });
-
-      dialogRef.componentInstance?.statusData.subscribe(
-        ($e: any) => {
-          this.database.push({
-            name: `${$e.data.accountCode} - ${$e.data.accountTitle}`,
-            parentId: $e.data.parentId,
-            key: $e.data.id
-          })
-          this.dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
-          // this.refresh();
-          this.cd.detectChanges();
-          this.refresh();
-        },
-      );
-
-    } else if (actionType === 'edit') {
-      console.log('data.key', data.key);
-      const temp: string = data.key;
-      const dialogRef = this.modalService.create({
-        nzTitle: `Edit Account of ${data.name}`,
-        nzContent: TmsAccountModalComponent,
-        nzData: {
-          actionType: 'edit',
-          id: temp,
-          parent: data.key
-        },
-      });
-
-      dialogRef.componentInstance?.statusData.subscribe(
-        ($e: any) => {
-          const result: any = $e;
-          if (result.status === 200) {
-
-            this.cd.detectChanges();
-          } else {
-            console.log('EEEEEEEEEEEEEEEEEEe');
-          }
-
-          this.cd.detectChanges();
-        }
-      );
-
-    } else if (actionType === 'view') {
-      const dialogRef = this.modalService.create({
-        nzTitle: 'Region',
-        nzContent: TmsAccountModalComponent,
-        nzData: {
-          actionType: 'view'
-        },
-      });
-
-    } else if (actionType === 'delete') {
-      const dialogRef = this.modalService.create({
-        nzTitle: 'Region',
-        nzContent: TmsAccountModalComponent,
-        nzData: {
-          actionType: 'view'
-        },
-      });
-      dialogRef.componentInstance?.statusData.subscribe(
-        ($e: any) => {
-
-        },
-      );
-    }
-
-  }
 }
