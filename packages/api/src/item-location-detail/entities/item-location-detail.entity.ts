@@ -8,28 +8,34 @@ export class ItemLocationDetailEntity implements ScmItemLocationDtl {
     id: string;
 
     @ApiProperty()
-    itemId: string;
+    itemDtlId: string;
 
     @ApiProperty()
     locationId: string;
 
     @ApiProperty({ required: false, type: ItemEntity })
-    items: ItemEntity;
+    itemDtls: ItemEntity;
 
     @ApiProperty({ required: false, type: ItemLocation })
     locations: ItemLocation;
 
-    constructor({ items, locations, ...data }: Partial<ItemLocationDetailEntity>) {
+    @ApiProperty()
+    balanceQty: string;
+
+    constructor({ itemDtls, locations, ...data }: Partial<ItemLocationDetailEntity>) {
         Object.assign(this, data);
 
-        if (items) {
-            this.items = new ItemEntity(items);
+        if (itemDtls) {
+            this.itemDtls = new ItemEntity(itemDtls);
         }
 
         if (locations) {
             this.locations = new ItemLocation(locations);
         }
     }
+
+
+
 
 
 }

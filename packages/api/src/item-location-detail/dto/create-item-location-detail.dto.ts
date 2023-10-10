@@ -6,10 +6,14 @@ export class CreateItemLocationDetailDto {
     @ApiProperty()
     @IsString()
     @IsOptional()
-    itemId: string;
+    itemDtlId: string;
 
     @ApiProperty()
     @IsString()
     @IsOptional()
     locationId: string;
+
+    @ApiProperty()
+    @IsString()
+    balanceQty: string
 }

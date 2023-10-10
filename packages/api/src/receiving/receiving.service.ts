@@ -18,7 +18,6 @@ export class ReceivingService {
         whAcro: 'SR'
       }
     })
-    console.log(wh)
     const createData = await this.prisma.scmReceive.create({
       data: { ...createReceivingDto, warehouseId: wh.id, createdBy: creatorName.accountName },
       include: {
@@ -268,6 +267,14 @@ export class ReceivingService {
     return res;
   }
 
+  async createLedgerPosting(data: any) {
+    const res = await this.prisma.scmStockLedger.createMany({
+      data: { entryDate: new Date(), refdate: new Date(), warehouseId: data.scmReceive.warehouseId }
+    })
+
+    return res
+  }
+
   async updatePosting(id: string, updateReceivingDto: UpdateReceivingDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     const data = await this.prisma.scmReceive.findUnique({
@@ -276,7 +283,6 @@ export class ReceivingService {
     if (!data) {
       throw new NotFoundException(`${id} does not exist.`);
     }
-    console.log(creatorName.accountName, 'update posting')
     const res = await this.prisma.scmReceive.update({
       where: { id },
       data: { ...updateReceivingDto, updatedBy: creatorName.accountName, postedBy: creatorName.accountName, postedAt: new Date() },
@@ -286,7 +292,26 @@ export class ReceivingService {
         scmSupplier: true
       },
     });
-    console.log(res)
+
+    const resDtl = await this.prisma.scmReceiveDtl.findMany({
+      where: {
+        receiveId: data.id
+      },
+      include: {
+        scmItemDtl: true,
+        scmReceive: true,
+      }
+    })
+
+
+    console.log(resDtl)
+
+    // this.createLedgerPosting(resDtl)
+
+
+    // const ledgerRes = await this.prisma.scmStockLedger.createMany({
+
+    // })
     return res;
   }
 

@@ -23,6 +23,7 @@ export class CreateReceivingDto {
 
     @ApiProperty()
     @IsString()
+    @IsOptional()
     warehouseId: string;
 
     @ApiProperty()
