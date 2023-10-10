@@ -28,6 +28,7 @@ import { Roles } from '@api/auth/roles/roles.decorator';
 import { CustomRequest, QueryT, ResponseT } from '@api/lib/interface';
 import { toBoolean } from '@api/lib/helper/cast.helper';
 import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { omit } from 'lodash';
 
 @Controller('users')
 @ApiTags('system_users')
@@ -53,7 +54,6 @@ export class UsersController {
     @Query()
     query: QueryT,
   ): Promise<ResponseT<UserEntity[]>> {
-    console.log(query.filteredObject);
     const data = await this.usersService.findAll({
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
       page: Number(query.page),
@@ -114,6 +114,7 @@ export class UsersController {
   @Patch(':id')
   @CustomGlobalDecorator(null, false, UserEntity)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const updatedUserDto = omit(updateUserDto, 'username');
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 

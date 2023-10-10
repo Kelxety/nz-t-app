@@ -93,7 +93,7 @@ export class HospitalPatientTypeService {
         `Hospital type with id ${id} does not exist.`,
       );
     }
-
+    console.log(updateHospitalPatientTypeDto);
     return this.prisma.hospitalPatientType.update({
       where: { id },
       data: {

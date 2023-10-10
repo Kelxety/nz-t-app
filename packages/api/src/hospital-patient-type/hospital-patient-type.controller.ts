@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   Query,
+  Put,
 } from '@nestjs/common';
 import { HospitalPatientTypeService } from './hospital-patient-type.service';
 import { CreateHospitalPatientTypeDto } from './dto/create-hospital-patient-type.dto';
@@ -66,11 +67,16 @@ export class HospitalPatientTypeController {
       data: newData,
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }
@@ -87,6 +93,24 @@ export class HospitalPatientTypeController {
     const data = await this.hospitalPatientTypeService.findOne(id);
     return {
       message: `Hospital Patient Type with the id of ${id} fetch Successfully`,
+      data: data,
+    };
+  }
+
+  @Put(':id')
+  @CustomGlobalDecorator(null, false, HospitalPatientTypeEntity)
+  async posted(
+    @Request() request: Req,
+    @Param('id') id: string,
+    @Body() updateHospitalPatientTypeDto: UpdateHospitalPatientTypeDto,
+  ) {
+    const data = await this.hospitalPatientTypeService.update(
+      id,
+      updateHospitalPatientTypeDto,
+      request?.headers?.authorization?.split('Bearer ')[1],
+    );
+    return {
+      message: `Hospital Patient Type with id of ${id} detail updated Succesfully`,
       data: data,
     };
   }

@@ -185,6 +185,7 @@ export class UsersService {
         updateUserDto.password,
         roundsOfHashing,
       );
+
       if (typeof updateUserDto.role === 'string') {
         return this.prisma.user.update({
           where: { id },
@@ -238,13 +239,6 @@ export class UsersService {
       );
     }
     return this.prisma.user.update({
-      include: {
-        role: {
-          include: {
-            role: true,
-          },
-        },
-      },
       where: { id },
       data: {
         password: updatePassword.newPassword,
