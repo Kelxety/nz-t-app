@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewChild, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -124,13 +124,13 @@ export class ItemComponent {
     ];
     this.itemServices.list({ order: order, pagination: false }).subscribe({
       next: (res: any) => {
-        const list = signal(res.data)
-        list.mutate(res => {
-          model.list.push(...res)
-          model.filteredList.push(...res)
-        })
-        // model.list = list;
-        // model.filteredList = list;
+        const list = res.data
+        // list.mutate(res => {
+        //   model.list.push(...res)
+        //   model.filteredList.push(...res)
+        // })
+        model.list = list;
+        model.filteredList = list;
       },
       error: (err: any) => {
         console.log(err);

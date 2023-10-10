@@ -5,9 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ScmItem, ScmReceiveMode, ScmSupplier, ScmWarehouse } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { of } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { SpinService } from '../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../shared';
+import { fnCheckForm } from '../../utils/tools';
 import { ModalBtnStatus } from '../../widget/base-modal';
 import { ItemCatergoryServices } from '../configuration/Services/item-category/item-category.service';
 import { ItemDetailServices } from '../configuration/Services/item-detail/item-detail.service';
@@ -115,7 +117,7 @@ export class ReceivingComponent {
     this.validateForm = this.fb.group({
       rcvDate: [new Date(), [Validators.required]],
       rcvRefno: [null],
-      warehouseId: [null, [Validators.required]],
+      // warehouseId: [null, [Validators.required]],
       supplierId: [null, [Validators.required]],
       receivemodeId: [null, [Validators.required]],
       purchaserequestNo: [null],
@@ -150,7 +152,11 @@ export class ReceivingComponent {
 
   ngOnInit(): void {
     // this.loadAccount()
-    const promise = [Promise.resolve(this.loadUnitData()), Promise.resolve(this.loadWarehouse()), Promise.resolve(this.loadSupplier()), Promise.resolve(this.loadRm()), Promise.resolve(this.loadItems())]
+    const promise = [Promise.resolve(this.loadUnitData()),
+    Promise.resolve(this.loadWarehouse()),
+    Promise.resolve(this.loadSupplier()),
+    Promise.resolve(this.loadRm()),
+    Promise.resolve(this.loadItems())]
     Promise.all(promise)
     this.spinService.setCurrentGlobalSpinStore(false);
     // this.validateFormDetail.disable()
@@ -542,12 +548,21 @@ export class ReceivingComponent {
     this.footerTotalCost()
   }
 
+  onSubmit() {
+
+    console.log('submit')
+    if (!fnCheckForm(this.validateForm)) {
+      return of(false);
+    }
+    if (this.itemDataList() === null || this.itemDataList().length === 0) {
+      return this.msg.info('Please add for receving items')
+    }
+    return this.onSaveAll()
+
+  }
+
   async onSaveAll() {
 
-    if (this.itemDataList() === null || this.itemDataList().length === 0) {
-      this.msg.info('Please add for receving items')
-      return
-    }
     if (this.validateForm.valid) {
       const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
       // this.validateForm.get('receivemodeId').setValue(this.validateForm.get('receivemodeId').value.id)
@@ -555,8 +570,9 @@ export class ReceivingComponent {
         next: (value: any) => {
           this.msg.remove(id)
           // this.updateRcvHdrForRefNo(value)
-          this.saveToItemDetail(value)
           this.refNo.set(value.data.rcvRefno)
+          this.saveToItemDetail(value)
+
         }, error: (error: any) => {
           if (error) {
             if (typeof error) {
@@ -668,34 +684,38 @@ export class ReceivingComponent {
 
   }
 
-  async saveToRcvDetail(data: any, rcvId: any, rcvDtlId: any) {
-    let model: any = []
-    model = {}
-    model.barcodeNo = data?.barcodeNo
-    model.batchNo = data?.batchNo
-    model.cost = data?.cost
-    model.costAmount = data.costAmount
-    model.expirationDate = data?.expirationDate
-    model.itemdtlId = rcvDtlId
-    model.lotNo = data?.lotNo
-    model.qty = data?.qty
-    model.receiveId = rcvId
+  async saveToRcvDetail(data: any, rcvId: any, rcvDtlId: any): Promise<any> {
+    return new Promise((resolve, reject) => {
 
-    this.stockReceivingDtlServices.create(model).subscribe({
-      next: () => {
+      let model: any = []
+      model = {}
+      model.barcodeNo = data?.barcodeNo
+      model.batchNo = data?.batchNo
+      model.cost = data?.cost
+      model.costAmount = data.costAmount
+      model.expirationDate = data?.expirationDate
+      model.itemdtlId = rcvDtlId
+      model.lotNo = data?.lotNo
+      model.qty = data?.qty
+      model.receiveId = rcvId
 
+      this.stockReceivingDtlServices.create(model).subscribe({
+        next: (val) => {
+          resolve(val)
+        }, error: (error) => {
 
-      }, error: (error) => {
-        if (error) {
-          if (typeof error) {
-            this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
+          if (error) {
+            if (typeof error) {
+              this.msg.error(`${error.error.error} must be unique "${error.error.message}"`)
+            }
+
+            this.msg.error('Unsuccessfully saved')
+            this.cd.detectChanges()
           }
-
-          this.msg.error('Unsuccessfully saved')
-          this.cd.detectChanges()
+          reject(error)
         }
-      }
-    })
+      })
+    });
   }
 
   success(): void {
@@ -705,6 +725,10 @@ export class ReceivingComponent {
       nzCentered: true,
       // nzOnOk: () => { console.log('print') },
       nzFooter: [
+        {
+          label: 'Cancel',
+          type: 'default'
+        },
         {
           label: 'Print',
           type: 'primary',

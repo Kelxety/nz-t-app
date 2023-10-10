@@ -88,6 +88,4 @@ export class ItemDetailEntity implements ScmItemDtl {
     @ApiProperty({ required: false, type: UnitEntity })
     unitIds?: UnitEntity;
 
-
-
 }

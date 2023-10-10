@@ -23,6 +23,9 @@ export class ItemEntity implements ScmItem {
   itemDescription: string;
 
   @ApiProperty()
+  itemImage: string;
+
+  @ApiProperty()
   @Exclude()
   itemcategoryId: string;
 
@@ -50,11 +53,12 @@ export class ItemEntity implements ScmItem {
   @ApiProperty({ required: false, type: ItemDetailEntity })
   itemDtls?: ItemDetailEntity;
 
-  constructor({ itemDtls, ...data }: Partial<ItemEntity>,) {
+  constructor({ itemDtls, ...data }: Partial<ItemEntity>) {
     Object.assign(this, data);
 
     if (itemDtls) {
       this.itemDtls = new ItemDetailEntity(itemDtls);
     }
   }
+
 }

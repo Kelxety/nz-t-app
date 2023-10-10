@@ -63,7 +63,6 @@ export class ReceivingController {
   @Get('search')
   @CustomReceivingDecoratorSearch()
   async search(@Query() query: QueryT): Promise<ResponseT<ReceivingEntity[]>> {
-    console.log(query, 'query')
     const data = await this.receivingService.searchFilterFulltext({
       searchData: query.q,
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},

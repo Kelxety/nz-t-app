@@ -1,0 +1,187 @@
+<div class="fixed-content p-2">
+    <!-- <div nz-row class="h-10 relative top-0">
+        <div nz-col nzSpan="12" class="font-bold text-[16pt]">
+            STOCK-ISSUANCE
+        </div>
+        <div nz-col nzSpan="12">
+            <div class="other-option float-right">
+                <nz-button-group>
+                    <button nz-button nzType="primary">
+                        <span nz-icon nzType="unordered-list" nzTheme="outline"></span> TRANSACTION LIST
+                    </button>
+                    <button nz-button nzType="primary">
+                        <span nz-icon nzType="printer" nzTheme="outline"></span> PRINT
+                    </button>
+                </nz-button-group>
+            </div>
+        </div>
+    </div> -->
+    <div nz-row class="relative w-full h-full">
+        <div nz-col nzXs="0" nzSm="0" nzMd="12" nzLg="14" nzXl="16">
+            <nz-card nzTitle="Available Items List" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '58px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
+                <app-item-selector [view]="itemFilter.view" (newItemEvent)="getSelectedItem($event)" [search]="searchChange" [showCost]="true"></app-item-selector>
+            </nz-card>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="10" nzXl="8">
+            <nz-card [nzTitle]="cartHeader" class="h-full" [nzBodyStyle]="{'margin-top': '58px', padding: '16px', position: 'absolute', bottom: '144px', top: 0, overflow: 'auto', width: '100%'}">
+                <div *ngIf="listOfSelectedItems.length > 0; else noSelected">
+
+                    <div (click)="removeItem(row.id)" *ngFor="let row of listOfSelectedItems" class="rounded shadow-sm bg-slate-200 hover:bg-slate-300 p-2 mb-1 dark:border dark:border-solid dark:border-[#303030] dark:bg-[#111111] dark:hover:bg-[#121212]">
+                        <div nz-row>
+                            <div nz-col nzFlex="auto" nzEllipsis="'true'">{{row.subitemName}}</div>
+                            <div nz-col nzFlex="100px" class="text-right">{{row.qty * row.cost | currency: '₱'}}</div>
+                            <div nz-col nzFlex="24px" class="text-right">
+                                <span nz-icon nzType="close-circle" nzTheme="outline" class="text-red-500 cursor-pointer hover:text-red-700"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <ng-template #noSelected>
+                    <div class="text-center w-full">No Selected Item!</div>
+                </ng-template>
+
+<!-- 
+                <form nz-form>
+                    <nz-form-item>
+                        <nz-form-label nzFlex="100px" class="text-left">Date</nz-form-label>
+                        <nz-form-control nzHasFeedback nzFlex="auto" nzErrorTip="Input is required">
+                            <nz-date-picker></nz-date-picker>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-label nzFlex="100px" class="text-left">Warehouse</nz-form-label>
+                        <nz-form-control nzHasFeedback nzFlex="auto" nzErrorTip="Input is required">
+                            <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderWarehouse" nzPlaceHolder="Select warehouse">
+                                <nz-option *ngFor="let row of listOfWarehouse" [nzLabel]="row.whName" [nzValue]="row.id"></nz-option>
+                            </nz-select>
+                            <ng-template #renderWarehouse>
+                                <nz-divider></nz-divider>
+                                <div class="container">
+                                <input type="text" nz-input #inputElement />
+                                <a class="add-item">
+                                    <span nz-icon nzType="plus"></span>
+                                    Add item
+                                </a>
+                                </div>
+                            </ng-template>   
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-label nzFlex="100px" class="text-left">Office</nz-form-label>
+                        <nz-form-control nzHasFeedback nzFlex="auto" nzErrorTip="Input is required">
+                            <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderWarehouse" nzPlaceHolder="Select office">
+                                <nz-option *ngFor="let row of listOfOffice" [nzLabel]="row.offName" [nzValue]="row.id"></nz-option>
+                            </nz-select>
+                            <ng-template #renderWarehouse>
+                                <nz-divider></nz-divider>
+                                <div class="container">
+                                <input type="text" nz-input #inputElement />
+                                <a class="add-item">
+                                    <span nz-icon nzType="plus"></span>
+                                    Add item
+                                </a>
+                                </div>
+                            </ng-template>   
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-label nzFlex="100px" class="text-left">Remarks</nz-form-label>
+                        <nz-form-control nzFlex="auto" nzHasFeedback>
+                            <textarea nz-input rows="2" placeholder="write any thing"></textarea>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <div nz-row [nzGutter]="4" class="text-center">
+                        <div nz-col nzFlex="100px">
+                            <div class="bg-slate-300 dark:bg-black rounded p-1">
+                                <div class="text-[8pt] font-semibold">Total Qty.</div>
+                                <div class="text-[12pt] font-semibold">{{ 0 | number: '1.0-0'}}</div>
+                            </div>
+                        </div>
+                        <div nz-col nzFlex="auto">
+                            <div nz-row [nzGutter]="4">
+                                <div nz-col nzFlex="50%">
+                                    <div class="bg-slate-300 dark:bg-black rounded p-1">
+                                        <div class="text-[8pt] font-semibold">Total Cost</div>
+                                        <div class="text-[12pt] font-semibold text-blue-600">{{ 1000000 | currency: '₱'}}</div>
+                                    </div>
+                                </div>
+                                <div nz-col nzFlex="50%">
+                                    <div class="bg-slate-300 dark:bg-black rounded p-1">
+                                        <div class="text-[8pt] font-semibold">Total Price</div>
+                                        <div class="text-[12pt] font-semibold text-red-500">{{ 1000000 | currency: '₱'}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button nz-button nzType="primary" type="submit" [nzLoading]="isSubmitting" class="mt-4 w-full">
+                        <span nz-icon nzType="save"></span>
+                        Submit
+                    </button>
+                </form> -->
+
+        
+            </nz-card>
+            <div class="w-full absolute bottom-0 h-36 bg-white dark:bg-[#141414] p-4 dark:border-b-0 dark:border-x-[1px] dark:border-t-[1px] dark:border-solid dark:border-[#303030]">
+                <div nz-row [nzGutter]="16" class="text-center h-[70px]">
+                    <div nz-col class="gutter-row" [nzSpan]="12">
+                        <div class="inner-box font-semibold">
+                            Total Quantity
+                            <div class="inner-box font-bold text-xl">{{totalQty | number: '1.0-0'}}</div>
+                        </div>
+                    </div>
+                    <div nz-col class="gutter-row" [nzSpan]="12">
+                        <div class="inner-box font-semibold m-aut">
+                            Total  Cost
+                            <div class="inner-box font-bold text-xl">{{totalCost | currency: '₱ '}}</div>
+                        </div>
+                    </div>
+                </div>
+                <button nz-button nzType="primary" class="h-10 font-bold" nzBlock>PROCEED TO CHECKOUT</button>
+            </div>    
+            <!-- <nz-collapse [nzBordered]="false" class="mt-1" class="dark:border dark:border-solid dark:border-[#303030] dark:bg-[#141414] mt-1">
+                <nz-collapse-panel
+                nzHeader="Selected Items"
+                nzActive=true
+                [nzExpandedIcon]="expandedIcon"
+                >
+
+                </nz-collapse-panel>
+            </nz-collapse>
+            <ng-template #expandedIcon let-active>
+                {{ active }}
+                <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="true ? 90 : -90"></span>
+            </ng-template> -->
+
+        </div>
+    </div>
+</div>
+
+
+<ng-template #itemsView >
+    <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-2 my-[-4px]">
+        <input type="text" nz-input placeholder="input search text" (change)="searchItem($event)"/>
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+        <span nz-icon nzType="search"></span>
+    </ng-template>
+    <nz-radio-group [(ngModel)]="itemFilter.view" nzButtonStyle="solid"  class="my-[-4px]">
+        <label nz-radio-button nzValue="list">
+            <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
+        </label>
+        <label nz-radio-button nzValue="grid">
+            <span nz-icon nzType="appstore" nzTheme="outline"></span>
+        </label>
+    </nz-radio-group>
+</ng-template>
+
+<ng-template #cartHeader>
+    <span nz-icon nzType="shopping-cart" nzTheme="outline"></span> Cart
+</ng-template>
+

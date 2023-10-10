@@ -60,8 +60,14 @@ export class ReceivingTransactionListComponent {
     list: [],
     filteredList: [],
     isSubmitting: false,
-    loading: true
+    loading: true,
   };
+
+  gridList = [
+    { label: 'Transaction', value: 'Transaction', icon: 'table' },
+    { label: 'For Posting', value: 'Posting', icon: 'bars' },
+
+  ];
 
   switchValue = false;
 
@@ -99,7 +105,10 @@ export class ReceivingTransactionListComponent {
         sortDirection: 'asc'
       }
     ];
-    if (event) {
+    if (event === 1) {
+
+      this.switchValue = true
+      this.cd.detectChanges()
       this.stockReceivingServices.list({ order: order, pagination: false, filteredObject: JSON.stringify({ isPosted: false }) }).subscribe({
         next: (res: any) => {
           const list = res.data
@@ -116,10 +125,32 @@ export class ReceivingTransactionListComponent {
         }
       });
     } else {
+      this.switchValue = false
       this.loadData()
     }
   }
 
+  onSearch() {
+    let model: any = this.model;
+    model.loading = true;
+    // this.model.filteredList = this.model.list.filter((d: any) => d.rcvRefno.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
+    // console.log('S', this.search);
+    this.stockReceivingServices.fulltextFilter({ q: this.search }).subscribe({
+      next: (value) => {
+        const list = value.data
+
+        model.list = list;
+        model.filteredList = list;
+      },
+      error: (err) => {
+
+      }, complete: () => {
+        model.loading = false;
+        this.cd.detectChanges();
+      },
+    })
+    this.cd.detectChanges();
+  }
 
   updateCheckedSet(id: any, checked: boolean): void {
     if (checked) {
@@ -279,7 +310,7 @@ export class ReceivingTransactionListComponent {
 
   filter(f: string) {
     this.search = f;
-    this.model.filteredList = this.model.list.filter((d: any) => d.className.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
+    this.model.filteredList = this.model.list.filter((d: any) => d.rcvRefno.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
     console.log('S', this.search);
     this.cd.detectChanges();
   }
@@ -332,6 +363,12 @@ export class ReceivingTransactionListComponent {
   }
 
   onDeleteClick(event: MouseEvent, data: any) {
+    event.stopPropagation(); // Prevent the click event from propagating to the row
+    // Add your delete logic here, such as showing a confirmation dialog
+    // or directly initiating the delete operation
+  }
+
+  onReprint(event: MouseEvent, data: any) {
     event.stopPropagation(); // Prevent the click event from propagating to the row
     // Add your delete logic here, such as showing a confirmation dialog
     // or directly initiating the delete operation

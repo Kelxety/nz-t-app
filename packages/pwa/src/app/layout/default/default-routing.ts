@@ -29,9 +29,19 @@ export default [
         loadComponent: () => import('../../pages/receiving-transaction-list/receiving-transaction-list.component').then(m => m.ReceivingTransactionListComponent)
       },
       {
+        path: 'issuance',
+        data: { title: 'Stock-Issuance', key: 'default:issuance' },
+        loadChildren: () => import('../../pages/issuance/issuance-routing')
+      },
+      {
         path: 'price-update',
         data: { title: 'Price Update', key: 'price-update' },
         loadComponent: () => import('../../pages/price-update/price-update.component').then(m => m.PriceUpdateComponent)
+      },
+      {
+        path: 'item-inquiry',
+        data: { title: 'Item Inquiry', key: 'item-inquiry' },
+        loadComponent: () => import('../../pages/item-inquiry/item-inquiry.component').then(m => m.ItemInquiryComponent)
       },
       {
         path: 'configuration',

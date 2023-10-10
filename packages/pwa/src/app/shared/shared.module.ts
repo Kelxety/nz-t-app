@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 
+import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -15,14 +16,17 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+import { NzPipesModule } from 'ng-zorro-antd/pipes';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
@@ -36,19 +40,12 @@ import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 
-import { LocationBarangayModalComponent } from './feature/location-barangay-modal/location-barangay-modal.component';
-import { LocationMunicipalityModalComponent } from './feature/location-municipality-modal/location-municipality-modal.component';
-import { LocationProvinceModalComponent } from './feature/location-province-modal/location-province-modal.component';
-import { LocationRegionComponent } from './feature/location-region/location-region.component';
-import { TmsAccountModalComponent } from './feature/tms-account-modal/tms-account-modal.component';
-import { TmsRptClassModalComponent } from './feature/tms-rpt-class-modal/tms-rpt-class-modal.component';
-import { TmsRptLedgerModalComponent } from './feature/tms-rpt-ledger-modal/tms-rpt-ledger-modal.component';
-import { TmsRptLedgerPaymentModalComponent } from './feature/tms-rpt-ledger-payment/tms-rpt-ledger-payment-modal.component';
 import { FilterPipe } from './pipes/filter.pipe';
 import { NumberLoopPipe } from './pipes/number-loop.pipe';
 import { ItemComponent } from './ui/item/item.component';
 import { LocationBarangayComponent } from './ui/location-barangay/location-barangay.component';
-
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { ItemSelectorComponent } from './feature/item-selector/item-selector.component';
 // import { NgxMaskModule } from 'ngx-mask'
 
 const MODULES: any[] = [
@@ -58,9 +55,13 @@ const MODULES: any[] = [
   NzIconModule,
   NzButtonModule,
   NzToolTipModule,
+  NzPipesModule,
+  NzAffixModule,
   NzDividerModule,
+  NzSegmentedModule,
   NzTabsModule,
   NzInputNumberModule,
+  NzImageModule,
   NgFor,
   NzBadgeModule,
   NzRadioModule,
@@ -89,22 +90,15 @@ const MODULES: any[] = [
   NzTreeSelectModule,
   NzPageHeaderModule,
   NzDescriptionsModule,
-  NzLayoutModule
+  NzLayoutModule,
+  NzCollapseModule
+  
   // NgxMaskModule.forRoot()
 ];
 
 const COMPONENTS: any[] = [
   ItemComponent,
-  LocationBarangayModalComponent,
-  LocationMunicipalityModalComponent,
-  LocationProvinceModalComponent,
-  LocationRegionComponent,
-  TmsRptClassModalComponent,
-  TmsRptLedgerModalComponent,
-  TmsAccountModalComponent,
-  LocationBarangayComponent,
-  LocationRegionComponent,
-  TmsRptLedgerPaymentModalComponent
+  ItemSelectorComponent
 ];
 
 const COMPONENTS_DYNAMIC: any[] = [];
@@ -116,7 +110,7 @@ const PROVIDERS: any[] = [];
 @NgModule({
   imports: [...MODULES],
   exports: [...MODULES, ...COMPONENTS, ...DIRECTIVES, ...PIPES],
-  declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES],
+  declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES, ItemSelectorComponent],
   providers: [...PROVIDERS]
 })
-export class SharedModule {}
+export class SharedModule { }

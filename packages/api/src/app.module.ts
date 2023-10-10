@@ -25,6 +25,7 @@ import { SupplierModule } from './supplier/supplier.module';
 import { ReceiveModeModule } from './receive-mode/receive-mode.module';
 import { ReceivingDtlModule } from './receiving-dtl/receiving-dtl.module';
 import { PermissionModule } from './permission/permission.module';
+import { IssuanceModule } from './issuance/issuance.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { PermissionModule } from './permission/permission.module';
     ReceiveModeModule,
     ReceivingDtlModule,
     PermissionModule,
+    IssuanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

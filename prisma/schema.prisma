@@ -304,26 +304,27 @@ model ScmIssuanceDtl {
 }
 
 model ScmItem {
-  id                  String               @id @default(uuid())
-  itemCode            String?              @unique() @map("item_code") @db.VarChar(36)
-  barcode             String?              @db.VarChar(50)
-  itemName            String?              @unique() @map("item_name") @db.VarChar(255)
-  itemDescription     String?              @map("item_description") @db.VarChar(50)
-  itemcategoryId      String?              @map("itemcategory_id") @db.VarChar(36)
-  unitId              String?              @map("unit_id") @db.VarChar(36)
-  state               String?              @db.VarChar(20)
-  remarks             String?              @db.VarChar(255)
-  createdBy           String?              @map("created_by") @db.VarChar(50)
-  createdAt           DateTime             @default(now()) @map("created_at") @db.DateTime(0)
-  updatedBy           String?              @map("updated_by") @db.VarChar(50)
-  updatedAt           DateTime             @updatedAt @map("updated_at") @db.DateTime(0)
-  scmItemCategory     ScmItemCategory?     @relation(fields: [itemcategoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_item_ibfk_1")
-  scmUnit             ScmUnit?             @relation(fields: [unitId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_item_ibfk_2")
-  scmItemDtl          ScmItemDtl[]
-  scmItemLocationDtls ScmItemLocationDtl[]
+  id              String           @id @default(uuid())
+  itemCode        String?          @unique() @map("item_code") @db.VarChar(36)
+  barcode         String?          @db.VarChar(50)
+  itemImage       String?          @db.VarChar(120)
+  itemName        String?          @unique() @map("item_name") @db.VarChar(255)
+  itemDescription String?          @map("item_description") @db.VarChar(50)
+  itemcategoryId  String?          @map("itemcategory_id") @db.VarChar(36)
+  unitId          String?          @map("unit_id") @db.VarChar(36)
+  state           String?          @db.VarChar(20)
+  remarks         String?          @db.VarChar(255)
+  createdBy       String?          @map("created_by") @db.VarChar(50)
+  createdAt       DateTime         @default(now()) @map("created_at") @db.DateTime(0)
+  updatedBy       String?          @map("updated_by") @db.VarChar(50)
+  updatedAt       DateTime         @updatedAt @map("updated_at") @db.DateTime(0)
+  scmItemCategory ScmItemCategory? @relation(fields: [itemcategoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_item_ibfk_1")
+  scmUnit         ScmUnit?         @relation(fields: [unitId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_item_ibfk_2")
+  scmItemDtl      ScmItemDtl[]
 
   @@index([itemcategoryId], map: "itemcategory_id")
   @@index([unitId], map: "unit_id")
+  @@fulltext([itemCode, barcode, itemName])
   @@map("scm_item")
 }
 
@@ -383,9 +384,11 @@ model ScmItemDtl {
   scmRisDtls            ScmRisDtl[]
   scmStockInventoryDtls ScmStockInventoryDtl[]
   scmStockLedgers       ScmStockLedger[]
+  scmItemLocationDtls   ScmItemLocationDtl[]
 
   @@index([itemId], map: "item_id")
   @@index([unitId], map: "unit_id")
+  @@fulltext([subitemCode, barcode, subitemName, brandName])
   @@map("scm_item_dtl")
 }
 
@@ -407,14 +410,16 @@ model ScmItemLocation {
 
 model ScmItemLocationDtl {
   id                    String                 @id @default(uuid())
-  itemId                String                 @map("item_id") @db.VarChar(36)
+  itemDtlId             String                 @map("item_dtl_id") @db.VarChar(36)
   locationId            String                 @map("location_id") @db.VarChar(36)
-  scmItem               ScmItem                @relation(fields: [itemId], references: [id], onUpdate: Restrict, map: "scm_item_location_dtl_ibfk_1")
+  balanceQty            String                 @db.VarChar(36)
+  scmItem               ScmItemDtl             @relation(fields: [itemDtlId], references: [id], onUpdate: Restrict, map: "scm_item_location_dtl_ibfk_1")
   scmItemLocation       ScmItemLocation        @relation(fields: [locationId], references: [id], onUpdate: Restrict, map: "scm_item_location_dtl_ibfk_2")
   scmStockInventoryDtls ScmStockInventoryDtl[]
   scmStockLedgers       ScmStockLedger[]
+  scmReceiveDtl         ScmReceiveDtl[]
 
-  @@index([itemId], map: "item_id")
+  @@index([itemDtlId], map: "item_dtl_id")
   @@index([locationId], map: "location_id")
   @@map("scm_item_location_dtl")
 }
@@ -490,21 +495,24 @@ model ScmReceive {
 }
 
 model ScmReceiveDtl {
-  id             String      @id @default(uuid())
-  receiveId      String?     @map("receive_id") @db.VarChar(36)
-  itemdtlId      String?     @map("itemdtl_id") @db.VarChar(36)
-  qty            Int?
-  cost           Float?
-  costAmount     Float?      @map("cost_amount")
-  lotNo          String?     @map("lot_no") @db.VarChar(50)
-  batchNo        String?     @map("batch_no") @db.VarChar(50)
-  expirationDate DateTime?   @map("expiration_date") @db.Date
-  barcodeNo      String?     @unique() @map("barcode_no") @db.VarChar(50)
-  scmReceive     ScmReceive? @relation(fields: [receiveId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_1")
-  scmItemDtl     ScmItemDtl? @relation(fields: [itemdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_2")
+  id                 String              @id @default(uuid())
+  receiveId          String?             @map("receive_id") @db.VarChar(36)
+  itemdtlId          String?             @map("itemdtl_id") @db.VarChar(36)
+  itemlocationDtlId  String?             @map("scm_item_location_dtl") @db.VarChar(36)
+  qty                Int?
+  cost               Float?
+  costAmount         Float?              @map("cost_amount")
+  lotNo              String?             @map("lot_no") @db.VarChar(50)
+  batchNo            String?             @map("batch_no") @db.VarChar(50)
+  expirationDate     DateTime?           @map("expiration_date") @db.Date
+  barcodeNo          String?             @unique() @map("barcode_no") @db.VarChar(50)
+  scmReceive         ScmReceive?         @relation(fields: [receiveId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_1")
+  scmItemDtl         ScmItemDtl?         @relation(fields: [itemdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_2")
+  scmItemLocationDtl ScmItemLocationDtl? @relation(fields: [itemlocationDtlId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   @@index([itemdtlId], map: "itemdtl_id")
   @@index([receiveId], map: "receive_id")
+  @@index([itemlocationDtlId], map: "scm_item_location_dtl")
   @@map("scm_receive_dtl")
 }
 
@@ -520,6 +528,7 @@ model ScmReceiveMode {
   scmSuppliers ScmSupplier[]
   scmItemDtl   ScmItemDtl[]
 
+  @@fulltext([recvMode])
   @@map("scm_receive_mode")
 }
 
@@ -784,6 +793,7 @@ model ScmSupplier {
   scmReceiveMode  ScmReceiveMode? @relation(fields: [receivemodeId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_supplier_ibfk_1")
 
   @@index([receivemodeId], map: "receivemode_id")
+  @@fulltext([supplierName, supplierAddress, contactPerson, contactNo])
   @@map("scm_supplier")
 }
 
@@ -833,6 +843,7 @@ model ScmUnit {
   scmItems    ScmItem[]
   scmItemDtls ScmItemDtl[]
 
+  @@fulltext([unitName, unitAcro])
   @@map("scm_unit")
 }
 
@@ -859,6 +870,7 @@ model ScmWarehouse {
   scmStockInventories                              ScmStockInventory[]
   scmStockLedgers                                  ScmStockLedger[]
 
+  @@fulltext([whName, whAcro])
   @@map("scm_warehouse")
 }
 

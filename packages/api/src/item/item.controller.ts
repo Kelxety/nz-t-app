@@ -26,7 +26,7 @@ import { ItemService } from './item.service';
 @Controller('item')
 @ApiTags('scm_item')
 export class ItemController {
-  constructor(private readonly itemService: ItemService) {}
+  constructor(private readonly itemService: ItemService) { }
 
   @Post()
   @CustomItemDecorator()
@@ -56,11 +56,48 @@ export class ItemController {
       data: data.map((res) => new ItemEntity(res)),
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    return resData;
+  }
+
+  @Get('search')
+  @CustomItemDecoratorFindAll()
+  async fulltextSearch(@Query() query: QueryT): Promise<ResponseT<ItemEntity[]>> {
+    const data = await this.itemService.fulltextSearch({
+      searchData: query.q,
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const resData = {
+      message: `List of all Item fetch Successfully`,
+      data: data.map((res) => new ItemEntity(res)),
+    };
+    if (!query.pagination) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }

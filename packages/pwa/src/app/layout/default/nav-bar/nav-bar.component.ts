@@ -144,7 +144,7 @@ export class NavBarComponent implements OnInit {
         );
         this.tabService.findIndex(this.routerPath);
         // angular16以后可以在路由中直接设置title了
-        this.titleServe.setTitle(`${routeData['title']} - Ant Design`);
+        this.titleServe.setTitle(`${routeData['title']} - HMIS v2`);
         // 混合模式时，切换tab，让左侧菜单也相应变化
         this.setMixModeLeftMenu();
       });

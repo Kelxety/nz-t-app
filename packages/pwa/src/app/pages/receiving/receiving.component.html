@@ -432,7 +432,7 @@
                             nzType="reload" nzTheme="outline">
                         </span>
                     </div>
-                    <form nz-form [formGroup]="validateForm" id="validateForm">
+                    <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="onSubmit()">
 
                         <nz-form-item>
                             <nz-form-label nzLabelAlign="left" [nzXs]="24" nzFor="entryDate" nzRequired nzLabelWrap>
@@ -517,7 +517,7 @@
 
                         <div>
                             <nz-form-control>
-                                <button nz-button nzType="primary" type="submit" class="w-full" (click)="onSaveAll()">
+                                <button nz-button nzType="primary" class="w-full">
                                     <span nz-icon nzType="save" nzTheme="outline"></span>
                                     Save
                                 </button>
@@ -628,7 +628,7 @@
                                         </nz-form-item>
                                     </div>
                                     <div
-                                        class="grid grid-cols-2 gap-x-2 -mt-4 items-center bg-gray-100  dark:bg-gray-500 px-2 shadow-md">
+                                        class="grid grid-cols-2 gap-x-2 -mt-4 items-center bg-gray-100  dark:bg-black/40 px-2 shadow-md">
                                         <nz-form-item class="-mt-1">
                                             <nz-form-label nzLabelAlign="left" nzErrorTip="Please input Cost!"
                                                 nzRequired [nzXs]="24" nzFor="cost"

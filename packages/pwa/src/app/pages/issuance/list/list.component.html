@@ -1,0 +1,28 @@
+<div class="fixed-content p-2">
+    <div nz-row class="relative w-full h-full">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24" nzXl="24">
+            <nz-card nzTitle="Available Items List" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '58px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
+            Sample
+            </nz-card>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #itemsView >
+    <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-2 my-[-4px]">
+        <input type="text" nz-input placeholder="input search text" />
+    </nz-input-group>
+     <ng-template #suffixIconSearch>
+        <span nz-icon nzType="search"></span>
+    </ng-template>
+    <!-- <nz-radio-group [(ngModel)]="itemFilter.view" nzButtonStyle="solid"  class="my-[-4px]">
+        <label nz-radio-button nzValue="list">
+            <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
+        </label>
+        <label nz-radio-button nzValue="grid">
+            <span nz-icon nzType="appstore" nzTheme="outline"></span>
+        </label>
+    </nz-radio-group> -->
+</ng-template>
+

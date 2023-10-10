@@ -7,7 +7,7 @@
         [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" (click)="isCollapsed = !isCollapsed"></span>
     </nz-header>
 
-    <form nz-form [formGroup]="validateForm" id="validateForm">
+    <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="onSubmit()">
       <nz-card [hidden]="isCollapsed">
 
         <nz-form-item>
@@ -43,7 +43,7 @@
           <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
         </nz-form-item>
         <div class="float-right px-4">
-          <button nz-button nzType="primary" [disabled]="this.btnDisable" type="submit" (click)="onCreateItem()">
+          <button nz-button nzType="primary" [disabled]="this.btnDisable">
             <span nz-icon nzType="save" nzTheme="outline"></span>
             Save
           </button>
@@ -207,9 +207,12 @@
                           <span class="text-xs text-gray-500">Exp. {{ data?.expirationDate | date : 'shortDate'}}</span>
                         </div>
                       </td>
-                      <td nzEllipsis>{{ data?.subitemCode }}</td>
-                      <td nzBreakWord>{{data.brandName}} - {{ data?.subitemName }}</td>
-                      <td class="text-center">{{ data?.balanceQty }}</td>
+                      <td nzEllipsis>{{ data?.subitemCode | nzSafeNull: '-'}}</td>
+                      <td nzBreakWord>{{data.brandName}}{{data.brandName ? '-' : ''}}{{
+                        data?.subitemName
+                        | nzSafeNull: '-'}}
+                      </td>
+                      <td class="text-center">{{ data?.balanceQty | nzSafeNull: '-'}}</td>
                       <td nzEllipsis class="text-right">{{ data?.cost | currency : 'PHP' }}</td>
                       <td nzEllipsis class="text-right">{{ data?.price | currency : 'PHP' }}</td>
                       <td nzEllipsis><nz-badge [nzColor]="data.state === 'Active' ? 'green' : 'red'"
