@@ -40,5 +40,15 @@ export default [
     path: 'receive-mode',
     data: { title: 'Receive mode', key: 'default:configuration:receive-mode', breadcrumb: 'Receive mode' },
     loadComponent: () => import('./feature/receive-mode/receive-mode.component').then(c => c.ReceiveModeComponent)
+  },
+  {
+    path: 'patient-type',
+    data: { title: 'Patient Type', key: 'default:configuration:patient-type', breadcrumb: 'Patient type' },
+    loadComponent: () => import('./feature/patient-type/patient-type.component').then(c => c.PatientTypeComponent)
+  },
+  {
+    path: 'physician',
+    data: { title: 'Physician', key: 'default:configuration:physician', breadcrumb: 'Physician' },
+    loadComponent: () => import('./feature/physician/physician.component').then(c => c.PhysicianComponent)
   }
 ] as Route[];
