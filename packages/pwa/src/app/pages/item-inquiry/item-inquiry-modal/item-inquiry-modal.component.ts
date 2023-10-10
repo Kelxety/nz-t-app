@@ -29,6 +29,7 @@ export class ItemInquiryModalComponent {
     isSubmitting: false,
     loading: false
   };
+
   private renderer: Renderer2;
   isLoading = false;
 

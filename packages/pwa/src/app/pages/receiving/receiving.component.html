@@ -441,7 +441,7 @@
                                 <nz-date-picker formControlName="rcvDate"></nz-date-picker>
                             </nz-form-control>
                         </nz-form-item>
-                        <nz-form-item class="-mt-2">
+                        <!-- <nz-form-item class="-mt-2">
                             <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired>Warehouse</nz-form-label>
                             <nz-form-control nzHasFeedback nzFlex="320px" nzErrorTip="Please select a warehouse!">
                                 <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplate"
@@ -452,7 +452,7 @@
                                     </nz-option>
                                 </nz-select>
                             </nz-form-control>
-                        </nz-form-item>
+                        </nz-form-item> -->
                         <nz-form-item class="-mt-2">
                             <nz-form-label nzLabelAlign="left" [nzXs]="24" nzRequired>Supplier</nz-form-label>
                             <nz-form-control nzFlex="320px" nzHasFeedback nzErrorTip="Please select a supplier!">
@@ -776,10 +776,6 @@
                 <p class="font-bold">Total cost: {{this.totalCostAmount() | currency
                     : 'PHP'}}</p>
             </div>
-        </ng-template>
-
-        <ng-template #forcustom>
-            <div>sample</div>
         </ng-template>
 
         <ng-template #renderTemplate>

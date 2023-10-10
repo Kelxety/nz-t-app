@@ -25,6 +25,8 @@ import { SupplierModule } from './supplier/supplier.module';
 import { ReceiveModeModule } from './receive-mode/receive-mode.module';
 import { ReceivingDtlModule } from './receiving-dtl/receiving-dtl.module';
 import { PermissionModule } from './permission/permission.module';
+import { StockLedgerModule } from './stock-ledger/stock-ledger.module';
+import { StockLedgerCodeModule } from './stock-ledger-code/stock-ledger-code.module';
 
 @Module({
   imports: [
@@ -52,6 +54,8 @@ import { PermissionModule } from './permission/permission.module';
     ReceiveModeModule,
     ReceivingDtlModule,
     PermissionModule,
+    StockLedgerModule,
+    StockLedgerCodeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

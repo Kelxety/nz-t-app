@@ -44,11 +44,16 @@ export class ReceivingDtlController {
       data: data.map((res: Partial<ReceivingDtlEntity>) => new ReceivingDtlEntity(res)),
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }

@@ -40,5 +40,15 @@ export default [
     path: 'receive-mode',
     data: { title: 'Receive mode', key: 'default:configuration:receive-mode', breadcrumb: 'Receive mode' },
     loadComponent: () => import('./feature/receive-mode/receive-mode.component').then(c => c.ReceiveModeComponent)
+  },
+  {
+    path: 'ledger-code',
+    data: { title: 'Ledger code', key: 'default:configuration:ledger-code', breadcrumb: 'Ledger code' },
+    loadComponent: () => import('./feature/ledger-code/ledger-code.component').then(c => c.LedgerCodeComponent)
+  },
+  {
+    path: 'planogram',
+    data: { title: 'Planogram', key: 'default:configuration:planogram', breadcrumb: 'Planogram' },
+    loadComponent: () => import('./feature/planogram/planogram.component').then(c => c.PlanogramComponent)
   }
 ] as Route[];

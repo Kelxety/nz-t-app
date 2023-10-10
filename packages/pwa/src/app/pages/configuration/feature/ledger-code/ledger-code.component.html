@@ -10,36 +10,35 @@
                 </nz-breadcrumb-item>
             </nz-breadcrumb>
         </nz-card>
-        <nz-card class="m-4" nzTitle="Warehouse List" [nzExtra]="options">
+        <nz-card class="m-4" nzTitle="Ledger code list" [nzExtra]="options">
             <div class="loc-content" *ngIf="!model.loading; else isLoading">
                 <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzSize]="'default'"
                     [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
                     (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
                     <thead>
                         <tr>
-                            <th>Warehouse Name</th>
-                            <th>Warehouse Acro</th>
+                            <th>Legder code</th>
+                            <th>Legder name</th>
+                            <th>ledger flag</th>
+                            <th>ledger desc</th>
                             <th nzWidth="110px">Status</th>
                             <th nzWidth="80px" class="text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let data of fixedTable.data">
-                            <td nzEllipsis>{{ data?.whName }}</td>
-                            <td nzEllipsis>{{ data?.whAcro }}</td>
+                            <td nzEllipsis>{{ data?.ledgerCode }}</td>
+                            <td nzEllipsis>{{ data?.ledgerName }}</td>
+                            <td nzEllipsis>{{ data?.ledgerFlag }}</td>
+                            <td nzEllipsis>{{ data?.ledgerDesc }}</td>
                             <td nzEllipsis><nz-badge [nzColor]="data.state === 'Active' ? 'green' : 'red'"
                                     [nzText]="data?.state"></nz-badge></td>
                             <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
-                                <span class="cursor-not-allowed" nz-icon nzType="edit" nzTheme="outline"
-                                    *ngIf="data.whAcro === 'SR'"></span>
                                 <span class="cursor-pointer" nz-icon nzType="edit" nzTheme="outline"
-                                    (click)="edit(data)" *ngIf="data.whAcro !== 'SR'"></span>
+                                    (click)="edit(data)"></span>
                                 <nz-divider nzType="vertical"></nz-divider>
-                                <span class="cursor-not-allowed" nz-icon nzType="stop" nzTheme="outline"
-                                    style="color: red" *ngIf="data.whAcro === 'SR'"></span>
-
                                 <span class="cursor-pointer" nz-icon nzType="stop" nzTheme="outline" style="color: red"
-                                    nz-popconfirm *ngIf="data.whAcro !== 'SR'"
+                                    nz-popconfirm
                                     nzPopconfirmTitle="Are you sure you want to delete {{ data.unitName }}"
                                     (nzOnConfirm)="softDelete(data)" (nzOnCancel)="cancel()"></span>
                             </td>

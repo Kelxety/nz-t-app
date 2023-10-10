@@ -4,9 +4,9 @@ import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 import { finalize } from 'rxjs';
 import { SharedModule } from '../../shared';
 import { ModalBtnStatus } from '../../widget/base-modal';
+import { ItemDetailServices } from '../configuration/Services/item-detail/item-detail.service';
 import { ItemServices } from '../configuration/Services/item/item.service';
 import { ItemInquiryModalService } from './item-inquiry-modal/item-inquiry-modal.service';
-
 interface ItemData {
   href: string;
   title: string;
@@ -42,6 +42,7 @@ export class ItemInquiryComponent {
     private cd: ChangeDetectorRef,
     private itemServices: ItemServices,
     private modalService: ItemInquiryModalService,
+    private itemDetailServices: ItemDetailServices,
   ) {
 
   }
@@ -73,7 +74,7 @@ export class ItemInquiryComponent {
         sortDirection: 'asc'
       }
     ];
-    this.itemServices.list({ order: order, pagination: false }).subscribe({
+    this.itemDetailServices.list({ order: order, pagination: false }).subscribe({
       next: (res: any) => {
         console.log(res.data)
         // const list = res.data
@@ -98,7 +99,7 @@ export class ItemInquiryComponent {
     // model.loading = true;
     // this.model.filteredList = this.model.list.filter((d: any) => d.rcvRefno.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
     // console.log('S', this.search);
-    this.itemServices.fulltextFilter({ q: this.search }).subscribe({
+    this.itemDetailServices.fulltextFilter({ q: this.search }).subscribe({
       next: (value) => {
         console.log(value)
         this.itemCardData.set(value.data)
