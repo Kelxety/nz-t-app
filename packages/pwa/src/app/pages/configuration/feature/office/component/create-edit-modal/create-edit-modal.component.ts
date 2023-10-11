@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HospitalPhysician } from '@prisma/client';
+import { HospitalOffice } from '@prisma/client';
 import { SharedModule } from '@pwa/src/app/shared';
 import { fnCheckForm } from '@pwa/src/app/utils/tools';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
@@ -16,10 +16,10 @@ import { Observable, of } from 'rxjs';
 })
 export class CreateEditModalComponent {
   private modalRef = inject(NzModalRef);
-  readonly nzModalData: { data: HospitalPhysician; actionType: string } = inject(NZ_MODAL_DATA);
+  readonly nzModalData: { data: HospitalOffice; actionType: string } = inject(NZ_MODAL_DATA);
   private fb = inject(FormBuilder);
 
-  // Declearation
+  // DECLERATION
   isEdit = signal<boolean>(false);
   addEditForm!: FormGroup;
   listOfOption = [
@@ -42,12 +42,9 @@ export class CreateEditModalComponent {
   initForm() {
     this.addEditForm = this.fb.group({
       id: [null],
-      physicianName: [null, [Validators.required]],
-      designation: [null],
-      specialty: [null],
-      prcNo: [null],
-      prcValidity: [new Date()],
-      state: [this.listOfOption[0].value],
+      officeName: [null, Validators.required],
+      officeAcro: [null, Validators.required],
+      state: [this.listOfOption[0], null],
       remarks: [null]
     });
   }

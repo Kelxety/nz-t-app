@@ -10,9 +10,9 @@
         </nz-breadcrumb-item>
       </nz-breadcrumb>
     </nz-card>
-    <nz-card class="m-4" nzTitle="Physician List" [nzExtra]="options">
-      <div class="loc-content" *ngIf="physicians().length > 0">
-        <app-ant-table [tableConfig]="tableConfig()" [tableData]="physicians()" (changePageNum)="getDataList($event)" (changePageSize)="changePageSize($event)"></app-ant-table>
+    <nz-card class="m-4" nzTitle="Office List" [nzExtra]="options">
+      <div class="loc-content" *ngIf="offices().length > 0">
+        <app-ant-table [tableConfig]="tableConfig()" [tableData]="offices()" (changePageNum)="getDataList($event)" (changePageSize)="changePageSize($event)"></app-ant-table>
       </div>
     </nz-card>
   </nz-content>
@@ -49,7 +49,7 @@
       <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="add()" nzTooltipTitle="Add " nzTooltipPlacement="topLeft" nz-tooltip>
         <span nz-icon nzType="plus" nzTheme="outline"></span>
       </button>
-      <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="clictToRefresh()" nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip>
+      <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="clickToRefresh()" nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip>
         <span nz-icon nzType="reload" nzTheme="outline"></span>
       </button>
     </nz-button-group>
@@ -73,9 +73,9 @@
 </ng-template>
 
 <ng-template #statusFlag let-isPatientselect="isPatientselect" let-id="id">
-  <nz-switch [nzControl]="true" [ngModel]="getUserStatus(isPatientselect)" [nzDisabled]="true" nzCheckedChildren="true" nzUnCheckedChildren="false"></nz-switch>
+  <!-- <nz-switch [nzControl]="true" [ngModel]="getUserStatus(isPatientselect)" [nzDisabled]="true" nzCheckedChildren="true" nzUnCheckedChildren="false"></nz-switch> -->
 </ng-template>
 
 <ng-template #stateFlag let-state="state" let-id="id">
-  <nz-switch [nzControl]="true" [ngModel]="getUserStatus(state)" [nzDisabled]="true" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
+  <!-- <nz-switch [nzControl]="true" [ngModel]="getUserStatus(state)" [nzDisabled]="true" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch> -->
 </ng-template>

@@ -30,7 +30,7 @@ export class AuthService {
         refresh_token: true,
         role: true,
       },
-      where: { username: createAuthDto.username, status: UserStatus.ACTIVE },
+      where: { username: createAuthDto.username, status: UserStatus.Active },
     });
 
     if (!user) {

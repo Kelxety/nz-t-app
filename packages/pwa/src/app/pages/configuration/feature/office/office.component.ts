@@ -1,44 +1,44 @@
 import { ChangeDetectorRef, Component, DestroyRef, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { SharedModule } from '@pwa/src/app/shared';
-import { HospitalPhysicianService } from '../../Services/physician/physician.service';
-import { HospitalPhysician, Prisma } from '@prisma/client';
-import { AntTableComponent, AntTableConfig } from '../../../../shared/components/ant-table/ant-table.component';
-import { NzTableQueryParams } from 'ng-zorro-antd/table';
-import { NzSafeAny } from 'ng-zorro-antd/core/types';
-import { PhysicianModalService } from './component/physician-modal.service';
-import { finalize } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ModalBtnStatus } from '@pwa/src/app/widget/base-modal';
+import { AntTableComponent, AntTableConfig } from '@pwa/src/app/shared/components/ant-table/ant-table.component';
+import { HospitalOfficeService } from '../../Services/office/office.service';
+import { OfficeModalService } from './component/office-modal.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzSafeAny } from 'ng-zorro-antd/core/types';
+import { HospitalOffice, Prisma } from '@prisma/client';
 import { SearchParams } from '@pwa/src/app/shared/interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { ModalBtnStatus } from '@pwa/src/app/widget/base-modal';
+import { NzTableQueryParams } from 'ng-zorro-antd/table';
 
 @Component({
-  selector: 'app-physician',
-  templateUrl: './physician.component.html',
-  styleUrls: ['./physician.component.less'],
+  selector: 'app-office',
+  templateUrl: './office.component.html',
+  styleUrls: ['./office.component.less'],
   standalone: true,
   imports: [SharedModule, AntTableComponent]
 })
-export class PhysicianComponent {
-  // INJECTION
+export class OfficeComponent {
+  //INJECTION
   destroyRef = inject(DestroyRef);
-  $physician = inject(HospitalPhysicianService);
+  $offices = inject(HospitalOfficeService);
   private readonly cdr = inject(ChangeDetectorRef);
-  private modalService = inject(PhysicianModalService);
+  private modalService = inject(OfficeModalService);
   private msg = inject(NzMessageService);
   private msgModalService = inject(NzModalService);
   @ViewChild('operationTpl', { static: true }) operationTpl!: TemplateRef<'C'>;
   @ViewChild('stateFlag', { static: true }) stateFlag!: TemplateRef<NzSafeAny>;
 
-  // DECLERATION
+  //DECLERATION
   errorMessage: string = '';
   search: string = '';
   checked: boolean = false;
-  listOfCurrentPageData: readonly HospitalPhysician[] = [];
+  listOfCurrentPageData: readonly HospitalOffice[] = [];
   setOfCheckedId = new Set<string>();
-  physicianState = 'Active';
-  params: SearchParams<Prisma.HospitalPatientWhereInput> = {
+  officesState = 'Active';
+  params: SearchParams<Prisma.HospitalOfficeWhereInput> = {
     page: 0,
     pagination: true,
     filteredObject: {
@@ -54,9 +54,9 @@ export class PhysicianComponent {
     loading: true
   });
 
-  physicians = computed(() => {
+  offices = computed(() => {
     try {
-      return this.$physician.physicians();
+      return this.$offices.offices();
     } catch (e) {
       this.errorMessage = typeof e === 'string' ? e : 'Error';
       return [];
@@ -65,31 +65,21 @@ export class PhysicianComponent {
 
   // FUNCTIONS
   refresh() {
-    this.$physician.refresh.update(r => !r);
+    this.$offices.refresh.update(r => !r);
     this.tableConfig.mutate(t => (t.loading = false));
     this.cdr.detectChanges();
   }
 
-  onCurrentPageDataChange($event: readonly HospitalPhysician[]): void {
-    this.listOfCurrentPageData = $event;
-    this.refreshCheckedStatus();
-  }
-
-  refreshCheckedStatus(): void {
-    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
-  }
-
   toDelete(id: string) {
-    this.modalService;
-    this.$physician
-      .deletePhysician(id)
+    this.$offices
+      .deleteOffice(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {
           const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId;
           if (res.statusCode === 200) {
             this.msg.remove(id);
-            this.msg.success('Deleted succesfully');
+            this.msg.success('Deleted successfully');
           } else {
             this.msg.remove(id);
             this.msg.error("There's an error!");
@@ -129,12 +119,12 @@ export class PhysicianComponent {
   }
 
   edit(id: string) {
-    const physician = this.$physician.physicians().filter(p => p.id === id);
+    const office = this.$offices.offices().filter(p => p.id === id);
     this.modalService
       .show({
         nzTitle: 'Edit',
         nzData: {
-          data: physician[0],
+          data: office[0],
           actionType: 'Edit'
         }
       })
@@ -152,15 +142,16 @@ export class PhysicianComponent {
       });
   }
 
-  clictToRefresh() {
+  clickToRefresh() {
     this.getDataList();
   }
 
-  addEditData(param: HospitalPhysician, method: 'add' | 'edit'): void {
+  addEditData(param: HospitalOffice, method: 'add' | 'edit'): void {
     const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId;
+
     if (method === 'add') {
-      this.$physician
-        .addPhysician(param)
+      this.$offices
+        .addOffice(param)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: res => {
@@ -183,11 +174,11 @@ export class PhysicianComponent {
           }
         });
     } else {
-      this.$physician.updatePhysician(param.id, param);
+      this.$offices.updateOffice(param.id, param);
     }
   }
 
-  getUserStatus(status: 'true' | 'Active' | 'false' | 'Inactive'): boolean {
+  getOffficeStatus(status: 'true' | 'Active' | 'false' | 'Inactive'): boolean {
     if (status === 'true' || status === 'Active') return true;
     return false;
   }
@@ -205,88 +196,45 @@ export class PhysicianComponent {
     if (e?.pageIndex) {
       this.tableConfig.mutate(t => (t.pageIndex = e.pageIndex));
     }
-    console.log('new config', this.tableConfig(), this.tableConfig().loading);
+
     this.params = {
       page: e.pageIndex,
       pageSize: e.pageSize,
       pagination: true,
-      filteredObject: { state: this.physicianState }
+      filteredObject: { state: this.officesState }
     };
-    this.$physician.getParams.update(p => this.params);
+    this.$offices.getParams.update(p => this.params);
     this.tableConfig.mutate(t => {
-      t.total = this.$physician.totalItems();
+      t.total = this.$offices.totalItems();
     });
     this.cdr.detectChanges();
     this.refresh();
   }
 
   private initTable(): void {
-    this.tableConfig.mutate(tableConfig => {
-      tableConfig.headers = [
+    this.tableConfig.mutate(t => {
+      t.headers = [
         {
-          title: 'Physician Name',
-          field: 'physicianName',
+          title: 'Office Name',
+          field: 'officeName',
           width: 120
         },
         {
-          title: 'Designation',
-          field: 'designation',
-          width: 120
-        },
-        {
-          title: 'Specialty',
-          field: 'specialty',
-          width: 120
-        },
-        {
-          title: 'PRC NO',
-          field: 'prcNo',
-          width: 120
-        },
-        {
-          title: 'PRC Validity',
-          field: 'prcValidity',
+          title: 'Office Acronym',
+          field: 'officeAcro',
           width: 120
         },
         {
           title: 'Status',
           field: 'state',
-          width: 150,
-          tdTemplate: this.stateFlag
+          width: 120
         },
         {
           title: 'Remarks',
           field: 'remarks',
           width: 120
-        },
-        {
-          title: 'Create Time',
-          width: 100,
-          field: 'createdAt',
-          pipe: 'date:yyyy-MM-dd HH:mm'
-        },
-        {
-          title: 'Updated Date',
-          width: 100,
-          field: 'updatedAt'
-        },
-        {
-          title: 'Updated By',
-          width: 100,
-          field: 'updatedBy'
-        },
-        {
-          title: 'Actions',
-          tdTemplate: this.operationTpl,
-          width: 120,
-          fixed: true,
-          fixedDir: 'right'
         }
       ];
-      tableConfig.total = this.$physician.totalItems();
-      tableConfig.loading = false;
-      tableConfig.pageSize = 10;
-      tableConfig.pageIndex = 1;
     });
   }
 

@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { HospitalPhysician, Prisma } from '@prisma/client';
+import { HospitalOffice, Prisma } from '@prisma/client';
 import { HttpParamsService } from '@pwa/src/app/shared';
 import { AntTableConfig } from '@pwa/src/app/shared/components/ant-table/ant-table.component';
 import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
@@ -12,16 +12,16 @@ import { Observable, catchError, map, shareReplay, switchMap, tap, throwError } 
 @Injectable({
   providedIn: 'root'
 })
-export class HospitalPhysicianService {
+export class HospitalOfficeService {
   destroyRef = inject(DestroyRef);
   http = inject(HttpClient);
   apiService = inject(ApiTypeService);
   httpParams = inject(HttpParamsService);
   refresh = signal<boolean>(true);
   errorMessage = '';
-  physician = signal<HospitalPhysician | undefined>(undefined);
+  office = signal<HospitalOffice | undefined>(undefined);
   totalItems = signal<number>(0);
-  getParams = signal<SearchParams<Prisma.HospitalPatientWhereInput>>({
+  getParams = signal<SearchParams<Prisma.HospitalOfficeWhereInput>>({
     page: 1,
     pageSize: 10,
     pagination: true,
@@ -29,18 +29,18 @@ export class HospitalPhysicianService {
       state: 'Active'
     }
   });
-  selectedPhysician = signal<HospitalPhysician | undefined>(undefined);
+  selectedOffice = signal<HospitalOffice | undefined>(undefined);
 
-  public baseUrl = '/api/hospital-physician';
+  public baseUrl = '/api/hospital-office';
 
-  private physicians$ = toObservable(this.refresh).pipe(
+  private offices$ = toObservable(this.refresh).pipe(
     switchMap(doRefresh => {
       const filteredObject = this.getParams().filteredObject ? JSON.stringify(this.getParams().filteredObject) : '';
 
       const p = new HttpParams({ fromObject: { ...this.getParams(), filteredObject } });
 
       return this.http
-        .get<ResType<HospitalPhysician[]>>(this.baseUrl, {
+        .get<ResType<HospitalOffice[]>>(this.baseUrl, {
           params: p
         })
         .pipe(
@@ -54,24 +54,24 @@ export class HospitalPhysicianService {
     })
   );
 
-  addPhysician(data: HospitalPhysician): Observable<ResType<HospitalPhysician>> {
+  addOffice(data: HospitalOffice): Observable<ResType<HospitalOffice>> {
     return this.apiService.post(this.baseUrl, data);
   }
 
-  updatePhysician(id: string, data: object): Observable<ResType<HospitalPhysician>> {
+  updateOffice(id: string, data: object): Observable<ResType<HospitalOffice>> {
     return this.apiService.put(`${this.baseUrl}/${id}`, data);
   }
 
-  deletePhysician(id: string): Observable<ResType<HospitalPhysician>> {
+  deleteOffice(id: string): Observable<ResType<HospitalOffice>> {
     console.log('ibis', id);
     return this.apiService.delete(`${this.baseUrl}/${id}`);
   }
 
-  physicians = toSignal(this.physicians$, { initialValue: [] });
+  offices = toSignal(this.offices$, { initialValue: [] });
 
-  physicianSelected(id: string) {
-    const foundPhysician = this.physicians().find(v => v.id === id);
-    this.selectedPhysician.set(foundPhysician);
+  officeSelected(id: string) {
+    const foundOffice = this.offices().find(v => v.id === id);
+    this.selectedOffice.set(foundOffice);
   }
 
   private handleError(err: HttpErrorResponse): Observable<never> {

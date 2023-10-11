@@ -16,7 +16,7 @@ model User {
   middleName    String?          @map("middle_name") @db.VarChar(50)
   lastName      String           @map("last_name") @db.VarChar(50)
   gender        Gender?
-  status        UserStatus       @default(ACTIVE)
+  status        UserStatus       @default(Active)
   description   String?
   username      String           @unique
   image         String?
@@ -904,7 +904,7 @@ model Permission {
   path      String?             @map("path") @db.VarChar(200)
   menuType  String?             @map("menu_type") @db.Char(1)
   visible   String              @db.Char(1)
-  status    PermissionStatus    @default(ACTIVE)
+  status    PermissionStatus    @default(Active)
   isNewLink Boolean?            @map("is_new_link")
   alIcon    String?             @map("al_icon") @db.VarChar(100)
   icon      String?             @db.VarChar(100)
@@ -942,7 +942,7 @@ model SystemUserRole {
 model Department {
   id             String       @id @default(uuid())
   departmentName String       @map("department_name") @db.VarChar(255)
-  status         normalStatus @default(ACTIVE)
+  status         normalStatus @default(Active)
   fatherId       Int          @default(0) @map("father_id")
   orderNum       Int          @default(0) @map("order_num")
   createdBy      String?      @map("created_by") @db.VarChar(50)
@@ -960,17 +960,17 @@ enum Gender {
 }
 
 enum normalStatus {
-  ACTIVE
-  INACTIVE
+  Active
+  Inactive
 }
 
 enum PermissionStatus {
-  ACTIVE
-  INACTIVE
+  Active
+  Inactive
 }
 
 enum UserStatus {
-  ACTIVE
-  INACTIVE
-  BANNED
+  Active
+  Inactive
+  Banned
 }

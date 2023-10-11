@@ -83,8 +83,8 @@ export class PatientTypeComponent implements OnInit {
     this.checkedCashArray = [...e];
   }
 
-  getUserStatus(status: 'true' | 'ACTIVE' | 'false' | 'INACTIVE'): boolean {
-    if (status === 'true' || status === 'ACTIVE') return true;
+  getUserStatus(status: 'true' | 'Active' | 'false' | 'Inactive'): boolean {
+    if (status === 'true' || status === 'Active') return true;
     return false;
   }
 

@@ -57,5 +57,10 @@ export default [
     path: 'physician',
     data: { title: 'Physician', key: 'default:configuration:physician', breadcrumb: 'Physician' },
     loadComponent: () => import('./feature/physician/physician.component').then(c => c.PhysicianComponent)
+  },
+  {
+    path: 'office',
+    data: { title: 'Office', key: 'default:configuration:office', breadcrumb: 'Office' },
+    loadComponent: () => import('./feature/office/office.component').then(c => c.OfficeComponent)
   }
 ] as Route[];

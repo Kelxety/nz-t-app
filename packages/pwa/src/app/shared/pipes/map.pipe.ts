@@ -39,8 +39,8 @@ export const MapSet = {
     false: 'HIDE'
   },
   status: {
-    true: 'ACTIVE',
-    false: 'INACTIVE'
+    true: 'Active',
+    false: 'Inactive'
   }
 };
 

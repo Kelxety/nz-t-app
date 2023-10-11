@@ -30,7 +30,7 @@
   <nz-form-item>
     <nz-form-label [nzSpan]="5" nzFor="prcValidity" nzRequired>PRC Validity</nz-form-label>
     <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
-      <input id="prcValidity" formControlName="prcValidity" nz-input placeholder="PRC Validity" />
+      <nz-date-picker formControlName="prcValidity"></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
 
