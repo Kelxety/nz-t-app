@@ -498,7 +498,7 @@ model ScmReceiveDtl {
   id                 String              @id @default(uuid())
   receiveId          String?             @map("receive_id") @db.VarChar(36)
   itemdtlId          String?             @map("itemdtl_id") @db.VarChar(36)
-  itemlocationDtlId  String?             @map("scm_item_location_dtl") @db.VarChar(36)
+  itemlocationDtlId  String?             @map("itemlocation_dtl_id") @db.VarChar(36)
   qty                Int?
   cost               Float?
   costAmount         Float?              @map("cost_amount")
@@ -512,7 +512,7 @@ model ScmReceiveDtl {
 
   @@index([itemdtlId], map: "itemdtl_id")
   @@index([receiveId], map: "receive_id")
-  @@index([itemlocationDtlId], map: "scm_item_location_dtl")
+  @@index([itemlocationDtlId], map: "itemlocation_dtl_id")
   @@map("scm_receive_dtl")
 }
 
