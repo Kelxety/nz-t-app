@@ -1,0 +1,35 @@
+<form nz-form [formGroup]="addEditForm">
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="officeName" nzRequired>Office Name</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="officeName" formControlName="officeName" nz-input placeholder="Office name" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="officeAcro" nzRequired>Office Acronym</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="officeAcro" formControlName="officeAcro" nz-input placeholder="Office Acronym" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="state">Status</nz-form-label>
+    <nz-form-control [nzSpan]="15" [nzErrorTip]="combineTpl">
+      <nz-select [nzOptions]="listOfOption" formControlName="state"></nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="5" nzFor="remarks">Remarks</nz-form-label>
+    <nz-form-control [nzSpan]="15" nzHasFeedback [nzErrorTip]="combineTpl">
+      <input id="remarks" formControlName="remarks" nz-input placeholder="Remarks" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <br />
+</form>
+<ng-template #combineTpl let-control>
+  <ng-container *ngIf="control.hasError('message')">{{ control.errors.message }}</ng-container>
+  <ng-container *ngIf="control.hasError('required')">Required fields</ng-container>
+</ng-template>
