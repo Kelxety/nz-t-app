@@ -198,7 +198,7 @@ export class OfficeComponent {
     }
 
     this.params = {
-      page: e.pageIndex,
+      page: e?.pageIndex,
       pageSize: e.pageSize,
       pagination: true,
       filteredObject: { state: this.officesState }
@@ -235,6 +235,10 @@ export class OfficeComponent {
           width: 120
         }
       ];
+      t.total = this.$offices.totalItems();
+      t.loading = false;
+      t.pageSize = 10;
+      t.pageIndex = 1;
     });
   }
 
