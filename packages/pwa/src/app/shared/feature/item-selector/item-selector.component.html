@@ -50,8 +50,39 @@
 
 <div *ngIf="view === 'list'">
     <div class="grid grid-rows-4 grid-flow-col gap-4">
-        <div *ngFor="let row of listOfItems" class="rounded shadow-sm bg-slate-200 hover:bg-slate-300 p-2 mb-1 dark:border dark:border-solid dark:border-[#303030] dark:bg-[#111111] dark:hover:bg-[#121212]">
-            01
-        </div>
+            <nz-table
+            nzShowSizeChanger
+            #fixedTable
+            [nzData]="listOfItems"
+            [nzSize]="'small'"
+            [nzFrontPagination]="false"
+            [nzLoading]="isLoading"
+            [nzScroll]="{ x: '500px', y: 'calc(100vh - 420px)' }"
+            >
+            <thead>
+                <tr>
+                    <th nzLeft nzWidth="120px" nzColumnKey="sort" [nzSortFn]="true">No.</th>
+                    <th nzLeft>Item Name</th>
+                    <th class="text-center" nzWidth="200px">Expiration Date</th>
+                    <th nzWidth="150px" class="text-right">Cost</th>
+                    <th nzWidth="150px" class="text-right">Price</th>
+                    <th nzWidth="150px" class="text-center">Balance Qty</th>
+                    <th nzRight nzWidth="94px" class="text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of fixedTable.data">
+                    <td nzLeft nzEllipsis>{{ data.subitemCode }}</td>
+                    <td nzLeft nzEllipsis>{{ data.subitemName }}</td>
+                    <td class="text-center">{{ data.expirationDate | date: 'MMM dd, yyyy'}}</td>
+                    <td class="text-right">{{ data.cost }}</td>
+                    <td class="text-right text-red-500">{{ data.price }}</td>
+                    <td class="text-center">{{ data.balanceQty }}</td>
+                    <td nzRight class="text-right" style="padding-top: 2px; padding-bottom: 2px">      
+
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>   
     </div>
 </div>

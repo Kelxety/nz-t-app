@@ -16,6 +16,6 @@ export class IssuanceModalService {
   }
 
   public show(modalOptions: ModalOptions = {}, modalData?: string): Observable<NzSafeAny> {
-    return this.modalWrapService.show(this.getContentComponent(), modalOptions, modalData);
+    return this.modalWrapService.show(this.getContentComponent(), modalOptions, modalData, 'Save Changes');
   }
 }

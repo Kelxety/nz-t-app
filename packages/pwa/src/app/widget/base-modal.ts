@@ -156,7 +156,10 @@ export class ModalWrapService {
   }
 
   // 创建对话框的配置项
-  createModalConfig<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params: T, wrapCls: string): ModalOptions {
+  createModalConfig<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params: T, wrapCls: string, labelConfirm: string): ModalOptions {
+    let confirm: string = '';
+    confirm = labelConfirm ? labelConfirm : 'Confirm';
+
     const defaultOptions: ModalOptions = {
       nzTitle: '',
       nzContent: component,
@@ -164,7 +167,7 @@ export class ModalWrapService {
       nzMaskClosable: false,
       nzFooter: [
         {
-          label: 'Confirm',
+          label: confirm,
           type: 'primary',
           show: true,
           onClick: this.confirmCallback.bind(this)
@@ -190,9 +193,9 @@ export class ModalWrapService {
     return newOptions;
   }
 
-  show<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params?: T): Observable<NzSafeAny> {
+  show<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params?: T, labelConfirm?: string): Observable<NzSafeAny> {
     const wrapCls = this.getRandomCls();
-    const newOptions = this.createModalConfig(component, modalOptions, params, wrapCls);
+    const newOptions = this.createModalConfig(component, modalOptions, params, wrapCls, labelConfirm);
     const modalRef = this.bsModalService.create(newOptions);
     let drag: DragRef | null;
     modalRef.afterOpen.pipe(first()).subscribe(() => {
