@@ -1,7 +1,7 @@
-import { Component, DestroyRef, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { SharedModule } from '@pwa/src/app/shared';
 import { HospitalPhysicianService } from '../../Services/physician/physician.service';
-import { HospitalPhysician } from '@prisma/client';
+import { HospitalPhysician, Prisma } from '@prisma/client';
 import { AntTableComponent, AntTableConfig } from '../../../../shared/components/ant-table/ant-table.component';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModalBtnStatus } from '@pwa/src/app/widget/base-modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { SearchParams } from '@pwa/src/app/shared/interface';
 
 @Component({
   selector: 'app-physician',
@@ -23,6 +24,7 @@ export class PhysicianComponent {
   // INJECTION
   destroyRef = inject(DestroyRef);
   $physician = inject(HospitalPhysicianService);
+  private readonly cdr = inject(ChangeDetectorRef);
   private modalService = inject(PhysicianModalService);
   private msg = inject(NzMessageService);
   private msgModalService = inject(NzModalService);
@@ -35,12 +37,21 @@ export class PhysicianComponent {
   checked: boolean = false;
   listOfCurrentPageData: readonly HospitalPhysician[] = [];
   setOfCheckedId = new Set<string>();
+  physicianState = 'Active';
+  params: SearchParams<Prisma.HospitalPatientWhereInput> = {
+    page: 0,
+    pagination: true,
+    filteredObject: {
+      state: 'Active'
+    }
+  };
+
   tableConfig = signal<AntTableConfig>({
     headers: [],
     pageSize: 0,
     pageIndex: 0,
     total: 0,
-    loading: false
+    loading: true
   });
 
   physicians = computed(() => {
@@ -54,9 +65,9 @@ export class PhysicianComponent {
 
   // FUNCTIONS
   refresh() {
-    this.tableConfig.mutate(t => (t.loading = true));
     this.$physician.refresh.update(r => !r);
     this.tableConfig.mutate(t => (t.loading = false));
+    this.cdr.detectChanges();
   }
 
   onCurrentPageDataChange($event: readonly HospitalPhysician[]): void {
@@ -83,7 +94,6 @@ export class PhysicianComponent {
             this.msg.remove(id);
             this.msg.error("There's an error!");
           }
-          this.refresh();
         },
         error: err => {
           if (err.code === 400) {
@@ -142,6 +152,10 @@ export class PhysicianComponent {
       });
   }
 
+  clictToRefresh() {
+    this.getDataList();
+  }
+
   addEditData(param: HospitalPhysician, method: 'add' | 'edit'): void {
     const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId;
     if (method === 'add') {
@@ -173,23 +187,36 @@ export class PhysicianComponent {
     }
   }
 
-  getUserStatus(status: 'true' | 'ACTIVE' | 'false' | 'INACTIVE'): boolean {
-    if (status === 'true' || status === 'ACTIVE') return true;
+  getUserStatus(status: 'true' | 'Active' | 'false' | 'Inactive'): boolean {
+    if (status === 'true' || status === 'Active') return true;
     return false;
   }
 
   changePageSize(e: number): void {
-    this.tableConfig.mutate(r => (r.pageSize = e));
+    this.tableConfig.mutate(t => {
+      t.loading = true;
+      t.pageSize = e;
+    });
   }
 
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.mutate(t => (t.loading = true));
-    this.$physician.getParams.mutate(p => {
-      p.page = this.tableConfig().pageIndex;
-      p.pageSize = this.tableConfig().pageSize;
-      p.pagination = true;
-      p.filteredObject = { state: 'ACTIVE' };
+
+    if (e?.pageIndex) {
+      this.tableConfig.mutate(t => (t.pageIndex = e.pageIndex));
+    }
+    console.log('new config', this.tableConfig(), this.tableConfig().loading);
+    this.params = {
+      page: e.pageIndex,
+      pageSize: e.pageSize,
+      pagination: true,
+      filteredObject: { state: this.physicianState }
+    };
+    this.$physician.getParams.update(p => this.params);
+    this.tableConfig.mutate(t => {
+      t.total = this.$physician.totalItems();
     });
+    this.cdr.detectChanges();
     this.refresh();
   }
 
@@ -256,8 +283,8 @@ export class PhysicianComponent {
           fixedDir: 'right'
         }
       ];
-      tableConfig.total = 0;
-      tableConfig.loading = true;
+      tableConfig.total = this.$physician.totalItems();
+      tableConfig.loading = false;
       tableConfig.pageSize = 10;
       tableConfig.pageIndex = 1;
     });
@@ -265,6 +292,5 @@ export class PhysicianComponent {
 
   ngOnInit(): void {
     this.initTable();
-    this.getDataList();
   }
 }

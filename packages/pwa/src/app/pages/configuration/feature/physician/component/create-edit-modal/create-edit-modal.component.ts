@@ -23,8 +23,8 @@ export class CreateEditModalComponent {
   isEdit = signal<boolean>(false);
   addEditForm!: FormGroup;
   listOfOption = [
-    { label: 'Active', value: 'ACTIVE' },
-    { label: 'Inactive', value: 'INACTIVE' }
+    { label: 'Active', value: 'Active' },
+    { label: 'Inactive', value: 'Inactive' }
   ];
 
   // FUNCTIONS

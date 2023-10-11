@@ -46,7 +46,7 @@
                 <nz-switch [(ngModel)]="data.isPatientselect" [nzDisabled]="true" nzCheckedChildren="true" nzUnCheckedChildren="false"></nz-switch>
               </td>
               <td nzEllipsis>
-                <nz-badge [nzColor]="data.state === 'ACTIVE' ? 'green' : 'red'" [nzText]="data.state"></nz-badge>
+                <nz-badge [nzColor]="data.state === 'Active' ? 'green' : 'red'" [nzText]="data.state"></nz-badge>
               </td>
               <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
                 <span class="hover:cursor-pointer" nz-icon nzType="edit" nzTheme="outline" (click)="edit(data)"></span>

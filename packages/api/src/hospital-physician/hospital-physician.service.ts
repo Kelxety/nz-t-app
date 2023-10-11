@@ -98,7 +98,7 @@ export class HospitalPhysicianService {
     const deletedData = this.prisma.hospitalPhysician.update({
       where: { id },
       data: {
-        state: 'INACTIVE',
+        state: 'Inactive',
       },
     });
     return deletedData;
