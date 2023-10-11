@@ -16,7 +16,7 @@ export class ReceivingController {
 
   @Post()
   @CustomReceivingDecorator()
-  async create(
+  async create (
     @Request() request: Req,
     @Body() createReceivingDto: CreateReceivingDto) {
     const data = await this.receivingService.create(

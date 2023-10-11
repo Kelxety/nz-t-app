@@ -1,16 +1,68 @@
 <div class="fixed-content p-2">
     <div nz-row class="relative w-full h-full">
         <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24" nzXl="24">
-            <nz-card nzTitle="Available Items List" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '58px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
-            Sample
+            <nz-card [nzTitle]="title" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '58px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
+                <div class="w-full h-full" *ngIf="!mainModel.loading; else isLoading">
+                    <nz-table
+                    nzShowSizeChanger
+                    #fixedTable
+                    [nzData]="mainModel.list"
+                    [nzSize]="'small'"
+                    [nzFrontPagination]="false"
+                    [nzLoading]="loading"
+                    [nzScroll]="{ x: '500px', y: 'calc(100vh - 420px)' }"
+                    [nzTotal]="totalItems"
+                    [nzPageSize]="_state.pageSize"
+                    [nzPageIndex]="_state.page"
+                    (nzQueryParams)="onQueryParamsChange($event)"
+                    >
+                    <thead>
+                      <tr>
+                        <th nzLeft nzWidth="120px" class="text-center"nzColumnKey="sort" [nzSortFn]="true">Issuance Date</th>
+                        <th nzColumnKey="judgeName" [nzSortFn]="true" nzLeft nzWidth="200px">Reference No.</th>
+                        <th nzLeft nzWidth="200px" class="">Office</th>
+                        <th nzLeft>Remarks</th>
+                        <th nzWidth="150px" class="text-center">Status</th>
+                        <th nzRight nzWidth="94px" class="text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let data of fixedTable.data">
+                        <td nzLeft>
+                          <input nz-input type="number" [ngModel]="data.sort" (change)="editSort(data.id, $event)" style="text-align: center; font-weight: bold;"/>
+                        </td>
+                        <td nzLeft nzEllipsis>{{ data.judgeName }} - {{ data.judgePosition }}</td>
+                        <td nzLeft nzEllipsis class="text-center">{{ data.judgePercent }}</td>
+                        <td nzLeft nzEllipsis>{{ data.username }}</td>
+                        <td nzLeft nzEllipsis>{{ data.remarks }}</td>
+                        <td nzRight class="text-right" style="padding-top: 2px; padding-bottom: 2px">      
+                          <span  class="pointer" nz-icon nzType="printer" nzTheme="outline" (click)="link(data.id)"></span>
+                          <nz-divider nzType="vertical"></nz-divider>     
+                          <span  class="pointer" nz-icon nzType="edit" nzTheme="outline" (click)="edit(data)"></span>
+                          <nz-divider nzType="vertical"></nz-divider>
+                          <span  class="pointer" nz-icon nzType="delete" nzTheme="outline" style="color: red"
+                          nz-popconfirm
+                          nzPopconfirmTitle="Are you sure you want to delete {{data.rptPin}}"
+                          (nzOnConfirm)="confirm(data)"
+                          (nzOnCancel)="cancel()"
+                          ></span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </nz-table>   
+                </div>
             </nz-card>
         </div>
     </div>
 </div>
 
 
+<ng-template #title >
+  <i nz-icon nzType="unordered-list" nzTheme="outline"></i> Issuances :: Transaction List
+</ng-template>
+
 <ng-template #itemsView >
-    <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-2 my-[-4px]">
+    <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-2 my-[-5px]">
         <input type="text" nz-input placeholder="input search text" />
     </nz-input-group>
      <ng-template #suffixIconSearch>
@@ -24,5 +76,12 @@
             <span nz-icon nzType="appstore" nzTheme="outline"></span>
         </label>
     </nz-radio-group> -->
+</ng-template>
+
+<ng-template #isLoading>
+  <div style="padding: 24px;">
+      <nz-skeleton [nzActive]="true"></nz-skeleton>
+      <nz-skeleton [nzActive]="true"></nz-skeleton>
+  </div>
 </ng-template>
 
