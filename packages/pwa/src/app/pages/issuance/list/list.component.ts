@@ -7,6 +7,10 @@ import { IssuanceService } from '../../configuration/Services/issuance/issuance.
 import { Router } from '@angular/router';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { Subject, takeUntil } from 'rxjs';
+import { Prisma, ScmIssuance } from '@prisma/client';
+import { orderBy } from 'lodash';
+import { SearchParams } from '@pwa/src/app/shared/interface';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
 
 interface State {
   filter: any;
@@ -15,15 +19,12 @@ interface State {
   order: any;
 }
 
-
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.less'],
   standalone: true,
-  imports: [
-    SharedModule
-  ]
+  imports: [SharedModule]
 })
 export class ListComponent {
   private ngUnsubscribe = new Subject();
@@ -36,7 +37,7 @@ export class ListComponent {
     filteredList: [],
     isSubmitting: false,
     loading: false
-  }
+  };
 
   _state: State = {
     filter: {},
@@ -45,9 +46,20 @@ export class ListComponent {
     order: [
       {
         sortColumn: 'sort',
-        sortDirection: 'asc',
+        sortDirection: 'asc'
       }
-    ],
+    ]
+  };
+
+  //for deletion
+  _params: SearchParams<Prisma.ScmIssuanceWhereInput, Prisma.ScmIssuanceOrderByWithAggregationInput> = {
+    orderBy: {
+      id: 'asc',
+      isPosted: 'asc'
+    },
+    filteredObject: {
+      risId: ''
+    }
   };
 
   totalItems = 1;
@@ -55,15 +67,8 @@ export class ListComponent {
 
   search: string = '';
 
-  constructor(
-    private cd: ChangeDetectorRef,
-    private spinService: SpinService,
-    private fb: FormBuilder,
-    private msg: NzMessageService,
-    private api: IssuanceService,
-    private router: Router,
-  ){}
-  
+  constructor(private cd: ChangeDetectorRef, private spinService: SpinService, private fb: FormBuilder, private msg: NzMessageService, private api: IssuanceService, private router: Router) {}
+
   ngAfterViewInit(): void {
     setTimeout(() => {
       // this.tableHeight = (this._tableContainer.nativeElement as HTMLImageElement).clientHeight - 500; // X depend of your page display
@@ -76,16 +81,18 @@ export class ListComponent {
   }
 
   ngOnInit(): void {
-    let order: any = [{
-      sortColumn: 'sort',
-      sortDirection: 'asc'
-    }];
+    let order: any = [
+      {
+        sortColumn: 'sort',
+        sortDirection: 'asc'
+      }
+    ];
 
     this._state.order = order;
 
     this._state.filter = {
       contest: ''
-    }
+    };
 
     this.loadData();
     this.spinService.setCurrentGlobalSpinStore(false);
@@ -94,14 +101,14 @@ export class ListComponent {
   loadData() {
     let model: any = this.mainModel;
     this.loading = true;
-    this.api.list(this._state).subscribe({
-      next: (res:any) => {
+    this.api.list(this._params).subscribe({
+      next: (res: ResType<ScmIssuance[]>) => {
         const list = res['hydra:member'];
         this.totalItems = res['hydra:totalItems'];
         model.list = list;
       },
       error: (err: any) => {
-        this.msg.warning("Can't load transaction list!")
+        this.msg.warning("Can't load transaction list!");
       },
       complete: () => {
         this.loading = false;
@@ -138,12 +145,16 @@ export class ListComponent {
 
     let s: any[] = [];
 
-    if (sortField && sortOrder) { sortOrder = this.convertSort(sortOrder); }
-    
-    this._state.order = [{
-      sortColumn: sortField,
-      sortDirection: sortOrder,
-    }];
+    if (sortField && sortOrder) {
+      sortOrder = this.convertSort(sortOrder);
+    }
+
+    this._state.order = [
+      {
+        sortColumn: sortField,
+        sortDirection: sortOrder
+      }
+    ];
     this._state.page = params.pageIndex;
     this._state.pageSize = params.pageSize;
 
@@ -152,56 +163,49 @@ export class ListComponent {
 
   convertSort(d: string) {
     if (d === 'ascend') {
-      return 'asc'
+      return 'asc';
     } else {
-      return 'desc'
+      return 'desc';
     }
   }
 
-  delete(data: any): void { // p: primary model, a: api service, data: row to delete
+  delete(data: any): void {
+    // p: primary model, a: api service, data: row to delete
     let model: any = this.mainModel;
     const id = data.id;
     const load = this.msg.loading('Removing in progress..', { nzDuration: 0 }).messageId;
 
-    this.api.delete(id)
-    .pipe(takeUntil(this.ngUnsubscribe))
-    .subscribe({
-      next: () => {
-        model.list = model.list.filter((item: any) => item.id !== data.id);
-        this.msg.remove(load);
-        this.cd.detectChanges();
-      },
-      error: (err:any) => {
-        this.msg.warning(err.message);
-        this.msg.remove(load);
-      },
-        complete: () => {
-      }
-    });
+    this.api
+      .delete(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: () => {
+          model.list = model.list.filter((item: any) => item.id !== data.id);
+          this.msg.remove(load);
+          this.cd.detectChanges();
+        },
+        error: (err: any) => {
+          this.msg.warning(err.message);
+          this.msg.remove(load);
+        },
+        complete: () => {}
+      });
   }
 
-  add() {
+  add() {}
 
-  }
-
-  edit(d: any) {
-
-  }
+  edit(d: any) {}
 
   editSort(id: string, sort: any) {
-
-    this.api.update(id, {sort: parseInt(sort.target.value)}).subscribe({
-      next: (res:any) => {
+    this.api.update(id, { sort: parseInt(sort.target.value) }).subscribe({
+      next: (res: any) => {
         this.msg.success('Successfully sort updated!');
-
       },
       error: (error: any) => {
         this.msg.error('Something wrong!');
         this.loadData();
       },
-      complete: () => {
-        
-      }
+      complete: () => {}
     });
   }
 
@@ -209,13 +213,11 @@ export class ListComponent {
     // this.search = f.target.value;
     // this.mainModel.filteredList =  this.mainModel.list.filter((d: any) => (d.ownerName).toLowerCase().indexOf(this.search.toLowerCase())>-1);
     this.cd.detectChanges();
-    
+
     this._state.filter.q = this.search;
 
     this.loadData();
   }
 
-  link(id: any) {
-    
-  }
+  link(id: any) {}
 }

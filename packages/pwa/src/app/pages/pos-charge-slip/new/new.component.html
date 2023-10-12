@@ -1,0 +1,39 @@
+<div class="fixed-content p-2">
+  <div nz-row class="relative w-full h-full md:space-x-2 flex">
+    <div nz-col class="w-full flex-1">
+      <nz-card
+        nzTitle="Available Items List"
+        [nzExtra]="itemsView"
+        class="h-full w-full"
+        [nzBodyStyle]="{ 'margin-top': '58px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%' }"
+      >
+        <!-- <app-item-selector [view]="itemFilter.view" (newItemEvent)="getSelectedItem($event)" [search]="searchChange" [showCost]="true"></app-item-selector> -->
+        <app-item-list></app-item-list>
+      </nz-card>
+    </div>
+    <div nz-col class="w-full md:w-1/3 relative">
+      <nz-card [nzTitle]="'hello'" class="h-full"></nz-card>
+      <button nz-button nzType="primary" class="h-10 w-full font-bold" nzBloc (click)="checkout()" [disabled]="listOfSelectedItems.length === 0">PROCEED TO CHECKOUT</button>
+      <nz-card class="absolute bottom-0 w-full" nzTitle="Check Out"></nz-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #itemsView>
+  <div class="flex">
+    <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-2 my-[-4px]">
+      <input type="text" nz-input placeholder="input search text" (change)="searchItem($event)" />
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+    <nz-radio-group [(ngModel)]="itemFilter.view" nzButtonStyle="solid" class="my-[-4px]">
+      <label nz-radio-button nzValue="list">
+        <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
+      </label>
+      <label nz-radio-button nzValue="grid">
+        <span nz-icon nzType="appstore" nzTheme="outline"></span>
+      </label>
+    </nz-radio-group>
+  </div>
+</ng-template>
