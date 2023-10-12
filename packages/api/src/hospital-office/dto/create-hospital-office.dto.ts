@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateHospitalOfficeDto {
   id: string;
@@ -20,7 +20,10 @@ export class CreateHospitalOfficeDto {
   state: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsString()
   remarks: string;
+
   createdBy: string;
   createdAt: Date;
   updatedBy: string;
