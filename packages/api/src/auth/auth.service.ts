@@ -296,15 +296,9 @@ export class AuthService {
       return;
     }
     if (user.refresh_token.validity > new Date()) {
-      const roles = user.role.map(
-        (individualRole: { userId: string; roleId: string }) => {
-          return individualRole;
-        },
-      );
       const accessToken = this.jwtService.sign({
         userId: user.id,
         username: user.username,
-        role: roles,
       });
       return accessToken;
     }
