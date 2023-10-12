@@ -410,16 +410,16 @@ model ScmItemLocation {
 
 model ScmItemLocationDtl {
   id                    String                 @id @default(uuid())
-  itemDtlId             String                 @map("item_dtl_id") @db.VarChar(36)
+  itemdtlId             String?                @map("itemdtl_id") @db.VarChar(36)
   locationId            String                 @map("location_id") @db.VarChar(36)
-  balanceQty            String                 @db.VarChar(36)
-  scmItem               ScmItemDtl             @relation(fields: [itemDtlId], references: [id], onUpdate: Restrict, map: "scm_item_location_dtl_ibfk_1")
+  balanceQty            Int?                   @map("balance_qty")
+  scmItemDtl            ScmItemDtl?            @relation(fields: [itemdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   scmItemLocation       ScmItemLocation        @relation(fields: [locationId], references: [id], onUpdate: Restrict, map: "scm_item_location_dtl_ibfk_2")
   scmStockInventoryDtls ScmStockInventoryDtl[]
   scmStockLedgers       ScmStockLedger[]
   scmReceiveDtl         ScmReceiveDtl[]
 
-  @@index([itemDtlId], map: "item_dtl_id")
+  @@index([itemdtlId], map: "itemdtl_id")
   @@index([locationId], map: "location_id")
   @@map("scm_item_location_dtl")
 }
@@ -498,7 +498,7 @@ model ScmReceiveDtl {
   id                 String              @id @default(uuid())
   receiveId          String?             @map("receive_id") @db.VarChar(36)
   itemdtlId          String?             @map("itemdtl_id") @db.VarChar(36)
-  itemlocationDtlId  String?             @map("itemlocation_dtl_id") @db.VarChar(36)
+  itemlocationdtlId  String?             @map("itemlocationdtl_id") @db.VarChar(36)
   qty                Int?
   cost               Float?
   costAmount         Float?              @map("cost_amount")
@@ -508,11 +508,11 @@ model ScmReceiveDtl {
   barcodeNo          String?             @unique() @map("barcode_no") @db.VarChar(50)
   scmReceive         ScmReceive?         @relation(fields: [receiveId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_1")
   scmItemDtl         ScmItemDtl?         @relation(fields: [itemdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_2")
-  scmItemLocationDtl ScmItemLocationDtl? @relation(fields: [itemlocationDtlId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  scmItemLocationDtl ScmItemLocationDtl? @relation(fields: [itemlocationdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_receive_dtl_ibfk_3")
 
   @@index([itemdtlId], map: "itemdtl_id")
   @@index([receiveId], map: "receive_id")
-  @@index([itemlocationDtlId], map: "itemlocation_dtl_id")
+  @@index([itemlocationdtlId], map: "itemlocationdtl_id")
   @@map("scm_receive_dtl")
 }
 
