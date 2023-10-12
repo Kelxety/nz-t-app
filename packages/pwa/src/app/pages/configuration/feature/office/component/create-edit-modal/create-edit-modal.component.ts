@@ -44,7 +44,7 @@ export class CreateEditModalComponent {
       id: [null],
       officeName: [null, Validators.required],
       officeAcro: [null, Validators.required],
-      state: [this.listOfOption[0], null],
+      state: [this.listOfOption[0].value, null],
       remarks: [null]
     });
   }

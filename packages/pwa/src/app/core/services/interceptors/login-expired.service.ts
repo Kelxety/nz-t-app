@@ -41,6 +41,7 @@ export class LoginExpiredService implements HttpInterceptor {
     return this.refresher!.pipe(
       switchMap(() => {
         const token = this.windowServe.getSessionStorage(TokenKey);
+        this.windowServe.clearSessionStorage();
         let httpConfig = {};
         if (!!token) {
           httpConfig = { headers: request.headers.set(TokenKey, token) };
