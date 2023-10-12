@@ -21,7 +21,7 @@ export class HospitalPhysicianService {
   errorMessage = '';
   physician = signal<HospitalPhysician | undefined>(undefined);
   totalItems = signal<number>(0);
-  getParams = signal<SearchParams<Prisma.HospitalPatientWhereInput>>({
+  getParams = signal<SearchParams<Prisma.HospitalPatientWhereInput, Prisma.HospitalOfficeOrderByWithAggregationInput>>({
     page: 1,
     pageSize: 10,
     pagination: true,
@@ -35,9 +35,18 @@ export class HospitalPhysicianService {
 
   private physicians$ = toObservable(this.refresh).pipe(
     switchMap(doRefresh => {
-      const filteredObject = this.getParams().filteredObject ? JSON.stringify(this.getParams().filteredObject) : '';
+      const filteredObject = this.getParams().filteredObject ? JSON.stringify(this.getParams().filteredObject) : null;
+      const orderBy = this.getParams().orderBy ? JSON.stringify(this.getParams().orderBy) : null;
 
-      const p = new HttpParams({ fromObject: { ...this.getParams(), filteredObject } });
+      let p: HttpParams = new HttpParams({ fromObject: { ...this.getParams(), filteredObject, orderBy } });
+
+      if (!filteredObject) {
+        p = p.delete('filteredObject');
+      }
+
+      if (!orderBy) {
+        p = p.delete('orderBy');
+      }
 
       return this.http
         .get<ResType<HospitalPhysician[]>>(this.baseUrl, {

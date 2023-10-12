@@ -64,7 +64,7 @@ export class PatientTypeComponent implements OnInit {
     }
   });
 
-  searchParam: SearchParams<string> = {};
+  searchParam: SearchParams<string, string> = {};
 
   listOfSelection = [];
 

@@ -105,11 +105,13 @@ export class AccountComponent implements OnInit {
   getDataList(e?: NzTableQueryParams): void {
     const numberOfFilters = Object.keys(this.searchParam).length;
     this.tableConfig.loading = true;
-    const params: SearchParams<Prisma.UserWhereInput> = {
+    const params: SearchParams<Prisma.UserWhereInput, Prisma.UserOrderByWithAggregationInput> = {
       pageSize: this.tableConfig.pageSize!,
       page: this.tableConfig.pageIndex!,
       filteredObject: numberOfFilters > 0 ? this.searchParam : null,
-      orderBy: null,
+      orderBy: {
+        accountName: 'asc'
+      },
       pagination: true
     };
     this.dataService

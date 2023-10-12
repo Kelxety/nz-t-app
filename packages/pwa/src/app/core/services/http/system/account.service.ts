@@ -27,7 +27,7 @@ export class AccountService {
 
   constructor(private apiService: ApiTypeService, private httpParams: HttpParamsService) {}
 
-  getAccountList(params: SearchParams<Prisma.UserWhereInput>): Observable<ResType<User[]>> {
+  getAccountList(params: SearchParams<Prisma.UserWhereInput, Prisma.UserOrderByWithAggregationInput>): Observable<ResType<User[]>> {
     const parameters = this.httpParams.convert(params);
     return this.apiService.get<ResType<User[]>>(this.baseUrl, parameters);
   }

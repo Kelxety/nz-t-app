@@ -38,11 +38,14 @@ export class OfficeComponent {
   listOfCurrentPageData: readonly HospitalOffice[] = [];
   setOfCheckedId = new Set<string>();
   officesState = 'Active';
-  params: SearchParams<Prisma.HospitalOfficeWhereInput> = {
+  params: SearchParams<Prisma.HospitalOfficeWhereInput, Prisma.HospitalOfficeOrderByWithAggregationInput> = {
     page: 0,
     pagination: true,
     filteredObject: {
       state: 'Active'
+    },
+    orderBy: {
+      officeName: 'desc'
     }
   };
 
@@ -201,7 +204,10 @@ export class OfficeComponent {
       page: e?.pageIndex,
       pageSize: e.pageSize,
       pagination: true,
-      filteredObject: { state: this.officesState }
+      filteredObject: { state: this.officesState },
+      orderBy: {
+        officeName: 'asc'
+      }
     };
     this.$offices.getParams.update(p => this.params);
     this.tableConfig.mutate(t => {

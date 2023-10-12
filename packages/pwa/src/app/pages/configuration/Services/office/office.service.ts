@@ -21,7 +21,7 @@ export class HospitalOfficeService {
   errorMessage = '';
   office = signal<HospitalOffice | undefined>(undefined);
   totalItems = signal<number>(0);
-  getParams = signal<SearchParams<Prisma.HospitalOfficeWhereInput>>({
+  getParams = signal<SearchParams<Prisma.HospitalOfficeWhereInput, Prisma.HospitalOfficeOrderByWithAggregationInput>>({
     page: 1,
     pageSize: 10,
     pagination: true,
@@ -35,9 +35,17 @@ export class HospitalOfficeService {
 
   private offices$ = toObservable(this.refresh).pipe(
     switchMap(doRefresh => {
-      const filteredObject = this.getParams().filteredObject ? JSON.stringify(this.getParams().filteredObject) : '';
+      const filteredObject = this.getParams().filteredObject ? JSON.stringify(this.getParams().filteredObject) : null;
+      const orderBy = this.getParams().filteredObject ? JSON.stringify(this.getParams().orderBy) : null;
+      let p: HttpParams = new HttpParams({ fromObject: { ...this.getParams(), filteredObject, orderBy } });
 
-      const p = new HttpParams({ fromObject: { ...this.getParams(), filteredObject } });
+      if (!filteredObject) {
+        p = p.delete('filteredObject');
+      }
+
+      if (!orderBy) {
+        p = p.delete('orderBy');
+      }
 
       return this.http
         .get<ResType<HospitalOffice[]>>(this.baseUrl, {
@@ -60,8 +68,8 @@ export class HospitalOfficeService {
   }
 
   get(id: string): Observable<ResType<HospitalOffice>> {
-      const url = `${this.baseUrl}/${id}`;
-      return this.apiService.get(url);
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.get(url);
   }
 
   addOffice(data: HospitalOffice): Observable<ResType<HospitalOffice>> {
