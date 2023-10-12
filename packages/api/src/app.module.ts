@@ -28,6 +28,7 @@ import { SupplierModule } from './supplier/supplier.module';
 import { UnitModule } from './unit/unit.module';
 import { UsersModule } from './users/users.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
+import { HospitalOfficeModule } from './hospital-office/hospital-office.module';
 
 @Module({
   imports: [
@@ -58,8 +59,9 @@ import { WarehouseModule } from './warehouse/warehouse.module';
     StockLedgerModule,
     StockLedgerCodeModule,
     IssuanceModule,
+    HospitalOfficeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

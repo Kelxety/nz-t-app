@@ -163,9 +163,9 @@ export class MenuComponent implements OnInit {
   addEditData(param: string & Permission, methodName: 'editMenus' | 'addMenus'): void {
     if (methodName === 'addMenus') {
       if (param.status) {
-        param.status = $Enums.PermissionStatus.ACTIVE;
+        param.status = $Enums.PermissionStatus.Active;
       } else {
-        param.status = $Enums.PermissionStatus.INACTIVE;
+        param.status = $Enums.PermissionStatus.Inactive;
       }
       if (param.visible) {
         param.visible = '1';
@@ -226,9 +226,9 @@ export class MenuComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
         if (res.status) {
-          res.status = PermissionStatus.ACTIVE;
+          res.status = PermissionStatus.Active;
         } else {
-          res.status = PermissionStatus.INACTIVE;
+          res.status = PermissionStatus.Inactive;
         }
         return this.menuModalService
           .show({ nzTitle: 'Edit' }, res)

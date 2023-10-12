@@ -28,8 +28,8 @@ export class CreateEditModalComponent implements OnInit {
 
   statusData: any;
   listOfOption = [
-    { label: 'Active', value: 'ACTIVE' },
-    { label: 'Inactive', value: 'INACTIVE' }
+    { label: 'Active', value: 'Active' },
+    { label: 'Inactive', value: 'Inactive' }
   ];
 
   constructor() {}

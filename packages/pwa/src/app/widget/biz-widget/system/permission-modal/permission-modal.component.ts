@@ -52,8 +52,8 @@ export class MenuModalComponent implements OnInit {
   // roleOptions: { label: string; value: string }[] = [];
   selectedRole = '';
   menuType: menuType = 'C';
-  permissionStatusOptionsActive: PermissionStatus = 'ACTIVE';
-  permissionStatusOptionsInactive: PermissionStatus = 'INACTIVE';
+  permissionStatusOptionsActive: PermissionStatus = 'Active';
+  permissionStatusOptionsInactive: PermissionStatus = 'Inactive';
   constructor(private modalRef: NzModalRef, private fb: FormBuilder, private roleService: RoleService) {}
 
   protected getCurrentValue(): Observable<any> {
@@ -72,7 +72,7 @@ export class MenuModalComponent implements OnInit {
       menuType: ['C'],
       path: [null, [Validators.required]],
       visible: ['1'],
-      status: [PermissionStatus.ACTIVE, [Validators.required]],
+      status: [PermissionStatus.Active, [Validators.required]],
       isNewLink: [false],
       alIcon: [null],
       icon: [null]
