@@ -7,6 +7,7 @@ import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
 import { Observable, of } from 'rxjs';
 import { WarehouseServices } from '../../../configuration/Services/warehouse/warehouse.service';
+import { HospitalOfficeService } from '../../../configuration/Services/office/office.service';
 
 @Component({
   selector: 'app-create-edit-modal',
@@ -18,7 +19,7 @@ import { WarehouseServices } from '../../../configuration/Services/warehouse/war
 export class CreateEditModalComponent {
   private modalRef = inject(NzModalRef);
   private warehouseServices = inject(WarehouseServices);
-  // private warehouseServices = inject(Office);
+  private officeService = inject(HospitalOfficeService);
   readonly nzModalData: { data: HospitalPhysician; actionType: string } = inject(NZ_MODAL_DATA);
   private fb = inject(FormBuilder);
 
@@ -50,7 +51,7 @@ export class CreateEditModalComponent {
       id: [null],
       warehouseId: [null, [Validators.required]],
       officeId: [null, [Validators.required]],
-      issDate: [null, [Validators.required]],
+      issDate: [new Date, [Validators.required]],
       state: [this.listOfOption[0].value, [Validators.required]],
       remarks: [null]
     });
@@ -79,17 +80,10 @@ export class CreateEditModalComponent {
   }
 
   loadOffice() {
-    this.warehouseServices.list({ pagination: false, state: 'Active' }).subscribe({
+    this.officeService.list({ pagination: false, state: 'Active' }).subscribe({
       next: (res: any) => {
         const list = res.data;
-        this.listOfWarehouse = list;
-        list.map((d:any) => {
-          if (d.whAcro === 'SR') {
-            this.frm.patchValue({
-              warehouseId: d.id
-            })
-          }
-        }); 
+        this.listOfOffice = list;
       },
       error: (err: any) => {
         console.log(err);
@@ -103,6 +97,8 @@ export class CreateEditModalComponent {
   ngOnInit(): void {
     this.initForm();
     this.loadWarehouse();
+    this.loadOffice();
+
     if (!!this.nzModalData) {
       this.isEdit.set(true);
     }

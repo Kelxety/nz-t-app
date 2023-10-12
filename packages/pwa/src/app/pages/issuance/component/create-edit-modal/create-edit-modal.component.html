@@ -1,8 +1,8 @@
 <form nz-form [formGroup]="frm">
     <nz-form-item>
         <nz-form-label nzFlex="100px" class="text-left" nzRequired>Date</nz-form-label>
-        <nz-form-control nzHasFeedback nzFlex="auto" nzErrorTip="Input is required" id="issDate" formControlName="issDate" >
-            <nz-date-picker></nz-date-picker>
+        <nz-form-control nzHasFeedback nzFlex="auto" nzErrorTip="Input is required" >
+            <nz-date-picker id="issDate" formControlName="issDate"></nz-date-picker>
         </nz-form-control>
     </nz-form-item>
     <nz-form-item>
@@ -17,7 +17,7 @@
         <nz-form-label nzFlex="100px" class="text-left" nzRequired>Office</nz-form-label>
         <nz-form-control nzHasFeedback nzFlex="auto" nzErrorTip="Input is required">
             <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select office" id="officeId" formControlName="officeId" >
-                <nz-option *ngFor="let row of listOfOffice" [nzLabel]="row.offName" [nzValue]="row.id"></nz-option>
+                <nz-option *ngFor="let row of listOfOffice" [nzLabel]="row.officeName" [nzValue]="row.id"></nz-option>
             </nz-select>
         </nz-form-control>
     </nz-form-item>

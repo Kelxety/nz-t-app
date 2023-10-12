@@ -261,7 +261,7 @@ model ScmChargeslipDtl {
 model ScmIssuance {
   id              String           @id @default(uuid())
   fyCode          Int?             @map("fy_code")
-  issRefno        String?          @map("iss_refno") @db.VarChar(15)
+  issRefno        String?          @map("iss_refno") @db.VarChar(36)
   issDate         DateTime?        @map("iss_date") @db.Date
   warehouseId     String?          @map("warehouse_id") @db.VarChar(36)
   officeId        String?          @map("office_id") @db.VarChar(36)

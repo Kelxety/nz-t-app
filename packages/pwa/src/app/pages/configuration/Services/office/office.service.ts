@@ -54,6 +54,16 @@ export class HospitalOfficeService {
     })
   );
 
+  list(params: object = {}): Observable<ResType<HospitalOffice[]>> {
+    const parameters = this.httpParams.convert(params);
+    return this.apiService.get(this.baseUrl, parameters);
+  }
+
+  get(id: string): Observable<ResType<HospitalOffice>> {
+      const url = `${this.baseUrl}/${id}`;
+      return this.apiService.get(url);
+  }
+
   addOffice(data: HospitalOffice): Observable<ResType<HospitalOffice>> {
     return this.apiService.post(this.baseUrl, data);
   }

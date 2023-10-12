@@ -4,13 +4,16 @@ import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateIssuanceDto {
     @ApiProperty()
+    @IsOptional()
     @IsNumber()
     fyCode: number;
     
     @ApiProperty()
+    @IsOptional()
     @IsString()
     issRefno: string;
     
+    @Transform(({ value }) => value && new Date(value))
     @ApiProperty()
     @IsDate()
     issDate: Date;
@@ -24,6 +27,7 @@ export class CreateIssuanceDto {
     officeId: string;
     
     @ApiProperty()
+    @IsOptional()
     @IsString()
     risId: string;
     
@@ -32,21 +36,26 @@ export class CreateIssuanceDto {
     state: string;
     
     @ApiProperty()
+    @IsOptional()
     @IsString()
     remarks: string;
     
     @ApiProperty()
+    @IsOptional()
     isRis: boolean;
     
     @ApiProperty()
+    @IsOptional()
     isPosted: boolean;
     
     @ApiProperty()
+    @IsOptional()
     @IsString()
     postedBy: string;
     
     @Transform(({ value }) => value && new Date(value))
     @ApiProperty()
+    @IsOptional()
     @IsDate()
     postedAt: Date;
     

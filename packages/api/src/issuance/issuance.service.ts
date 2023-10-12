@@ -13,9 +13,15 @@ export class IssuanceService {
   async create(createIssuanceDto: CreateIssuanceDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Unathorized');
-    return await this.prisma.scmIssuance.create({
+    
+    const createData =  await this.prisma.scmIssuance.create({
       data: { ...createIssuanceDto, createdBy: creatorName.accountName },
     });
+
+    return await this.prisma.scmIssuance.update({
+      where: { id: createData.id },
+      data: { issRefno: `${new Date(createData.issDate).getFullYear()}-${new Date(createData.issDate).getMonth() + 1}-${createData.id.split('-').pop()}` }
+    })
   }
 
   async findAll({

@@ -40,7 +40,7 @@
                         </div>
                     </div>
                 </div>
-                <button nz-button nzType="primary" class="h-10 w-full font-bold" nzBloc (click)="add()" [disabled]="">PROCEED TO CHECKOUT</button>
+                <button nz-button nzType="primary" class="h-10 w-full font-bold" nzBloc (click)="add()" [disabled]="listOfSelectedItems.length === 0">PROCEED TO CHECKOUT</button>
             </div>    
             <!-- <nz-collapse [nzBordered]="false" class="mt-1" class="dark:border dark:border-solid dark:border-[#303030] dark:bg-[#141414] mt-1">
                 <nz-collapse-panel
