@@ -73,6 +73,7 @@ export class JudgeAuthGuardService {
     while (route.firstChild) {
       route = route.firstChild;
     }
+    console.log(route);
     // If there is authCode, it means that clicking the button on the page jumps to the new route, not the route in the menu
     if (!!route.data['authCode']) {
       // console.log('code route: ', route.data['authCode']);
