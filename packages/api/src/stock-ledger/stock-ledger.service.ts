@@ -67,6 +67,40 @@ export class StockLedgerService {
     return returnData;
   }
 
+  async findInquiry(id: string) {
+    const ledgerCode = await this.prisma.scmLedgerCode.findMany({
+      where: {
+        ledgerCode: {
+          equals: 'BB'
+        }
+      }
+    })
+
+    const findLatestDate = await this.prisma.scmStockLedger.findMany({
+      where: {
+        entryDate: {
+          gte: new Date()
+        }
+      },
+      orderBy: {
+        entryDate: {
+          sort: 'desc'
+        }
+      }
+    })
+    const data = await this.prisma.scmStockLedger.findMany({
+      where: {
+        itemdtlId: {
+          equals: id
+        },
+        ledgercodeId: {
+          equals: ledgerCode[0].id
+        },
+      },
+
+    })
+  }
+
   async findOne(id: string) {
     const data = await this.prisma.scmStockLedger.findUnique({
       where: { id },

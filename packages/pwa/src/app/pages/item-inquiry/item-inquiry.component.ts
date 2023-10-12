@@ -121,7 +121,7 @@ export class ItemInquiryComponent {
 
   onClick(data: any) {
     this.modalService
-      .show({ nzTitle: 'Item list', nzMask: false }, data)
+      .show({ nzTitle: `${data?.brandName ? data.brandName + ' | ' : ''}${data.subitemName}`, nzMask: false, nzWrapClassName: 'fullscreen-modal' }, data)
       .pipe(
         finalize(() => {
           // this.tableLoading(false);

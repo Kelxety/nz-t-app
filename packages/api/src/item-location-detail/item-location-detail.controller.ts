@@ -29,7 +29,7 @@ import { ItemLocationDetailService } from './item-location-detail.service';
 export class ItemLocationDetailController {
   constructor(
     private readonly itemLocationDetailService: ItemLocationDetailService,
-  ) {}
+  ) { }
 
   @Post()
   @CustomItemLocationDetailDecorator()
@@ -39,7 +39,6 @@ export class ItemLocationDetailController {
   ) {
     const data = await this.itemLocationDetailService.create(
       createItemLocationDetailDto,
-      request?.headers?.authorization.split('Bearer ')[1],
     );
     return {
       message: `Successfully created`,
@@ -64,11 +63,16 @@ export class ItemLocationDetailController {
       data: data.map((res) => new ItemLocationDetailEntity(res)),
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }

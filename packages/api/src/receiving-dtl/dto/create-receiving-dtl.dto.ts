@@ -42,4 +42,8 @@ export class CreateReceivingDtlDto {
     @IsString()
     @IsOptional()
     barcodeNo: string;
+
+    @ApiProperty()
+    @IsString()
+    itemlocationdtlId: string;
 }

@@ -28,10 +28,9 @@ interface planogramData {
 export class PlanogramComponent {
   search: string = '';
   private ngUnsubscribe = new Subject();
-  private modalService = Inject(NzModalService)
   private msg = Inject(NzMessageService)
   private fb = Inject(FormBuilder)
-  private itemLocationServices = Inject(ItemLocationServices)
+  // private itemLocationServices = Inject(ItemLocationServices)
 
   public tableHeight!: number;
   isVisible = false;
@@ -57,6 +56,8 @@ export class PlanogramComponent {
   constructor(
     private cd: ChangeDetectorRef,
     private spinService: SpinService,
+    private modalService: NzModalService,
+    private itemLocationServices: ItemLocationServices
   ) { }
 
   ngOnInit(): void {
@@ -98,7 +99,6 @@ export class PlanogramComponent {
   loadData() {
     let model: any = this.model;
     model.loading = true;
-
 
     this.itemLocationServices.list({ pagination: true }).subscribe({
       next: (res: any) => {

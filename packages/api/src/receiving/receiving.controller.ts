@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Request } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
 import { toBoolean } from '../lib/helper/cast.helper';
@@ -98,6 +98,23 @@ export class ReceivingController {
     const data = await this.receivingService.findOne(id);
     return {
       message: `${id} detail fetched Succesfully`,
+      data: new ReceivingEntity(data),
+    };
+  }
+
+  @Put(':id')
+  @CustomReceivingDecorator()
+  async updates(
+    @Request() request: Req,
+    @Param('id') id: string,
+    @Body() updateReceivingDto: UpdateReceivingDto) {
+    const data = await this.receivingService.update(
+      id,
+      updateReceivingDto,
+      request?.headers?.authorization?.split('Bearer ')[1],
+    );
+    return {
+      message: `${id} Data patched Succesfully`,
       data: new ReceivingEntity(data),
     };
   }
