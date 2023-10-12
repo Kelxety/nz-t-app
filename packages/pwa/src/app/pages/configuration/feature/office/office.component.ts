@@ -233,6 +233,13 @@ export class OfficeComponent {
           title: 'Remarks',
           field: 'remarks',
           width: 120
+        },
+        {
+          title: 'Actions',
+          tdTemplate: this.operationTpl,
+          width: 120,
+          fixed: true,
+          fixedDir: 'right'
         }
       ];
       t.total = this.$offices.totalItems();

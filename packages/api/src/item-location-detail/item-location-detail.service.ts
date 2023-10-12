@@ -8,20 +8,17 @@ import { UpdateItemLocationDetailDto } from './dto/update-item-location-detail.d
 
 @Injectable()
 export class ItemLocationDetailService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) { }
 
   async create(
-    createItemLocationDetailDto: CreateItemLocationDetailDto,
-    token: string,
+    createItemLocationDetailDto: CreateItemLocationDetailDto
   ) {
-    const creatorName = await this.role.getRequesterName(token);
-    if (!creatorName) throw new Error('Error in token');
     return await this.prisma.scmItemLocationDtl.create({
       data: { ...createItemLocationDetailDto },
       include: {
-        scmItem: true,
+        scmItemDtl: true,
         scmItemLocation: true,
-      },
+      }
     });
   }
 
@@ -38,7 +35,7 @@ export class ItemLocationDetailService {
     if (!pagination) {
       return this.prisma.scmItemLocationDtl.findMany({
         include: {
-          scmItem: true,
+          scmReceiveDtl: true,
           scmItemLocation: true,
         },
         where: data,
@@ -51,7 +48,7 @@ export class ItemLocationDetailService {
       }),
       this.prisma.scmItemLocationDtl.findMany({
         include: {
-          scmItem: true,
+          scmReceiveDtl: true,
           scmItemLocation: true,
         },
         where: data,
@@ -89,7 +86,7 @@ export class ItemLocationDetailService {
       where: { id },
       data: { ...updateItemLocationDetailDto },
       include: {
-        scmItem: true,
+        scmReceiveDtl: true,
         scmItemLocation: true,
       },
     });

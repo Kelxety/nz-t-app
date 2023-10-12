@@ -1,1 +1,53 @@
-<p>create-edit-modal works!</p>
+<form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+
+    <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzLabelAlign="left" nzRequired>Warehouse</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback nzErrorTip="Please select a warehouse!">
+            <nz-select nzShowSearch nzAllowClear [nzDropdownRender]="renderTemplate" formControlName="warehouseId"
+                id="warehouseId" nzPlaceHolder="Select warehouse">
+                <nz-option *ngFor="let item of listOfItemWarehouse" [nzCustomContent]="true" [nzLabel]="item.whName"
+                    [nzValue]="item.id">
+                    <div>{{item.whName}} | {{item.whAcro}}</div>
+                </nz-option>
+            </nz-select>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzLabelAlign="left" nzRequired>Location name</nz-form-label>
+        <nz-form-control [nzSpan]="17" nzHasFeedback nzErrorTip="Please input your Location name!">
+            <input nz-input formControlName="locName" placeholder="Location name" />
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label nzLabelAlign="left" [nzSm]="7" [nzXs]="24" nzFor="state">Status</nz-form-label>
+        <nz-select [nzOptions]="listOfOption" formControlName="state" id="state"></nz-select>
+    </nz-form-item>
+
+    <div *nzModalFooter>
+        <nz-form-control>
+            <button *ngIf="actionType === 'Create'" nz-button nzType="primary" type="submit"
+                (click)="submitCreate()">Save </button>
+            <button *ngIf="actionType === 'Edit'" nz-button nzType="primary" type="submit"
+                [disabled]="!validateForm.valid" (click)="submitEdit()">Save changes</button>
+            <button nz-button (click)="closeMe() ">Close</button>
+        </nz-form-control>
+    </div>
+</form>
+
+<ng-template #renderTemplate>
+    <nz-divider></nz-divider>
+    <span class="text-xs px-2 text-gray-600">Add new warehouse</span>
+    <div class="flex flex-row space-x-2 items-center justify-center p-2">
+        <div class="space-y-2 border">
+
+            <input required type="text" [(ngModel)]="warehouse.whName" nz-input placeholder="Name" />
+            <input required type="text" placeholder="Acro" [(ngModel)]="warehouse.whAcro" nz-input />
+        </div>
+        <a class="flex text-xs items-center justify-center text-center space-x-2" (click)="saveNewWh()" type="submit">
+            <span class="text-sm px-1" nz-icon nzType="plus"></span>
+            Warehouse
+        </a>
+    </div>
+</ng-template>

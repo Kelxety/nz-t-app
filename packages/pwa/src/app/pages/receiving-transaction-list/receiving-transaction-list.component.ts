@@ -106,7 +106,7 @@ export class ReceivingTransactionListComponent {
       }
     ];
     if (event === 1) {
-
+      this.setOfCheckedId.has(null)
       this.switchValue = true
       this.cd.detectChanges()
       this.stockReceivingServices.list({ order: order, pagination: false, filteredObject: JSON.stringify({ isPosted: false }) }).subscribe({
@@ -196,7 +196,7 @@ export class ReceivingTransactionListComponent {
     Promise.all(promises)
       .then(() => {
         this.loading = false;
-        this.onPosting(this.switchValue = true);
+        this.onPosting(1);
         this.msg.remove(id)
       })
       .catch(error => {
@@ -211,6 +211,7 @@ export class ReceivingTransactionListComponent {
       this.stockReceivingPostingServices.patch(data.id, { isPosted: true })
         .subscribe({
           next: (value) => {
+            this.updateCheckedSet(data.id, false)
             console.log(value);
             resolve(value); // Resolve the promise on success
           },

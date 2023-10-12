@@ -11,7 +11,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 import { Observable, of } from 'rxjs';
-import { SharedModule } from '../../../shared';
+import { SharedModule } from '../../../../shared';
 
 @Component({
   selector: 'app-table-modal',

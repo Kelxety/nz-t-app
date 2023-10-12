@@ -12,7 +12,7 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 import { Observable, of } from 'rxjs';
 import { SharedModule } from '../../../shared';
-
+import { StockLegderServices } from '../../configuration/Services/Stock-legder/stock-ledger.service';
 @Component({
   selector: 'app-item-inquiry-modal',
   templateUrl: './item-inquiry-modal.component.html',
@@ -22,6 +22,7 @@ import { SharedModule } from '../../../shared';
 export class ItemInquiryModalComponent {
   protected bsModalService: NzModalService;
   readonly nzModalData: any = inject(NZ_MODAL_DATA);
+  stockLegderServices = inject(StockLegderServices)
   // readonly nzModalRef: any = inject(NzModalRef)
   model: any = {
     list: [],
@@ -45,27 +46,27 @@ export class ItemInquiryModalComponent {
     rendererFactory: RendererFactory2,
     private cd: ChangeDetectorRef) {
     this.bsModalService = this.baseInjector.get(NzModalService);
-    this.renderer = rendererFactory.createRenderer(null, null);
   }
 
   async ngOnInit(): Promise<void> {
     console.log(this.nzModalData)
-    this.itemDataList.set(this.nzModalData)
-    // this.fullScreenIconClick(true)
-    this.bsModalService.openModals.forEach(modal => {
-      this.renderer.addClass(modal.containerInstance['host'].nativeElement, 'fullscreen-modal');
-    })
+    this.loadLedger()
+
   }
 
-  // fullScreenIconClick(fullStatus: boolean): void {
-  //   this.bsModalService.openModals.forEach(modal => {
-  //     if (fullStatus) {
-  //       this.renderer.addClass(modal.containerInstance['host'].nativeElement, 'fullscreen-modal');
-  //     } else {
-  //       this.renderer.removeClass(modal.containerInstance['host'].nativeElement, 'fullscreen-modal');
-  //     }
-  //   });
-  // }
+  loadLedger() {
+    this.stockLegderServices.list({ filteredObject: JSON.stringify({ itemdtlId: this.nzModalData?.id }) }).subscribe(({
+      next: (value) => {
+        console.log(value)
+        this.itemDataList.set(value.data)
+      }, error: (err) => {
+
+      },
+      complete: () => {
+
+      },
+    }))
+  }
 
   protected getAsyncFnData(modalValue: NzSafeAny): Observable<NzSafeAny> {
     return of(modalValue);

@@ -17,7 +17,8 @@ export class ReceivingDtlService {
       data: { ...createReceivingDtlDto },
       include: {
         scmReceive: true,
-        scmItemDtl: true
+        scmItemDtl: true,
+        scmItemLocationDtl: true
       },
     });
   }
@@ -36,7 +37,8 @@ export class ReceivingDtlService {
       return this.prisma.scmReceiveDtl.findMany({
         include: {
           scmItemDtl: true,
-          scmReceive: true
+          scmReceive: true,
+          scmItemLocationDtl: true
         },
         where: data,
         orderBy: order,
@@ -49,7 +51,8 @@ export class ReceivingDtlService {
       this.prisma.scmReceiveDtl.findMany({
         include: {
           scmItemDtl: true,
-          scmReceive: true
+          scmReceive: true,
+          scmItemLocationDtl: true
         },
         where: data,
         take: pageSize || 10,
@@ -66,7 +69,8 @@ export class ReceivingDtlService {
       where: { id },
       include: {
         scmItemDtl: true,
-        scmReceive: true
+        scmReceive: true,
+        scmItemLocationDtl: true
       }
     });
     if (!data) {
@@ -88,7 +92,8 @@ export class ReceivingDtlService {
       data: { ...updateReceivingDtlDto },
       include: {
         scmItemDtl: true,
-        scmReceive: true
+        scmReceive: true,
+        scmItemLocationDtl: true
       },
     });
     return res;

@@ -1,103 +1,78 @@
-<div class="bg-white dark:bg-stone-900 rounded overflow-hidden m-2"> <!-- custom-card -->
-    <div class="bg-white dark:bg-stone-900  items-center mx-4 my-2"> <!-- header -->
-        <!-- Sticky Header -->
-        <div class="flex sticky top-0 bg-white dark:bg-stone-900 justify-between flex-row"> <!-- sticky-header -->
-            <!-- Header Content -->
-            <ng-container>
-                <!-- Default Title Content -->
-                <h5 class="text-base font-semibold">Item list</h5>
-            </ng-container>
-            <!-- Use the provided title template -->
-            <ng-container [ngTemplateOutlet]="options"></ng-container>
-        </div>
-    </div>
-    <nz-divider></nz-divider>
-    <div class="h-[calc(100vh-205px)] overflow-y-auto"> <!-- content -->
-        <!-- Scrollable Content -->
-        <div class="scrollable-content mx-4">
-            <!-- Content Goes Here -->
-            <!-- Example Content -->
-            <nz-spin [nzSpinning]="isSpinning">
-                <div class="flex flex-row flex-wrap gap-4 items-center justify-center" *ngIf="!dataGridList">
-                    <div *ngFor="let item of itemCardData()">
-                        <div (click)="onClick(item)" nz-infinite-scroll
-                            class="relative group cursor-pointer group overflow-hidden text-gray-50 h-56 w-52 hover:scale-105 hover:shadow-xl rounded-2xl hover:duration-700 duration-700">
-                            <div class="w-52 h-56 bg-gray-200 text-gray-800 dark:bg-gray-700">
-                                <div class="flex flex-row justify-between z-50 absolute top-0">
-                                    <svg class="fill-current stroke-current w-8 h-8 p-2 dark:hover:bg-white hover:bg-gray-300 rounded-full m-1 hover:duration-700 "
-                                        height="100" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100"
-                                        width="100" x="0" xmlns="http://www.w3.org/2000/svg" y="0">
-                                        <path class=""
-                                            d="M15.8,32.9V15.8m0,0H32.9m-17.1,0L37.2,37.2m47-4.3V15.8m0,0H67.1m17.1,0L62.8,37.2m-47,29.9V84.2m0,0H32.9m-17.1,0L37.2,62.8m47,21.4L62.8,62.8M84.2,84.2V67.1m0,17.1H67.1"
-                                            fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
-                                        </path>
-                                    </svg>
+<nz-card nzTitle="Item list" [nzExtra]="options" class="m-2 h-[calc(100vh-115px)] overflow-auto"
+    [nzBodyStyle]="{'margin-top': '80px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
+    <nz-content>
+        <nz-spin [nzSpinning]="isSpinning">
+            <div class="flex flex-row flex-wrap gap-4 items-center justify-center" *ngIf="!dataGridList">
+                <div *ngFor="let item of itemCardData()">
+                    <div (click)="onClick(item)" nz-infinite-scroll
+                        class="relative group cursor-pointer group overflow-hidden text-gray-50 h-56 w-52 hover:scale-105 hover:shadow-xl rounded-2xl hover:duration-700 duration-700">
+                        <div class="w-52 h-56 bg-gray-200 text-gray-800 dark:bg-gray-700">
+                            <div class="flex flex-row justify-between z-50 absolute top-0">
+                                <svg class="fill-current stroke-current w-8 h-8 p-2 dark:hover:bg-white hover:bg-gray-300 rounded-full m-1 hover:duration-700 "
+                                    height="100" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100" width="100"
+                                    x="0" xmlns="http://www.w3.org/2000/svg" y="0">
+                                    <path class=""
+                                        d="M15.8,32.9V15.8m0,0H32.9m-17.1,0L37.2,37.2m47-4.3V15.8m0,0H67.1m17.1,0L62.8,37.2m-47,29.9V84.2m0,0H32.9m-17.1,0L37.2,62.8m47,21.4L62.8,62.8M84.2,84.2V67.1m0,17.1H67.1"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+                                    </path>
+                                </svg>
 
-                                </div>
-                                <img src="../../../assets//imgs//default_face.png" alt="Italian Trulli"
-                                    class="opacity-50 z-0">
                             </div>
-                            <div
-                                class="absolute bg-gray-200/60 dark:bg-gray-600/60 dark:hover:bg-gray-600 hover:bg-gray-100 -bottom-24 w-56 p-3 flex flex-col gap-1 group-hover:-bottom-0 group-hover:duration-600 duration-500">
-                                <span
-                                    class="text-black dark:text-white font-bold text-xs items-center mb-6 hover:underline underline-offset-1 uppercase">{{item.subitemName}}</span>
-                                <span
-                                    class="text-gray-800 dark:text-white font-bold text-xl uppercase hover:underline underline-offset-1">{{item.brandName}}</span>
-                                <p class="text-neutral-800 dark:text-white text-xs">Lorem ipsum dolor sit amet,
-                                    consectetur
-                                    adipiscing
-                                    elit.
-                                </p>
-                            </div>
+                            <img src="../../../assets//imgs//default_face.png" alt="Italian Trulli"
+                                class="opacity-50 z-0">
+                        </div>
+                        <div
+                            class="absolute bg-gray-200/60 dark:bg-gray-600/60 dark:hover:bg-gray-600 hover:bg-gray-100 -bottom-24 w-56 p-3 flex flex-col gap-1 group-hover:-bottom-0 group-hover:duration-600 duration-500">
+                            <span
+                                class="text-black dark:text-white font-bold text-xs items-center mb-6 hover:underline underline-offset-1 uppercase">{{item.subitemName}}</span>
+                            <span
+                                class="text-gray-800 dark:text-white font-bold text-xl uppercase hover:underline underline-offset-1">{{item.brandName}}</span>
+                            <p class="text-neutral-800 dark:text-white text-xs">Lorem ipsum dolor sit amet,
+                                consectetur
+                                adipiscing
+                                elit.
+                            </p>
                         </div>
                     </div>
                 </div>
-                <div *ngIf="dataGridList" nz-infinite-scroll>
-                    <nz-list nzItemLayout="vertical">
-                        <nz-list-item *ngFor="let item of data">
-                            <nz-list-item-meta>
-                                <nz-list-item-meta-avatar [nzSrc]="item.avatar"></nz-list-item-meta-avatar>
-                                <nz-list-item-meta-title>
-                                    <a href="{{ item.href }}">{{ item.title }}</a>
-                                </nz-list-item-meta-title>
-                                <nz-list-item-meta-description>
-                                    {{ item.description }}
-                                </nz-list-item-meta-description>
-                            </nz-list-item-meta>
-                            {{ item.content }}
-                            <ul nz-list-item-actions>
-                                <nz-list-item-action>
-                                    <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
-                                    156
-                                </nz-list-item-action>
-                                <nz-list-item-action>
-                                    <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
-                                    156
-                                </nz-list-item-action>
-                                <nz-list-item-action>
-                                    <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
-                                    2
-                                </nz-list-item-action>
-                            </ul>
-                            <nz-list-item-extra>
-                                <img nz-image width="200px" height="200px" nzSrc="error" [nzFallback]="fallback"
-                                    alt="" />
-                            </nz-list-item-extra>
-                        </nz-list-item>
-                    </nz-list>
-                </div>
-            </nz-spin>
-            <!-- Add more content as needed -->
-        </div>
-    </div>
-</div>
-
-<!-- <nz-card nzTitle="Item list" [nzExtra]="options" class="m-2 h-[calc(100vh-115px)] overflow-auto">
-    <nz-content>
-
+            </div>
+            <div *ngIf="dataGridList" nz-infinite-scroll>
+                <nz-list nzItemLayout="vertical">
+                    <nz-list-item *ngFor="let item of data">
+                        <nz-list-item-meta>
+                            <nz-list-item-meta-avatar [nzSrc]="item.avatar"></nz-list-item-meta-avatar>
+                            <nz-list-item-meta-title>
+                                <a href="{{ item.href }}">{{ item.title }}</a>
+                            </nz-list-item-meta-title>
+                            <nz-list-item-meta-description>
+                                {{ item.description }}
+                            </nz-list-item-meta-description>
+                        </nz-list-item-meta>
+                        {{ item.content }}
+                        <ul nz-list-item-actions>
+                            <nz-list-item-action>
+                                <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
+                                156
+                            </nz-list-item-action>
+                            <nz-list-item-action>
+                                <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
+                                156
+                            </nz-list-item-action>
+                            <nz-list-item-action>
+                                <span nz-icon nzType="star-o" style="margin-right: 8px;"></span>
+                                2
+                            </nz-list-item-action>
+                        </ul>
+                        <nz-list-item-extra>
+                            <img nz-image width="200px" height="200px" nzSrc="error" [nzFallback]="fallback" alt="" />
+                        </nz-list-item-extra>
+                    </nz-list-item>
+                </nz-list>
+            </div>
+        </nz-spin>
     </nz-content>
 
-</nz-card> -->
+</nz-card>
 
 <nz-dropdown-menu #menu1="nzDropdownMenu">
     <ul nz-menu>

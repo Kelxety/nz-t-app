@@ -10,7 +10,7 @@ import { ResType } from '@utils/types/return-types';
 })
 export class ItemLocationDtlServices {
     private _items = signal<ScmItemLocationDtl[]>([])
-    public baseUrl = '/api/item-location';
+    public baseUrl = '/api/item-location-detail';
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 

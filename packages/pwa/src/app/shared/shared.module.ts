@@ -40,12 +40,12 @@ import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 
+
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { ItemSelectorComponent } from './feature/item-selector/item-selector.component';
 import { FilterPipe } from './pipes/filter.pipe';
 import { NumberLoopPipe } from './pipes/number-loop.pipe';
 import { ItemComponent } from './ui/item/item.component';
-import { LocationBarangayComponent } from './ui/location-barangay/location-barangay.component';
-import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-import { ItemSelectorComponent } from './feature/item-selector/item-selector.component';
 // import { NgxMaskModule } from 'ngx-mask'
 
 const MODULES: any[] = [
@@ -92,7 +92,7 @@ const MODULES: any[] = [
   NzDescriptionsModule,
   NzLayoutModule,
   NzCollapseModule
-  
+
   // NgxMaskModule.forRoot()
 ];
 

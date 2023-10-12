@@ -29,7 +29,7 @@ export class ReceivingService {
 
     return await this.prisma.scmReceive.update({
       where: { id: createData.id },
-      data: { rcvRefno: `${new Date(createData.rcvDate).getFullYear()}-${new Date(createData.rcvDate).getMonth() + 1}-${createData.id.split('-').pop()}` }
+      data: { rcvRefno: `RR-${new Date(createData.rcvDate).getFullYear()}-${new Date(createData.rcvDate).getMonth() + 1}-${createData.id.split('-').pop()}` }
     })
   }
 
@@ -267,12 +267,29 @@ export class ReceivingService {
     return res;
   }
 
-  async createLedgerPosting(data: any) {
-    const res = await this.prisma.scmStockLedger.createMany({
-      data: { entryDate: new Date(), refdate: new Date(), warehouseId: data.scmReceive.warehouseId }
+  async createLedgerPosting(data: any, token: string) {
+    const creatorName = await this.role.getRequesterName(token);
+    const findCode = await this.prisma.scmLedgerCode.findMany({
+      where: {
+        ledgerCode: {
+          equals: 'RR'
+        }
+      }
     })
 
-    return res
+    for (const resItem of data) {
+      const res = await this.prisma.scmStockLedger.createMany({
+        data: {
+          entryDate: new Date(), refdate: new Date(),
+          warehouseId: resItem.scmReceive?.warehouseId,
+          itemlocationdtlId: resItem.scmItemLocationDtl?.id,
+          ledgercodeId: findCode[0]?.id, cost: resItem.scmItemDtl?.cost, itemdtlId: resItem.itemdtlId,
+          price: resItem.scmItemDtl?.price, qty: resItem.scmItemDtl?.balanceQty,
+          refno: resItem.scmReceive.rcvRefno, postedAt: new Date(), postedBy: creatorName.accountName
+        }
+      })
+    }
+
   }
 
   async updatePosting(id: string, updateReceivingDto: UpdateReceivingDto, token: string) {
@@ -289,7 +306,7 @@ export class ReceivingService {
       include: {
         scmWarehouse: true,
         scmReceiveMode: true,
-        scmSupplier: true
+        scmSupplier: true,
       },
     });
 
@@ -303,15 +320,8 @@ export class ReceivingService {
       }
     })
 
+    this.createLedgerPosting(resDtl, token)
 
-    console.log(resDtl)
-
-    // this.createLedgerPosting(resDtl)
-
-
-    // const ledgerRes = await this.prisma.scmStockLedger.createMany({
-
-    // })
     return res;
   }
 

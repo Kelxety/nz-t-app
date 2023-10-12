@@ -1,12 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 
 export class CreateItemLocationDetailDto {
     @ApiProperty()
     @IsString()
     @IsOptional()
-    itemDtlId: string;
+    itemdtlId: string;
 
     @ApiProperty()
     @IsString()
@@ -14,6 +14,6 @@ export class CreateItemLocationDetailDto {
     locationId: string;
 
     @ApiProperty()
-    @IsString()
-    balanceQty: string
+    @IsNumber()
+    balanceQty: number
 }
