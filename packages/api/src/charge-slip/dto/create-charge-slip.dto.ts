@@ -26,7 +26,7 @@ export class CreateChargeSlipDto {
   csName: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   patienttypeId: string;
 
@@ -41,12 +41,12 @@ export class CreateChargeSlipDto {
   patientId: string;
 
   @ApiProperty({ required: true })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   warehouseId: string;
 
   @ApiProperty({ required: true })
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   amount: number;
 

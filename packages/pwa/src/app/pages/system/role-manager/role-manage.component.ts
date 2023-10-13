@@ -92,7 +92,7 @@ export class RoleManageComponent implements OnInit {
 
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
-    const params: SearchParams<any> = {
+    const params: SearchParams<Prisma.RoleWhereInput, Prisma.RoleOrderByWithAggregationInput> = {
       pageSize: this.tableConfig.pageSize!,
       pagination: true,
       page: this.tableConfig.pageIndex!

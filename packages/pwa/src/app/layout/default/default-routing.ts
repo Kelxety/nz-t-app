@@ -29,6 +29,11 @@ export default [
         loadComponent: () => import('../../pages/receiving-transaction-list/receiving-transaction-list.component').then(m => m.ReceivingTransactionListComponent)
       },
       {
+        path: 'pos',
+        data: { title: 'POS', key: 'default:pos' },
+        loadChildren: () => import('../../pages/pos-charge-slip/pos-charge-slip-routing')
+      },
+      {
         path: 'issuance',
         data: { title: 'Stock-Issuance', key: 'default:issuance' },
         loadChildren: () => import('../../pages/issuance/issuance-routing')

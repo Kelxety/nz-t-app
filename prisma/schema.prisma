@@ -759,6 +759,7 @@ model ScmStockLedger {
   itemdtlId          String?             @map("itemdtl_id") @db.VarChar(36)
   ledgercodeId       String?             @map("ledgercode_id") @db.VarChar(36)
   refno              String?             @db.VarChar(30)
+  remarks            String?             @db.VarChar(30)
   refdate            DateTime?           @db.Date
   qty                Int?
   cost               Float?

@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { HospitalPatientType, Prisma } from '@prisma/client';
@@ -19,7 +19,7 @@ export class HospitalPatientTypeService {
   refresh = signal<boolean>(true);
   errorMessage = '';
   patientType = signal<HospitalPatientType | undefined>(undefined);
-  getParams = signal<SearchParams<Prisma.HospitalPatientWhereInput>>({
+  getParams = signal<SearchParams<Prisma.HospitalPatientWhereInput, Prisma.HospitalPatientOrderByWithAggregationInput>>({
     pageSize: 10
   });
   selectedPatienttype = signal<HospitalPatientType | undefined>(undefined);
@@ -28,10 +28,21 @@ export class HospitalPatientTypeService {
 
   private patientTypes$ = toObservable(this.refresh).pipe(
     switchMap(doRefresh => {
-      const filteredObject = JSON.stringify(this.getParams().filteredObject);
+      const filteredObject = this.getParams().filteredObject ? JSON.stringify(this.getParams().filteredObject) : null;
+      const orderBy = this.getParams().orderBy ? JSON.stringify(this.getParams().orderBy) : null;
+
+      let p: HttpParams = new HttpParams({ fromObject: { ...this.getParams(), filteredObject, orderBy } });
+
+      if (!filteredObject) {
+        p = p.delete('filteredObject');
+      }
+
+      if (!orderBy) {
+        p = p.delete('orderBy');
+      }
       return this.http
         .get<ResType<HospitalPatientType[]>>(this.baseUrl, {
-          params: this.getParams() ? { ...this.getParams(), filteredObject } : { pageSize: 0 }
+          params: p
         })
         .pipe(
           map(data => data.data.map(v => v)),

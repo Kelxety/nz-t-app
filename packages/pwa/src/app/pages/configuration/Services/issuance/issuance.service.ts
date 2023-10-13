@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ScmIssuance, Prisma } from '@prisma/client';
@@ -19,7 +19,7 @@ export class IssuanceService {
   refresh = signal<boolean>(true);
   errorMessage = '';
   data = signal<ScmIssuance | undefined>(undefined);
-  getParams = signal<SearchParams<Prisma.ScmIssuanceWhereInput>>({
+  getParams = signal<SearchParams<Prisma.ScmIssuanceWhereInput, Prisma.ScmIssuanceOrderByWithAggregationInput>>({
     pageSize: 10
   });
   selectedData = signal<ScmIssuance | undefined>(undefined);
@@ -29,10 +29,22 @@ export class IssuanceService {
 
   private data$ = toObservable(this.refresh).pipe(
     switchMap(doRefresh => {
-      const filteredObject = JSON.stringify(this.getParams().filteredObject);
+      const filteredObject = this.getParams().filteredObject ? JSON.stringify(this.getParams().filteredObject) : null;
+      const orderBy = this.getParams().orderBy ? JSON.stringify(this.getParams().orderBy) : null;
+
+      let p: HttpParams = new HttpParams({ fromObject: { ...this.getParams(), filteredObject, orderBy } });
+
+      if (!filteredObject) {
+        p = p.delete('filteredObject');
+      }
+
+      if (!orderBy) {
+        p = p.delete('orderBy');
+      }
+
       return this.http
         .get<ResType<ScmIssuance[]>>(this.baseUrl, {
-          params: this.getParams() ? { ...this.getParams(), filteredObject } : { pageSize: 0 }
+          params: p
         })
         .pipe(
           map(data => data.data.map(v => v)),
@@ -44,13 +56,13 @@ export class IssuanceService {
   );
 
   list(params: object = {}): Observable<ResType<ScmIssuance[]>> {
-      const parameters = this.httpParams.convert(params);
-      return this.apiService.get(this.baseUrl, parameters);
+    const parameters = this.httpParams.convert(params);
+    return this.apiService.get(this.baseUrl, parameters);
   }
 
   get(id: string): Observable<ResType<ScmIssuance>> {
-      const url = `${this.baseUrl}/${id}`;
-      return this.apiService.get(url);
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.get(url);
   }
 
   fulltextFilter(params: object = {}): Observable<ResType<ScmIssuance[]>> {
@@ -74,7 +86,7 @@ export class IssuanceService {
   datas = toSignal(this.data$, { initialValue: [] });
 
   selected(id: string) {
-    const foundData= this.datas().find(v => v.id === id);
+    const foundData = this.datas().find(v => v.id === id);
     this.selectedData.set(foundData);
   }
 

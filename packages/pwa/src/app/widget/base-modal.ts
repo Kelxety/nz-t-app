@@ -1,5 +1,5 @@
 import { DragDrop, DragRef } from '@angular/cdk/drag-drop';
-import { ComponentRef, DestroyRef, Inject, inject, Injectable, Injector, Renderer2, RendererFactory2, TemplateRef, Type } from '@angular/core';
+import { ComponentRef, DestroyRef, Inject, Injectable, Injector, Renderer2, RendererFactory2, TemplateRef, Type, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, of } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
@@ -24,7 +24,7 @@ export const enum ModalBtnStatus {
 
 // 组件实例需要继承此类
 export abstract class BasicConfirmModalComponent {
-  protected constructor(protected modalRef: NzModalRef) {}
+  protected constructor(protected modalRef: NzModalRef) { }
 
   protected abstract getCurrentValue(): NzSafeAny;
 }
@@ -159,7 +159,7 @@ export class ModalWrapService {
   }
 
   // 创建对话框的配置项
-  createModalConfig<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params: T, wrapCls: string, labelConfirm: string): ModalOptions {
+  createModalConfig<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params: T, wrapCls: string, labelConfirm: string, confirmBtnShow: boolean): ModalOptions {
     let confirm: string = '';
     confirm = labelConfirm ? labelConfirm : 'Confirm';
 
@@ -172,7 +172,7 @@ export class ModalWrapService {
         {
           label: confirm,
           type: 'primary',
-          show: true,
+          show: confirmBtnShow ? true : false,
           onClick: this.confirmCallback.bind(this)
         },
         {
@@ -196,9 +196,9 @@ export class ModalWrapService {
     return newOptions;
   }
 
-  show<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params?: T, labelConfirm?: string): Observable<NzSafeAny> {
+  show<T>(component: Type<NzSafeAny>, modalOptions: ModalOptions = {}, params?: T, labelConfirm?: string, confirmBtnShow?: boolean): Observable<NzSafeAny> {
     const wrapCls = this.getRandomCls();
-    const newOptions = this.createModalConfig(component, modalOptions, params, wrapCls, labelConfirm);
+    const newOptions = this.createModalConfig(component, modalOptions, params, wrapCls, labelConfirm, confirmBtnShow);
     const modalRef = this.bsModalService.create(newOptions);
     let drag: DragRef | null;
     modalRef.afterOpen.pipe(first()).subscribe(() => {

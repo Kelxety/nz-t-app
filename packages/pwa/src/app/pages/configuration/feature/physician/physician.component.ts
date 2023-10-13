@@ -38,11 +38,14 @@ export class PhysicianComponent {
   listOfCurrentPageData: readonly HospitalPhysician[] = [];
   setOfCheckedId = new Set<string>();
   physicianState = 'Active';
-  params: SearchParams<Prisma.HospitalPatientWhereInput> = {
+  params: SearchParams<Prisma.HospitalPatientWhereInput, Prisma.HospitalOfficeOrderByWithAggregationInput> = {
     page: 0,
     pagination: true,
     filteredObject: {
       state: 'Active'
+    },
+    orderBy: {
+      officeName: 'asc'
     }
   };
 

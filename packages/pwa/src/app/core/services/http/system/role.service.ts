@@ -37,7 +37,7 @@ export class RoleService {
   public baseUrl = '/api/roles';
   constructor(private apiService: ApiTypeService, private httpParams: HttpParamsService) {}
 
-  public getRoles(param: SearchParams<Prisma.RoleWhereInput>): Observable<ResType<Role[]>> {
+  public getRoles(param: SearchParams<Prisma.RoleWhereInput, Prisma.RoleOrderByWithAggregationInput>): Observable<ResType<Role[]>> {
     const parameters = this.httpParams.convert(param);
     return this.apiService.get<ResType<Role[]>>(this.baseUrl, parameters);
   }

@@ -16,11 +16,11 @@ export interface QueryParams<T> extends NzTableQueryParams {
   pagination: boolean | null;
 }
 
-export interface SearchParams<T> {
+export interface SearchParams<T, K> {
   page?: number;
   pageSize?: number;
   pagination?: boolean;
-  orderBy?: string;
+  orderBy?: K;
   filteredObject?: T;
 }
 
