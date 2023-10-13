@@ -24,7 +24,7 @@ export const enum ModalBtnStatus {
 
 // 组件实例需要继承此类
 export abstract class BasicConfirmModalComponent {
-  protected constructor(protected modalRef: NzModalRef) { }
+  protected constructor(protected modalRef: NzModalRef) {}
 
   protected abstract getCurrentValue(): NzSafeAny;
 }
@@ -172,7 +172,7 @@ export class ModalWrapService {
         {
           label: confirm,
           type: 'primary',
-          show: confirmBtnShow ? true : false,
+          show: confirmBtnShow || confirmBtnShow === undefined ? true : false,
           onClick: this.confirmCallback.bind(this)
         },
         {
