@@ -1,20 +1,16 @@
 <div class="fixed-content p-2">
     <div nz-row class="relative w-full h-full">
         <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24" nzXl="24">
-            <nz-card [nzTitle]="title" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '58px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
+            <nz-card [nzTitle]="title" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '64px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
                 <div class="w-full h-full" *ngIf="!mainModel.loading; else isLoading">
                     <nz-table
                     nzShowSizeChanger
                     #fixedTable
                     [nzData]="mainModel.list"
                     [nzSize]="'small'"
-                    [nzFrontPagination]="false"
                     [nzLoading]="loading"
-                    [nzScroll]="{ x: '500px', y: 'calc(100vh - 420px)' }"
-                    [nzTotal]="totalItems"
                     [nzPageSize]="_state.pageSize"
                     [nzPageIndex]="_state.page"
-                    (nzQueryParams)="onQueryParamsChange($event)"
                     >
                     <thead>
                       <tr>
@@ -28,11 +24,9 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let data of fixedTable.data">
-                        <td nzLeft>
-                          <input nz-input type="number" [ngModel]="data.sort" (change)="editSort(data.id, $event)" style="text-align: center; font-weight: bold;"/>
-                        </td>
-                        <td nzLeft nzEllipsis>{{ data.judgeName }} - {{ data.judgePosition }}</td>
-                        <td nzLeft nzEllipsis class="text-center">{{ data.judgePercent }}</td>
+                        <td nzLeft nzEllipsis>{{data.issDate | date: 'MMM dd, yyyy'}}</td>
+                        <td nzLeft nzEllipsis>{{data.issRefno}}</td>
+                        <td nzLeft nzEllipsis class="text-center">{{ data.o</td>
                         <td nzLeft nzEllipsis>{{ data.username }}</td>
                         <td nzLeft nzEllipsis>{{ data.remarks }}</td>
                         <td nzRight class="text-right" style="padding-top: 2px; padding-bottom: 2px">      
@@ -62,20 +56,24 @@
 </ng-template>
 
 <ng-template #itemsView >
-    <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-2 my-[-5px]">
-        <input type="text" nz-input placeholder="input search text" />
+  <div nz-space nzAlign="start">
+    <nz-input-group  *nzSpaceItem [nzSuffix]="suffixIconSearch" class="w-60 mr-2">
+      <input type="text" nz-input placeholder="input search text" />
     </nz-input-group>
-     <ng-template #suffixIconSearch>
-        <span nz-icon nzType="search"></span>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
     </ng-template>
-    <!-- <nz-radio-group [(ngModel)]="itemFilter.view" nzButtonStyle="solid"  class="my-[-4px]">
-        <label nz-radio-button nzValue="list">
-            <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
-        </label>
-        <label nz-radio-button nzValue="grid">
-            <span nz-icon nzType="appstore" nzTheme="outline"></span>
-        </label>
-    </nz-radio-group> -->
+    <nz-button-group *nzSpaceItem>
+      <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="add()"
+          nzTooltipTitle="Add " nzTooltipPlacement="topLeft" nz-tooltip>
+          <span nz-icon nzType="plus" nzTheme="outline"></span>
+      </button>
+      <button (click)="loadData()" class="pointer" nz-button style="padding-left: 8px; padding-right: 8px"
+          nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip>
+          <span nz-icon nzType="reload" nzTheme="outline"></span>
+      </button>
+    </nz-button-group>
+  </div>
 </ng-template>
 
 <ng-template #isLoading>

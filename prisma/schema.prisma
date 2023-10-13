@@ -268,6 +268,8 @@ model ScmIssuance {
   risId           String?          @map("ris_id") @db.VarChar(36)
   state           String?          @db.VarChar(20)
   remarks         String?          @db.VarChar(255)
+  totalQty        Float?           @map("total_qty")
+  totalAmount     Float?           @map("total_amount")
   isRis           Boolean?         @map("is_ris")
   isPosted        Boolean?         @map("is_posted")
   postedBy        String?          @map("posted_by") @db.VarChar(50)

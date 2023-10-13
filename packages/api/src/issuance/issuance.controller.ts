@@ -38,7 +38,7 @@ export class IssuanceController {
     );
     return {
       message: `Warehouse successfully created`,
-      data: data,
+      data: new IssuanceEntity(data),
     };
   }
 
@@ -61,10 +61,46 @@ export class IssuanceController {
     });
     const resData = {
       message: `List of all issuance fetch Successfully`,
-      data: data,
+      data: data.map(d => new IssuanceEntity(d)),
     };
     if (!query.pagination) {
       return resData;
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    return resData;
+  }
+
+  @Get('search')
+  @CustomGlobalDecorator (
+    Prisma.ScmIssuanceScalarFieldEnum,
+    true,
+    IssuanceEntity,
+  )
+  async fulltextSearch(@Query() query: QueryT): Promise<ResponseT<IssuanceEntity[]>> {
+    const data = await this.issuanceService.fulltextSearch({
+      searchData: query.q,
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const resData = {
+      message: `List of all Item fetch Successfully`,
+      data: data.map((res) => new IssuanceEntity(res)),
+    };
+    if (!query.pagination) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
@@ -86,7 +122,7 @@ export class IssuanceController {
     const data = await this.issuanceService.findOne(id);
     return {
       message: `Warehouse with id of ${id} detail fetched Succesfully`,
-      data: data,
+      data: new IssuanceEntity(data),
     };
   }
 
@@ -104,7 +140,7 @@ export class IssuanceController {
     );
     return {
       message: `Patch with id of ${id} detail patched Succesfully`,
-      data: data,
+      data: new IssuanceEntity(data),
     };
   }
 
@@ -114,7 +150,7 @@ export class IssuanceController {
     const data = await this.issuanceService.remove(id);
     return {
       message: `Warehouse with id of ${id} detail deleted Succesfully`,
-      data: data,
+      data: new IssuanceEntity(data),
     };
   }
 }

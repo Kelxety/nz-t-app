@@ -25,6 +25,7 @@ export class IssuanceService {
   selectedData = signal<ScmIssuance | undefined>(undefined);
 
   public baseUrl = '/api/issuance';
+  public searchFulltext = '/api/issuance/search';
 
   private data$ = toObservable(this.refresh).pipe(
     switchMap(doRefresh => {
@@ -52,6 +53,10 @@ export class IssuanceService {
       return this.apiService.get(url);
   }
 
+  fulltextFilter(params: object = {}): Observable<ResType<ScmIssuance[]>> {
+    const parameters = this.httpParams.convert(params);
+    return this.apiService.get(this.searchFulltext, parameters);
+  }
 
   add(data: ScmIssuance): Observable<ResType<ScmIssuance>> {
     return this.apiService.post(this.baseUrl, data);

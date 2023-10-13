@@ -20,7 +20,7 @@ export class CreateEditModalComponent {
   private modalRef = inject(NzModalRef);
   private warehouseServices = inject(WarehouseServices);
   private officeService = inject(HospitalOfficeService);
-  readonly nzModalData: { data: HospitalPhysician; actionType: string } = inject(NZ_MODAL_DATA);
+  readonly nzModalData: { data: any; actionType: string } = inject(NZ_MODAL_DATA);
   private fb = inject(FormBuilder);
 
   listOfWarehouse: any[] = [];
@@ -43,17 +43,24 @@ export class CreateEditModalComponent {
     if (!fnCheckForm(this.frm)) {
       return of(false);
     }
-    return of(this.frm.value);
+
+    console.log('CHECK');
+      // return of(false);
+      return of(this.frm.value);
   }
 
   initForm() {
+    const default_data: any = this.nzModalData;
+    console.log('XXX', default_data);
     this.frm = this.fb.group({
       id: [null],
       warehouseId: [null, [Validators.required]],
       officeId: [null, [Validators.required]],
       issDate: [new Date, [Validators.required]],
       state: [this.listOfOption[0].value, [Validators.required]],
-      remarks: [null]
+      remarks: [null],
+      totalQty: [default_data.totalQty, [Validators.required]],
+      totalCost: [default_data.totalCost, [Validators.required]]
     });
   }
 

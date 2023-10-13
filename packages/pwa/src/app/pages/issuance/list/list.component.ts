@@ -96,8 +96,9 @@ export class ListComponent {
     this.loading = true;
     this.api.list(this._state).subscribe({
       next: (res:any) => {
-        const list = res['hydra:member'];
-        this.totalItems = res['hydra:totalItems'];
+        console.log('DATA', res);
+        const list = res.data[1];
+        this.totalItems = res.data[1].length;
         model.list = list;
       },
       error: (err: any) => {

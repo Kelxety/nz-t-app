@@ -100,7 +100,7 @@ export class NewComponent implements OnInit {
     this.modalService
       .show({
         nzTitle: 'New Issuance'
-      })
+      },{totalQty: this.totalQty, totalCost: this.totalCost, details: this.listOfSelectedItems})
       .pipe(
         finalize(() => {}),
         takeUntilDestroyed(this.destroyRef)

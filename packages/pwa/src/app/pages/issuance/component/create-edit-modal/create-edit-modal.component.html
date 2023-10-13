@@ -16,7 +16,7 @@
     <nz-form-item>
         <nz-form-label nzFlex="100px" class="text-left" nzRequired>Office</nz-form-label>
         <nz-form-control nzHasFeedback nzFlex="auto" nzErrorTip="Input is required">
-            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select office" id="officeId" formControlName="officeId" >
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select office" id="officeId" formControlName="officeId">
                 <nz-option *ngFor="let row of listOfOffice" [nzLabel]="row.officeName" [nzValue]="row.id"></nz-option>
             </nz-select>
         </nz-form-control>
@@ -27,7 +27,8 @@
             <textarea nz-input rows="2" placeholder="Write any thing" id="remarks" formControlName="remarks" ></textarea>
         </nz-form-control>
     </nz-form-item>
-
+    <input type="hidden" id="totalQty" formControlName="totalQty">
+    <input type="hidden" id="totalCost" formControlName="totalCost">
 </form>
 
 <ng-template #combineTpl let-control>

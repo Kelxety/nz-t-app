@@ -75,7 +75,8 @@ export class ModalWrapService {
     return modalButtonOptions['modalRef'].destroy({ status: ModalBtnStatus.Cancel, value: null });
   }
 
-  private confirmCallback(modalButtonOptions: ModalButtonOptions): void {
+  private confirmCallback(modalButtonOptions: ModalButtonOptions, isclosed?: boolean): void {
+    
     (modalButtonOptions['modalRef'].componentInstance as NzSafeAny)
       .getCurrentValue()
       .pipe(
@@ -84,7 +85,9 @@ export class ModalWrapService {
           if (!modalValue) {
             return of(false);
           } else {
-            return modalButtonOptions['modalRef'].destroy({ status: ModalBtnStatus.Ok, modalValue });
+            if (isclosed) {
+              return modalButtonOptions['modalRef'].destroy({ status: ModalBtnStatus.Ok, modalValue });
+            }
           }
         }),
         takeUntilDestroyed(this.destroyRef)

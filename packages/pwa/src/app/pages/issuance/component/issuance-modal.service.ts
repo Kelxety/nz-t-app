@@ -15,7 +15,7 @@ export class IssuanceModalService {
     return CreateEditModalComponent;
   }
 
-  public show(modalOptions: ModalOptions = {}, modalData?: string): Observable<NzSafeAny> {
+  public show(modalOptions: ModalOptions = {}, modalData?: any): Observable<NzSafeAny> {
     return this.modalWrapService.show(this.getContentComponent(), modalOptions, modalData, 'Save');
   }
 }

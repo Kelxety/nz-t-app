@@ -37,6 +37,9 @@ export class IssuanceService {
     if (!pagination) {
       return this.prisma.scmIssuance.findMany({
         where: data,
+        include: {
+          hospitalOffice: true,
+        },
         orderBy: order,
       });
     }
@@ -46,6 +49,80 @@ export class IssuanceService {
       }),
       this.prisma.scmIssuance.findMany({
         where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+
+    return returnData;
+  }
+
+  async fulltextSearch({
+    searchData,
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+  Prisma.ScmIssuanceWhereInput,
+  Prisma.ScmIssuanceOrderByWithAggregationInput
+>): Promise<ScmIssuance[] | any> {
+    if (!pagination) {
+      return this.prisma.scmIssuance.findMany({
+        where: {
+          OR: [
+            {
+              issRefno: {
+                contains: searchData
+              }
+            },
+            {
+              remarks: {
+                contains: searchData
+              }
+            },
+          ]
+        },
+        include: {
+          hospitalOffice: true,
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmIssuance.count({
+        where: {
+          OR: [
+            {
+              issRefno: {
+                contains: searchData
+              }
+            },
+            {
+              remarks: {
+                contains: searchData
+              }
+            },
+          ]
+        },
+      }),
+      this.prisma.scmIssuance.findMany({
+        where: {
+          OR: [
+            {
+              issRefno: {
+                contains: searchData
+              }
+            },
+            {
+              remarks: {
+                contains: searchData
+              }
+            },
+          ]
+        },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
         orderBy: order,

@@ -3,6 +3,15 @@ import { Transform } from "class-transformer";
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateIssuanceDto {
+
+    @ApiProperty()
+    @IsNumber()
+    totalQty: number;
+
+    @ApiProperty()
+    @IsNumber()
+    totalAmount: number;
+
     @ApiProperty()
     @IsOptional()
     @IsNumber()
