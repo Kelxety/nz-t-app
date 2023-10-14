@@ -3,6 +3,7 @@
         <div *ngFor="let row of listOfItems" class=" bg-gray-50 rounded-lg relative hover:rounded-lg hover:bg-white hover:scale-105 transition hover:ease-in group/item cursor-pointer shadow-sm aspect-square mb-1 border border-solid border-[#eeeeee] dark:border dark:border-solid dark:border-[#303030] dark:bg-[#111111] hover:shadow-black/10 hover:shadow-lg dark:hover:bg-[#111111]">
             <div class="grid grid-cols-1 gap-0 h-full dark:bg-[#1F1F1F]">
                 <div style="background-image: url('assets/imgs/no_img.jpg');" class="bg-cover bg-center rounded-t-lg min-h-[60px]">
+                    <div class="bg-red-600 rounded-full font-bold m-1 px-1 w-fit float-right" *ngIf="row?.selectedQty > 0">{{row.selectedQty}}</div>
                 </div>
                 <div class="h-full rounded-b-lg">
                     <div class="p-1 font-semibold">

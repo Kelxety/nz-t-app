@@ -48,6 +48,9 @@ export class IssuanceService {
         where: data,
       }),
       this.prisma.scmIssuance.findMany({
+        include: {
+          hospitalOffice: true,
+        },
         where: data,
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,

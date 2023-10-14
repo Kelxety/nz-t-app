@@ -28,7 +28,9 @@
         </nz-form-control>
     </nz-form-item>
     <input type="hidden" id="totalQty" formControlName="totalQty">
-    <input type="hidden" id="totalCost" formControlName="totalCost">
+    <input type="hidden" id="totalAmount" formControlName="totalAmount">
+
+    {{frm.value | json}}
 </form>
 
 <ng-template #combineTpl let-control>

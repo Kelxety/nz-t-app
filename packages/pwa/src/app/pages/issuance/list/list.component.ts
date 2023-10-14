@@ -8,7 +8,6 @@ import { Router } from '@angular/router';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { Subject, takeUntil } from 'rxjs';
 import { Prisma, ScmIssuance } from '@prisma/client';
-import { orderBy } from 'lodash';
 import { SearchParams } from '@pwa/src/app/shared/interface';
 import { ResType } from '@pwa/src/app/utils/types/return-types';
 
@@ -67,7 +66,13 @@ export class ListComponent {
 
   search: string = '';
 
-  constructor(private cd: ChangeDetectorRef, private spinService: SpinService, private fb: FormBuilder, private msg: NzMessageService, private api: IssuanceService, private router: Router) {}
+  constructor(
+    private cd: ChangeDetectorRef, 
+    private spinService: SpinService, 
+    private fb: FormBuilder, 
+    private msg: NzMessageService, 
+    private api: IssuanceService, 
+    private router: Router) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -101,8 +106,9 @@ export class ListComponent {
   loadData() {
     let model: any = this.mainModel;
     this.loading = true;
-    this.api.list(this._params).subscribe({
+    this.api.list({}).subscribe({
       next: (res: ResType<ScmIssuance[]>) => {
+        console.log('LOAD DATA', res);
         const list = res.data[1];
         this.totalItems = 1;
       },
@@ -191,7 +197,9 @@ export class ListComponent {
       });
   }
 
-  add() {}
+  add() {
+    this.router.navigate(['/default/issuance/new']);
+  }
 
   edit(d: any) {}
 

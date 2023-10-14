@@ -19,6 +19,11 @@ export default [
         loadChildren: () => import('../../pages/dashboard/dashboard-routing')
       },
       {
+        path: 'inventory',
+        data: { title: 'Inventory Period', key: 'default:inventory' },
+        loadChildren: () => import('../../pages/inventory/inventory-routing')
+      },
+      {
         path: 'receiving',
         data: { title: 'Stock Receiving', key: 'receiving' },
         loadComponent: () => import('../../pages/receiving/receiving.component').then(m => m.ReceivingComponent)

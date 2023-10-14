@@ -67,7 +67,19 @@ export class NewComponent implements OnInit {
   }
 
   getSelectedItem(event: any) {
-    this.listOfSelectedItems = [{...event},...this.listOfSelectedItems];
+    let isAdd: boolean = true;
+
+    this.listOfSelectedItems.map((d:any) => {
+      if (d.id === event.id) {
+        d.qty += event.qty;
+        isAdd = false;
+      }
+    });
+
+    if (isAdd) {
+      this.listOfSelectedItems = [{...event},...this.listOfSelectedItems];
+    }
+
     this.getTotal();
   }
 

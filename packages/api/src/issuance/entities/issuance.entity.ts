@@ -1,12 +1,12 @@
 
-import { HospitalOfficeEntity } from '@api/hospital-office/entities/hospital-office.entity';
+import { HospitalOfficeEntity } from '../../hospital-office/entities/hospital-office.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { ScmIssuance } from '@prisma/client';
-import { partial } from 'lodash';
+import { Exclude } from 'class-transformer';
 
 export class IssuanceEntity implements ScmIssuance {
-    constructor({office,...partial}: Partial<IssuanceEntity>) {
-        Object.assign(this, partial);
+    constructor({hospitalOffice,...data}: Partial<IssuanceEntity>) {
+        Object.assign(this, data);
     }
 
     @ApiProperty()
@@ -31,6 +31,7 @@ export class IssuanceEntity implements ScmIssuance {
     warehouseId: string;
     
     @ApiProperty()
+    @Exclude()
     officeId: string;
     
     @ApiProperty()
@@ -67,5 +68,5 @@ export class IssuanceEntity implements ScmIssuance {
     updatedAt: Date;
 
     @ApiProperty({type: HospitalOfficeEntity})
-    office: HospitalOfficeEntity;
+    hospitalOffice: HospitalOfficeEntity;
 }

@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ItemDetailServices } from '@pwa/src/app/pages/configuration/Services/item-detail/item-detail.service';
+import e from 'express';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -48,6 +49,7 @@ export class ItemSelectorComponent implements OnInit {
     this.itemDetailServices.fulltextFilter({q: q}).subscribe({
       next: (res: any) => {
         this.listOfItems = res.data;
+        this.getCountSelected();
         this.defaultQty();
         console.log('ITEMS', this.listOfItems);
         this.isLoading = true
@@ -62,6 +64,13 @@ export class ItemSelectorComponent implements OnInit {
         this.cd.detectChanges();
       }
     });
+  }
+
+  getCountSelected() {
+    this.listOfItems.map((d:any) => {
+      const count = this.listOfSelectedItem.filter((r: any) => r.id !== d.id);
+      if (count.length > 0) { d.selectedQty = count[0].qty; } else {d.selectedQty = 0;}
+    })
   }
 
   fun_search() {
@@ -82,5 +91,7 @@ export class ItemSelectorComponent implements OnInit {
     console.log('ss', value);
     this.newItemEvent.emit(value);
     this.defaultQty();
+    this.getCountSelected();
+    this.cd.detectChanges();
   }
 }

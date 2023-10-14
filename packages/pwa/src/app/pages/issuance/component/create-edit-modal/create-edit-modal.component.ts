@@ -60,7 +60,7 @@ export class CreateEditModalComponent {
       state: [this.listOfOption[0].value, [Validators.required]],
       remarks: [null],
       totalQty: [default_data.totalQty, [Validators.required]],
-      totalCost: [default_data.totalCost, [Validators.required]]
+      totalAmount: [default_data.totalCost, [Validators.required]]
     });
   }
 

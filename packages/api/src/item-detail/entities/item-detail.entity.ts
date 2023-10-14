@@ -5,10 +5,10 @@ import { ReceiveMode } from "../../receive-mode/entities/receive-mode.entity";
 import { UnitEntity } from "../../unit/entities/unit.entity";
 
 export class ItemDetailEntity implements ScmItemDtl {
-    constructor(
-        { unitIds, rrMode, ...data }: Partial<ItemDetailEntity>) {
+    constructor({ unitIds, rrMode, ...data }: Partial<ItemDetailEntity>) {
         Object.assign(this, data);
     }
+
     @ApiProperty()
     rrModeId: string;
 
