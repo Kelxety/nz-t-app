@@ -413,6 +413,7 @@ model ScmItemLocationDtl {
   itemdtlId             String?                @map("itemdtl_id") @db.VarChar(36)
   locationId            String                 @map("location_id") @db.VarChar(36)
   balanceQty            Int?                   @map("balance_qty")
+  qty                   Int?                   @map("qty")
   scmItemDtl            ScmItemDtl?            @relation(fields: [itemdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   scmItemLocation       ScmItemLocation        @relation(fields: [locationId], references: [id], onUpdate: Restrict, map: "scm_item_location_dtl_ibfk_2")
   scmStockInventoryDtls ScmStockInventoryDtl[]
