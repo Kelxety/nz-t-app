@@ -410,6 +410,7 @@ model ScmItemLocation {
   scmItemLocationDtls ScmItemLocationDtl[]
 
   @@index([warehouseId], map: "warehouse_id")
+  @@fulltext([locName])
   @@map("scm_item_location")
 }
 
