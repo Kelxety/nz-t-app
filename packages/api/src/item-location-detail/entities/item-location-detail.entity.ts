@@ -13,6 +13,9 @@ export class ItemLocationDetailEntity implements ScmItemLocationDtl {
     @ApiProperty()
     locationId: string;
 
+    @ApiProperty()
+    qty: number;
+
     @ApiProperty({ required: false, type: ItemDetailEntity })
     itemDtls: ItemDetailEntity;
 
@@ -33,5 +36,6 @@ export class ItemLocationDetailEntity implements ScmItemLocationDtl {
             this.locations = new ItemLocation(locations);
         }
     }
+
 
 }

@@ -2,6 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ScmItemCategory } from '@prisma/client';
 
 export class ItemCategoryEntity implements ScmItemCategory {
+  constructor(partial: Partial<ItemCategoryEntity>) {
+    Object.assign(this, partial);
+  }
+
   @ApiProperty()
   id: string;
 

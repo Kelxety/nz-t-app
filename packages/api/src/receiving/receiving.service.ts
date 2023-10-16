@@ -282,14 +282,14 @@ export class ReceivingService {
         data: {
           entryDate: new Date(), refdate: new Date(),
           warehouseId: resItem.scmReceive?.warehouseId,
-          itemlocationdtlId: resItem.scmItemLocationDtl?.id,
+          itemlocationdtlId: resItem.itemlocationdtlId,
           ledgercodeId: findCode[0]?.id, cost: resItem.scmItemDtl?.cost, itemdtlId: resItem.itemdtlId,
           price: resItem.scmItemDtl?.price, qty: resItem.scmItemDtl?.balanceQty,
-          refno: resItem.scmReceive.rcvRefno, postedAt: new Date(), postedBy: creatorName.accountName
+          refno: resItem.scmReceive.rcvRefno, postedAt: new Date(), postedBy: creatorName.accountName,
+          remarks: resItem.scmReceive.remakrs
         }
       })
     }
-
   }
 
   async updatePosting(id: string, updateReceivingDto: UpdateReceivingDto, token: string) {
@@ -317,8 +317,11 @@ export class ReceivingService {
       include: {
         scmItemDtl: true,
         scmReceive: true,
+        scmItemLocationDtl: true
       }
     })
+
+
 
     this.createLedgerPosting(resDtl, token)
 

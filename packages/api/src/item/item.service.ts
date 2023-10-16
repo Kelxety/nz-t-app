@@ -29,7 +29,6 @@ export class ItemService {
       data: { ...createItemDto, createdBy: creatorName.accountName },
       include: {
         scmItemCategory: true,
-        scmItemDtl: true,
       },
     });
   }
@@ -369,7 +368,7 @@ export class ItemService {
   async findOne(id: string) {
     const data = await this.prisma.scmItem.findUnique({
       where: { id },
-      include: { scmItemDtl: true, scmItemCategory: true },
+      include: { scmItemCategory: true },
     });
     if (!data) {
       throw new NotFoundException(`Item with id ${id} does not exist.`);
@@ -388,7 +387,6 @@ export class ItemService {
       data: { ...updateItemDto, updatedBy: creatorName.accountName },
       include: {
         scmItemCategory: true,
-        scmItemDtl: true,
       },
     });
     return Item;

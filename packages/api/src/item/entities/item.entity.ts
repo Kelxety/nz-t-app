@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ScmItem } from '@prisma/client';
 import { Exclude } from 'class-transformer';
-import { IsEnum } from 'class-validator';
-import { ItemDetailEntity } from '../../item-detail/entities/item-detail.entity';
+import { ItemCategoryEntity } from '../../item-category/entities/item-category.entity';
 
 export class ItemEntity implements ScmItem {
   @ApiProperty()
@@ -16,7 +15,6 @@ export class ItemEntity implements ScmItem {
   barcode: string;
 
   @ApiProperty()
-  @IsEnum(ItemDetailEntity)
   itemName: string;
 
   @ApiProperty()
@@ -26,7 +24,6 @@ export class ItemEntity implements ScmItem {
   itemImage: string;
 
   @ApiProperty()
-  @Exclude()
   itemcategoryId: string;
 
   @ApiProperty()
@@ -50,14 +47,14 @@ export class ItemEntity implements ScmItem {
   @ApiProperty()
   updatedAt: Date;
 
-  @ApiProperty({ required: false, type: ItemDetailEntity })
-  itemDtls?: ItemDetailEntity;
+  @ApiProperty({ required: false, type: ItemCategoryEntity })
+  itemcategoryIds?: ItemCategoryEntity;
 
-  constructor({ itemDtls, ...data }: Partial<ItemEntity>) {
+  constructor({ itemcategoryIds, ...data }: Partial<ItemEntity>) {
     Object.assign(this, data);
 
-    if (itemDtls) {
-      this.itemDtls = new ItemDetailEntity(itemDtls);
+    if (itemcategoryIds) {
+      this.itemcategoryIds = new ItemCategoryEntity(itemcategoryIds);
     }
   }
 
