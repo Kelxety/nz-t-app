@@ -61,4 +61,9 @@ export class CreateStockLedgerDto {
     @ApiProperty()
     @IsOptional()
     postedAt: Date;
+
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    remarks: string;
 }

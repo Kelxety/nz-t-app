@@ -22,6 +22,9 @@ export class StockLedgerEntity implements ScmStockLedger {
     }
 
     @ApiProperty()
+    remarks: string;
+
+    @ApiProperty()
     id: string;
 
     @ApiProperty()
