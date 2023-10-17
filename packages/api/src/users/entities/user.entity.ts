@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, Prisma, Role, User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
-import { IsArray } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { RefreshTokenEntity } from '@api/auth/entity/refreshToken.entity';
 import { RoleEntity } from '@api/role/entities/role.entity';
 import { UserRole } from './user-role.entity';
@@ -60,8 +60,14 @@ export class UserEntity implements User {
   @Exclude()
   refreshToken?: RefreshTokenEntity[];
 
-  @ApiProperty()
+  @Exclude()
   departmentId: string;
+
+  @Exclude()
+  warehouseId: string;
+
+  @Exclude()
+  officeId: string;
 
   // @Exclude()
   // refreshToken: string;
