@@ -11,12 +11,18 @@ import { ResType } from '@utils/types/return-types';
 export class ItemLocationServices {
     private _items = signal<ScmItemLocation[]>([])
     public baseUrl = '/api/item-location';
+    public searchFulltext = '/api/item-location/search';
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
     list(params: object = {}): Observable<ResType<ScmItemLocation[]>> {
         const parameters = this.httpParams.convert(params);
         return this.apiService.get(this.baseUrl, parameters);
+    }
+
+    fulltextFilter(params: object = {}): Observable<ResType<ScmItemLocation[]>> {
+        const parameters = this.httpParams.convert(params);
+        return this.apiService.get(this.searchFulltext, parameters);
     }
 
     get(id: string): Observable<ResType<ScmItemLocation>> {

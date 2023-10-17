@@ -51,10 +51,15 @@
       <span nz-icon nzType="search"></span>
     </ng-template>
 
+    <ng-template #suffixIconLoad>
+      <span nz-icon nzType="loading"></span>
+    </ng-template>
+
     <ng-template #options>
       <div nz-space nzAlign="start">
-        <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch">
-          <input type="text" nz-input placeholder="Search..." name="search" [ngModel]="search" />
+        <nz-input-group *nzSpaceItem [nzSuffix]="this.Loading ? suffixIconLoad : suffixIconSearch">
+          <input type="text" nz-input placeholder="Search..." name="search" [(ngModel)]="search"
+            (keyup.enter)="onSearchFulltext(search)" />
         </nz-input-group>
         <nz-button-group *nzSpaceItem>
           <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="onAdd()"

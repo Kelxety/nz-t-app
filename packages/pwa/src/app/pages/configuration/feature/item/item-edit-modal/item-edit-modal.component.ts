@@ -252,7 +252,7 @@ export class ItemEditModalComponent {
     model.loading = true;
 
 
-    this.itemDetailServices.list({ pagination: false, filteredObject: JSON.stringify({ itemId: this.id?.id }) }).subscribe({
+    this.itemDetailServices.list({ pagination: false, filteredObject: { itemId: this.id?.id } }).subscribe({
       next: (res: ResType<ScmItemDtl[]>) => {
         const list = res.data;
 
