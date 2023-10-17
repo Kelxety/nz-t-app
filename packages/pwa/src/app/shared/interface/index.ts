@@ -20,7 +20,7 @@ export interface SearchParams<T, K> {
   page?: number;
   pageSize?: number;
   pagination?: boolean;
-  orderBy?: K;
+  orderBy?: K[] | K;
   filteredObject?: T;
 }
 
