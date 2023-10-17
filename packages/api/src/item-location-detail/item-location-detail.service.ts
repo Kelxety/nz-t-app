@@ -35,6 +35,7 @@ export class ItemLocationDetailService {
     if (!pagination) {
       return this.prisma.scmItemLocationDtl.findMany({
         include: {
+          scmItemDtl: true,
           scmReceiveDtl: true,
           scmItemLocation: true,
         },
@@ -48,6 +49,7 @@ export class ItemLocationDetailService {
       }),
       this.prisma.scmItemLocationDtl.findMany({
         include: {
+          scmItemDtl: true,
           scmReceiveDtl: true,
           scmItemLocation: true,
         },
@@ -63,6 +65,11 @@ export class ItemLocationDetailService {
   async findOne(id: string) {
     const data = await this.prisma.scmItemLocationDtl.findUnique({
       where: { id },
+      include: {
+        scmItemDtl: true,
+        scmReceiveDtl: true,
+        scmItemLocation: true
+      }
     });
     if (!data) {
       throw new NotFoundException(`${id} does not exist.`);
@@ -78,6 +85,11 @@ export class ItemLocationDetailService {
     const creatorName = await this.role.getRequesterName(token);
     const data = await this.prisma.scmItemLocationDtl.findUnique({
       where: { id },
+      include: {
+        scmItemDtl: true,
+        scmReceiveDtl: true,
+        scmItemLocation: true
+      }
     });
     if (!data) {
       throw new NotFoundException(`${id} does not exist.`);
@@ -87,6 +99,7 @@ export class ItemLocationDetailService {
       data: { ...updateItemLocationDetailDto },
       include: {
         scmReceiveDtl: true,
+        scmItemDtl: true,
         scmItemLocation: true,
       },
     });
@@ -98,6 +111,10 @@ export class ItemLocationDetailService {
 
     const deletedData = this.prisma.scmItemLocationDtl.delete({
       where: { id },
+      include: {
+        scmItemDtl: true,
+        scmItemLocation: true
+      }
     });
     return deletedData;
   }

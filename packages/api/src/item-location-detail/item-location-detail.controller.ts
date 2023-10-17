@@ -23,6 +23,8 @@ import { CreateItemLocationDetailDto } from './dto/create-item-location-detail.d
 import { UpdateItemLocationDetailDto } from './dto/update-item-location-detail.dto';
 import { ItemLocationDetailEntity } from './entities/item-location-detail.entity';
 import { ItemLocationDetailService } from './item-location-detail.service';
+import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { Prisma } from '@prisma/client';
 
 @Controller('item-location-detail')
 @ApiTags('scm_item_location_detail')
@@ -32,7 +34,8 @@ export class ItemLocationDetailController {
   ) { }
 
   @Post()
-  @CustomItemLocationDetailDecorator()
+  // @CustomItemLocationDetailDecorator()
+  @CustomGlobalDecorator(Prisma.ScmItemLocationDtlScalarFieldEnum, false, null)
   async create(
     @Request() request: Req,
     @Body() createItemLocationDetailDto: CreateItemLocationDetailDto,
@@ -58,24 +61,24 @@ export class ItemLocationDetailController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    const resData = {
-      message: `List of all data`,
-      data: data.map((res) => new ItemLocationDetailEntity(res)),
-    };
-    if (!query.pagination) {
-      return {
-        ...resData,
-        totalItems: data[0],
-        data: data[1],
-      };
-    }
-    if (toBoolean(query.pagination)) {
-      return {
-        ...resData,
-        totalItems: data[0],
-        data: data[1],
-      };
-    }
+    const resData = { 
+      message: 'List of all physician fetch Successfully', 
+      data: data, 
+    }; 
+    if (!query.pagination) { 
+      return { 
+        ...resData, 
+        totalItems: data[0], 
+        data: data[1], 
+      }; 
+    } 
+    if (toBoolean(query.pagination)) { 
+      return { 
+        ...resData, 
+        totalItems: data[0], 
+        data: data[1], 
+      }; 
+    } 
     return resData;
   }
 

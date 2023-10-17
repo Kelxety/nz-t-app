@@ -1,0 +1,122 @@
+<div class="fixed-content p-2">
+  <nz-card nzTitle="Warehouse: Pharmacy" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '66px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
+    <div class="flex h-full">
+          <div class="flex-1 m-2 border border-solid rounded-sm border-[#F0F0F0] dark:border-[#303030]">
+            <div class="flex w-full h-12 p-2">
+              <div class="flex-none w-36">
+                <p class="pt-1">Sub-Item Masterlist</p>
+              </div>
+              <div class="flex w-full">
+
+              </div>
+            </div>
+            <nz-table
+            nzShowSizeChanger
+            #itemDetailTable
+            [nzData]="service._itemDetails()"
+            [nzSize]="'small'"
+            [nzFrontPagination]="false"
+            [nzLoading]="service._loadingItemDetail()"
+            [nzTotal]="service._totalItemDetails()"
+            [nzPageSize]="service._pageSizeItemDetails()"
+            [nzPageIndex]="service._pageItemDetails()"
+            (nzQueryParams)="onQueryParamsChange($event)"
+            [nzScroll]="{ x: '300px', y: 'calc(100vh - 340px)' }"
+            >
+            <thead>
+              <tr>
+                <th nzLeft nzWidth="70px">No.</th>
+                <th>Item Name</th>
+                <th nzRight nzWidth="100px" class="text-center">Expiration</th>
+                <th nzRight nzWidth="70px" class="text-center">Add</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of itemDetailTable.data">
+                <td nzLeft>{{ data.subitemCode }}</td>
+                <td>{{ data.subitemName }}</td>
+                <td nzRight class="text-center w-12">{{ data.expirationDate | date: 'MMM dd, yyyy'}}</td>
+                <td nzRight class="text-center" style="padding-top: 2px; padding-bottom: 2px">
+                  <span class="cursor-pointer text-blue-500" nz-icon nzType="plus" nzTheme="outline" (click)="add(data.id)"></span>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>   
+        </div>
+        <div class="flex-1 m-2 border border-solid rounded-sm border-[#F0F0F0] dark:border-[#303030]">
+          <div class="flex w-full h-12 p-2">
+            <div class="flex-none w-20">
+              <p class="pt-1">Planogram:</p>
+            </div>
+            <div class="flex w-full">
+              <nz-select nzShowSearch [ngModel]="model.locationId" (ngModelChange)="changePlanogram($event)" id="locationId" nzPlaceHolder="Select planogram" class="w-full">
+                <nz-option *ngFor="let list of service._itemLocations()" [nzCustomContent]="true" [nzLabel]="list.locName" [nzValue]="list.id">
+                    <div>{{list.locName}}</div>
+                </nz-option>
+              </nz-select>
+            </div>
+          </div>
+          <nz-table
+            nzShowSizeChanger
+            #itemLocationDetailTable
+            [nzData]="service._itemLocationDetails()"
+            [nzSize]="'small'"
+            [nzFrontPagination]="true"
+            [nzLoading]="service._loadingItemDetail()"
+            [nzTotal]="service._totalItemDetails()"
+            [nzPageSize]="service._pageSizeItemDetails()"
+            [nzPageIndex]="service._pageItemDetails()"
+            [nzScroll]="{ x: '500px', y: 'calc(100vh - 340px)' }"
+            >
+            <!-- [nzScroll]="{ x: '500px', y: 'calc(100vh - 420px)' }" -->
+            <thead>
+              <tr>
+                <th nzRight nzWidth="70px" class="text-center">Remove</th>
+                <th nzLeft nzWidth="60px" >No.</th>
+                <th>Item Name</th>
+                <th nzRight nzWidth="100px" class="text-center">Expiration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of itemLocationDetailTable.data">
+                <td nzRight class="text-center" style="padding-top: 2px; padding-bottom: 2px">      
+                  <span  class="cursor-pointer text-red-500" nz-icon nzType="close" nzTheme="outline"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Are you sure you want to remove this?"
+                  (nzOnConfirm)="confirmDelete(data)"
+                  (nzOnCancel)="cancel()"
+                  ></span>
+                </td>
+                <td nzLeft nzEllipsis nzWidth="60px"></td>
+                <td nzEllipsis>{{ data.scmItemDtl.subitemName }}</td>
+                <td nzRight nzEllipsis class="text-center">{{ data.scmItemDtl.expirationDate | date: 'MMM dd, yyyy' }}</td>
+              </tr>
+            </tbody>
+          </nz-table>  
+        </div>
+    </div>
+  </nz-card>
+</div>
+
+<ng-template #itemsView >
+    <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-[-5px]">
+        <input type="text" nz-input placeholder="input search text" (change)="search($event)"/>
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+        <span nz-icon nzType="search"></span>
+    </ng-template>
+</ng-template>
+
+<nz-modal
+[nzStyle]="{ top: '20px' }"
+[(nzVisible)]="isVisibleEnterQuantity"
+nzTitle="20px to Top"
+(nzOnCancel)="cancelQty()"
+(nzOnOk)="confirmQty()"
+>
+<ng-container *nzModalContent>
+  <p>some contents...</p>
+  <p>some contents...</p>
+  <p>some contents...</p>
+</ng-container>
+</nz-modal>

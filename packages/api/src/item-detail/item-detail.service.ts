@@ -38,7 +38,7 @@ export class ItemDetailService {
       });
     }
     const returnData = await this.prisma.$transaction([
-      this.prisma.scmItemDtl.aggregate({
+      this.prisma.scmItemDtl.count({
         where: data,
       }),
       this.prisma.scmItemDtl.findMany({

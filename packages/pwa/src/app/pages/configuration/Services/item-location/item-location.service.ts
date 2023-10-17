@@ -9,7 +9,7 @@ import { ResType } from '@utils/types/return-types';
     providedIn: 'root'
 })
 export class ItemLocationServices {
-    private _items = signal<ScmItemLocation[]>([])
+    public _items = signal<ScmItemLocation[]>([])
     public baseUrl = '/api/item-location';
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }

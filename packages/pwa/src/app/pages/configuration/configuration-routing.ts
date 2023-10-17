@@ -49,6 +49,11 @@ export default [
     loadComponent: () => import('./feature/planogram/planogram.component').then(c => c.PlanogramComponent)
   },
   {
+    path: 'item-location',
+    data: { title: 'Item Location', key: 'default:configuration:item-location', breadcrumb: 'Item Location' },
+    loadComponent: () => import('./feature/item-location/item-location.component').then(c => c.ItemLocationComponent)
+  },
+  {
     path: 'patient-type',
     data: { title: 'Patient Type', key: 'default:configuration:patient-type', breadcrumb: 'Patient type' },
     loadComponent: () => import('./feature/patient-type/patient-type.component').then(c => c.PatientTypeComponent)

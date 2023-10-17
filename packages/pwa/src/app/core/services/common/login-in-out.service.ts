@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { finalize, map, takeUntil } from 'rxjs/operators';
 
-import { AccountService, UserService } from '@app/shared/data-access/api';
+import { UserService } from '@app/shared/data-access/api';
 import { ActionCode } from '@config/actionCode';
 import { TokenKey, TokenPre } from '@config/constant';
 import { SimpleReuseStrategy } from '@core/services/common/reuse-strategy';
@@ -33,7 +33,6 @@ export class LoginInOutService {
     private tabService: TabService,
     private loginService: LoginService,
     private apiUser: UserService,
-    private acctService: AccountService,
     private router: Router,
     private userInfoService: UserInfoService,
     private menuService: MenuStoreService,
@@ -50,7 +49,6 @@ export class LoginInOutService {
       this.windowServe.setSessionStorage(TokenKey, TokenPre + token);
 
       const data$ = this.getMe();
-      const acctList$ = this.getClass();
 
       data$.pipe().subscribe({
         next: (o: any) => {
@@ -149,14 +147,6 @@ export class LoginInOutService {
 
   getMe(): Observable<User> {
     return this.apiUser.me().pipe(
-      map((res: any) => {
-        return res;
-      })
-    );
-  }
-
-  getClass(): any {
-    return this.acctService.list({ pagination: false }).pipe(
       map((res: any) => {
         return res;
       })

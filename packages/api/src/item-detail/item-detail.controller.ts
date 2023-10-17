@@ -56,19 +56,24 @@ export class ItemDetailController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
-    const resData = {
-      message: `List of data`,
-      data: data.map((res) => new ItemDetailEntity(res)),
-    };
-    if (!query.pagination) {
-      return resData;
-    }
-    if (toBoolean(query.pagination)) {
-      return {
-        ...resData,
-        data: data[1],
-      };
-    }
+    const resData = { 
+      message: 'List of all Item-details fetch Successfully', 
+      data: data, 
+    }; 
+    if (!query.pagination) { 
+      return { 
+        ...resData, 
+        totalItems: data[0], 
+        data: data[1], 
+      }; 
+    } 
+    if (toBoolean(query.pagination)) { 
+      return { 
+        ...resData, 
+        totalItems: data[0], 
+        data: data[1], 
+      }; 
+    } 
     return resData;
   }
 
