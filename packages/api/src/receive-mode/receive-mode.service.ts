@@ -49,6 +49,62 @@ export class ReceiveModeService {
     return returnData;
   }
 
+  async fullTextSearch({
+    searchData,
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmReceiveModeWhereInput,
+    Prisma.ScmReceiveModeOrderByWithAggregationInput
+  >): Promise<ScmReceiveMode[] | any> {
+    if (!pagination) {
+      return this.prisma.scmReceiveMode.findMany({
+        where: {
+          OR: [
+            {
+              recvMode: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmReceiveMode.count({
+        where: {
+          OR: [
+            {
+              recvMode: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+      }),
+      this.prisma.scmReceiveMode.findMany({
+        where: {
+          OR: [
+            {
+              recvMode: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+
+    return returnData;
+  }
+
   async findOne(id: string) {
     const data = await this.prisma.scmReceiveMode.findUnique({
       where: { id },

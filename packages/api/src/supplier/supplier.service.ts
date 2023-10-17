@@ -57,6 +57,107 @@ export class SupplierService {
     return returnData;
   }
 
+  async fullTextSearch({
+    searchData,
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmSupplierWhereInput,
+    Prisma.ScmSupplierOrderByWithAggregationInput
+  >): Promise<ScmSupplier[] | any> {
+    if (!pagination) {
+      return this.prisma.scmSupplier.findMany({
+        where: {
+          OR: [
+            {
+              supplierName: {
+                contains: searchData
+              }
+            },
+            {
+              supplierAddress: {
+                contains: searchData
+              }
+            },
+            {
+              contactPerson: {
+                contains: searchData
+              }
+            },
+            {
+              contactNo: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmSupplier.count({
+        where: {
+          OR: [
+            {
+              supplierName: {
+                contains: searchData
+              }
+            },
+            {
+              supplierAddress: {
+                contains: searchData
+              }
+            },
+            {
+              contactPerson: {
+                contains: searchData
+              }
+            },
+            {
+              contactNo: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+      }),
+      this.prisma.scmSupplier.findMany({
+        where: {
+          OR: [
+            {
+              supplierName: {
+                contains: searchData
+              }
+            },
+            {
+              supplierAddress: {
+                contains: searchData
+              }
+            },
+            {
+              contactPerson: {
+                contains: searchData
+              }
+            },
+            {
+              contactNo: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+
+    return returnData;
+  }
+
   async findOne(id: string) {
     const data = await this.prisma.scmSupplier.findUnique({
       where: { id },

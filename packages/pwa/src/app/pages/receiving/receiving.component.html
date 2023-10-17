@@ -349,9 +349,9 @@
                                                 </td>
                                                 <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
 
-                                                    <span class="pointer" nz-icon nzType="delete" nzTheme="outline"
-                                                        style="color: red" nz-popconfirm
-                                                        (nzOnConfirm)="removeFromHeaderList(group)"
+                                                    <span [hidden]="group.loadNow === false" class="cursor-pointer"
+                                                        nz-icon nzType="delete" nzTheme="outline" style="color: red"
+                                                        nz-popconfirm (nzOnConfirm)="removeFromHeaderList(group)"
                                                         nzPopconfirmTitle="Are you sure you want to delete {{ group?.itemData?.itemName }}"></span>
                                                 </td>
                                             </tr>
@@ -374,12 +374,13 @@
                                                     data?.costAmount | currency
                                                     : 'PHP'
                                                     }}</td>
-                                                <td class="text-right" style="padding-top: 2px; padding-bottom: 2px">
-                                                    <span [hidden]="group.loadNow" class="pointer" nz-icon
-                                                        nzType="delete" nzTheme="outline" style="color: red"
+                                                <td class="text-right space-x-2"
+                                                    style="padding-top: 2px; padding-bottom: 2px">
+                                                    <span [hidden]="group.loadNow === false" class="cursor-pointer"
+                                                        nz-icon nzType="delete" nzTheme="outline" style="color: red"
                                                         nz-popconfirm (nzOnConfirm)="removeFromDetailList(group, data)"
                                                         nzPopconfirmTitle="Are you sure you want to delete {{ group?.itemData?.itemName }} - Exp.{{data?.expirationDate | date: 'shortDate'}}/Lot no. {{data?.lotNo}}"></span>
-                                                    <span *ngIf="group.loadNow" nz-icon nzType="loading"
+                                                    <span *ngIf="group.loadNow === true" nz-icon nzType="loading"
                                                         class="text-blue-500" nzTheme="outline"></span>
                                                     <span *ngIf="group.loadNow === false" class="text-green-400" nz-icon
                                                         nzType="check-circle" nzTheme="outline"></span>
