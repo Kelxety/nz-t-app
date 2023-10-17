@@ -5,6 +5,12 @@
       <input id="username" formControlName="username" nz-input placeholder="username" />
     </nz-form-control>
   </nz-form-item>
+  <nz-form-item *ngIf="!isEdit">
+    <nz-form-label nzFor="password" nzRequired [nzSm]="4" [nzXs]="24">Password</nz-form-label>
+    <nz-form-control nzExtra="The initial password for a new user is: a123456" [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
+      <input formControlName="password" nz-input placeholder="password" [type]="'password'" />
+    </nz-form-control>
+  </nz-form-item>
   <nz-form-item>
     <nz-form-label nzFor="firstName" nzRequired [nzSm]="4" [nzXs]="24">First name</nz-form-label>
     <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
@@ -12,7 +18,7 @@
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label nzFor="middleName" nzRequired [nzSm]="4" [nzXs]="24">Middle name</nz-form-label>
+    <nz-form-label nzFor="middleName" [nzSm]="4" [nzXs]="24">Middle name</nz-form-label>
     <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
       <input id="middleName" formControlName="middleName" nz-input placeholder="middle name" />
     </nz-form-control>
@@ -23,12 +29,7 @@
       <input id="lastName" formControlName="lastName" nz-input placeholder="last name" />
     </nz-form-control>
   </nz-form-item>
-  <nz-form-item *ngIf="!isEdit">
-    <nz-form-label nzFor="password" nzRequired [nzSm]="4" [nzXs]="24">Password</nz-form-label>
-    <nz-form-control nzExtra="The initial password for a new user is: a123456" [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
-      <input formControlName="password" nz-input placeholder="password" [type]="'password'" />
-    </nz-form-control>
-  </nz-form-item>
+
   <nz-form-item>
     <nz-form-label nzFor="gender" nzRequired [nzSm]="4" [nzXs]="24">Gender</nz-form-label>
     <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
@@ -54,6 +55,24 @@
   </nz-form-item> -->
 
   <nz-form-item>
+    <nz-form-label nzFor="officeId" nzRequired [nzSm]="4" [nzXs]="24">User Office</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
+      <nz-select formControlName="officeId" nzPlaceHolder="Office">
+        <nz-option *ngFor="let option of officeOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label nzFor="warehouseId" nzRequired [nzSm]="4" [nzXs]="24">Warehouse</nz-form-label>
+    <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
+      <nz-select formControlName="warehouseId" nzPlaceHolder="Warehouse">
+        <nz-option *ngFor="let option of warehouseOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
     <nz-form-label nzFor="role" nzRequired [nzSm]="4" [nzXs]="24">User role</nz-form-label>
     <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="18" [nzXs]="24">
       <nz-select formControlName="role" nzMode="multiple" nzPlaceHolder="Role">
@@ -62,11 +81,11 @@
     </nz-form-control>
   </nz-form-item>
 
-  <div style="border-bottom: 1px solid rgb(233, 233, 233)">
+  <!-- <div style="border-bottom: 1px solid rgb(233, 233, 233)">
     <label nz-checkbox formControlName="role" (ngModelChange)="updateAllChecked()" [nzIndeterminate]="indeterminate">Check all</label>
   </div>
   <br />
-  <nz-checkbox-group formControlName="role" (ngModelChange)="updateSingleChecked()"></nz-checkbox-group>
+  <nz-checkbox-group formControlName="role" (ngModelChange)="updateSingleChecked()"></nz-checkbox-group> -->
 </form>
 <ng-template #combineTpl let-control>
   <ng-container *ngIf="control.hasError('message')">{{ control.errors.message }}</ng-container>

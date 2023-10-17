@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { Observable, throwError } from 'rxjs';
 import { catchError, first, tap } from 'rxjs/operators';
 
@@ -7,6 +8,7 @@ import { catchError, first, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ApiTypeService {
+  private msg = inject(NzMessageService);
   constructor(private http: HttpClient) {}
 
   get<T>(path: string, params: HttpParams = new HttpParams()): Observable<T> {
@@ -75,9 +77,11 @@ export class ApiTypeService {
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
+      if (error.error.statusCode === 409) {
+        this.msg.error(error.error.error + ' : ' + error.error.message);
+      }
       // TODO: send the error to remote logging infrastructure
       console.error(error);
-
       // Let the app keep running by returning an empty result.
       // return of(result as T);
       // eslint-disable-next-line deprecation/deprecation

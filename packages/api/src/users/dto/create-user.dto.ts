@@ -66,6 +66,16 @@ export class CreateUserDto {
   @IsString()
   image: string | null;
 
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  officeId: string | null;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  warehouseId: string | null;
+
   @IsOptional()
   @ApiProperty()
   role?: string | null | string[];

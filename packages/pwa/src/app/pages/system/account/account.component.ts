@@ -38,6 +38,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { OffListComponent } from './off-list/off-list.component';
 
 @Component({
   selector: 'app-account',
@@ -62,7 +63,8 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
     AntTableComponent,
     AuthDirective,
     NzSwitchModule,
-    NzTagModule
+    NzTagModule,
+    OffListComponent
   ]
 })
 export class AccountComponent implements OnInit {
@@ -266,7 +268,7 @@ export class AccountComponent implements OnInit {
     if (this.checkedCashArray.length > 0) {
       const tempArrays: string[] = [];
       this.modalSrv.confirm({
-        nzTitle: 'You sure you want to delete it？',
+        nzTitle: 'You sure you want to delete it? ',
         nzContent: 'Unrecoverable after deletion',
         nzOnOk: () => {
           this.checkedCashArray.forEach(item => {
@@ -325,7 +327,7 @@ export class AccountComponent implements OnInit {
     this.tableConfig.pageSize = e;
   }
 
-  searchDeptIdUser(departmentId: number): void {
+  searchDeptIdUser(departmentId: any): void {
     console.log(departmentId);
     // this.searchParam.id = departmentId;
     // this.getDataList();
@@ -347,7 +349,6 @@ export class AccountComponent implements OnInit {
 
   private initTable(): void {
     this.tableConfig = {
-      showCheckbox: true,
       headers: [
         {
           title: 'Username',
@@ -399,6 +400,16 @@ export class AccountComponent implements OnInit {
           title: 'Image',
           width: 100,
           field: 'image'
+        },
+        {
+          title: 'Warehouse',
+          width: 100,
+          field: 'warehouse.whName'
+        },
+        {
+          title: 'Office',
+          width: 100,
+          field: 'office.officeName'
         },
         {
           title: 'Create Time',

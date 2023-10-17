@@ -9,11 +9,6 @@ export class UserEntity implements User {
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);
   }
-  @ApiProperty()
-  warehouseId: string;
-
-  @ApiProperty()
-  officeId: string;
 
   @ApiProperty()
   id: string;
@@ -65,8 +60,14 @@ export class UserEntity implements User {
   @Exclude()
   refreshToken?: RefreshTokenEntity[];
 
-  @ApiProperty()
+  @Exclude()
   departmentId: string;
+
+  @Exclude()
+  warehouseId: string;
+
+  @Exclude()
+  officeId: string;
 
   // @Exclude()
   // refreshToken: string;

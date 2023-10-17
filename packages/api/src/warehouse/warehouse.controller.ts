@@ -59,11 +59,17 @@ export class WarehouseController {
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
     const resData = {
-      message: `List of all warehouse fetch Successfully`,
-      data: data,
+      message: `List of all Warehouse fetch Successfully`,
+      data: data.map(
+        (warehouse: WarehouseEntity) => new WarehouseEntity(warehouse),
+      ),
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
@@ -102,7 +108,7 @@ export class WarehouseController {
       request?.headers?.authorization?.split('Bearer ')[1],
     );
     return {
-      message: `Patch with id of ${id} detail patched Succesfully`,
+      message: `Warehouse with id of ${id} detail patched Succesfully`,
       data: data,
     };
   }
