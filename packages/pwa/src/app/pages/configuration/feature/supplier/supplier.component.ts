@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/co
 import { FormBuilder } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, catchError, debounceTime, map, of, switchMap } from 'rxjs';
 import { SpinService } from '../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../shared';
 import { SupplierServices } from '../../Services/supplier/supplier.service';
@@ -52,6 +52,8 @@ export class SupplierComponent {
     loading: true
   };
 
+  searchChange$ = new BehaviorSubject('');
+
   listOfSelection = [];
 
   constructor(
@@ -71,6 +73,31 @@ export class SupplierComponent {
   ngOnDestroy() {
     this.ngUnsubscribe.next({});
     this.ngUnsubscribe.complete();
+  }
+
+  onSearchFulltext(value: string): void {
+    let model: any = this.model;
+    model.loading = true;
+
+    this.searchChange$.next(value);
+
+    const getList = (): Observable<any> =>
+      this.supplierServices.fulltextFilter({ q: this.search })
+        .pipe(
+          catchError(() => of({ results: [] })),
+          map((res: any) => res.data)
+        )
+    const optionList$: Observable<any[]> = this.searchChange$
+      .asObservable()
+      .pipe(debounceTime(500))
+      .pipe(switchMap(getList));
+    optionList$.subscribe(data => {
+      console.log(data)
+      model.list = data;
+      model.filteredList = data;
+      model.loading = false;
+      this.cd.detectChanges();
+    });
   }
 
   updateCheckedSet(id: string, checked: boolean): void {

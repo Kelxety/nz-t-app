@@ -1,29 +1,29 @@
+import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { toBoolean } from '@api/lib/helper/cast.helper';
+import { QueryT, ResponseT } from '@api/lib/interface';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
   Request,
 } from '@nestjs/common';
-import { WarehouseService } from './warehouse.service';
+import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
+import { Request as Req } from 'express';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
-import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
-import { toBoolean } from '@api/lib/helper/cast.helper';
 import { WarehouseEntity } from './entities/warehouse.entity';
-import { Request as Req } from 'express';
-import { QueryT, ResponseT } from '@api/lib/interface';
-import { Prisma } from '@prisma/client';
-import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { WarehouseService } from './warehouse.service';
 
 @Controller('warehouse')
 @ApiTags('smc_warehouse')
 export class WarehouseController {
-  constructor(private readonly warehouseService: WarehouseService) {}
+  constructor(private readonly warehouseService: WarehouseService) { }
 
   @Post()
   @CustomGlobalDecorator(null, false, WarehouseEntity)
@@ -63,6 +63,40 @@ export class WarehouseController {
       data: data.map(
         (warehouse: WarehouseEntity) => new WarehouseEntity(warehouse),
       ),
+    };
+    if (!query.pagination) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    return resData;
+  }
+
+  @Get('search')
+  @CustomGlobalDecorator(Prisma.ScmUnitScalarFieldEnum, true, WarehouseEntity)
+  async fulltextSearch(
+    @Query() query: QueryT,
+  ): Promise<ResponseT<WarehouseEntity[]>> {
+    const data = await this.warehouseService.fullTextSearch({
+      searchData: query.q,
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const resData = {
+      message: `List of data`,
+      data: data,
     };
     if (!query.pagination) {
       return {
