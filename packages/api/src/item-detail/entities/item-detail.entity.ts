@@ -89,8 +89,7 @@ export class ItemDetailEntity implements ScmItemDtl {
     @ApiProperty({ required: false, type: ItemEntity })
     itemIds?: ItemEntity;
 
-    constructor(
-        { unitIds, itemIds, rrMode, ...data }: Partial<ItemDetailEntity>) {
+    constructor({ unitIds, itemIds, rrMode, ...data }: Partial<ItemDetailEntity>) {
         Object.assign(this, data);
 
         if (unitIds) {
