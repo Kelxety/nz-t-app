@@ -1,7 +1,7 @@
 import { NgIf, NgFor } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, finalize, of } from 'rxjs';
 
 import { OptionsInterface } from '@core/services/types';
 import { ValidatorsService } from '@core/services/validators/validators.service';
@@ -21,6 +21,12 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
+import { AccountService } from '@pwa/src/app/core/services/http/system/account.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { HospitalOfficeService } from '@pwa/src/app/pages/configuration/Services/office/office.service';
+import { WarehouseServices } from '@pwa/src/app/pages/configuration/Services/warehouse/warehouse.service';
+import { LoginInOutService } from '@pwa/src/app/core/services/common/login-in-out.service';
 
 @Component({
   selector: 'app-account-modal',
@@ -30,12 +36,21 @@ import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
   imports: [FormsModule, NzFormModule, ReactiveFormsModule, NzCheckboxModule, NzGridModule, NzInputModule, NgIf, NzRadioModule, NzSwitchModule, NzTreeSelectModule, NzSelectModule, NgFor]
 })
 export class AccountModalComponent implements OnInit {
+  private msg = inject(NzMessageService);
+  private dataService = inject(AccountService);
+  private destroyRef = inject(DestroyRef);
+  private officeService = inject(HospitalOfficeService);
+  private warehouseService = inject(WarehouseServices);
+  private loginService = inject(LoginInOutService);
+  private cdr = inject(ChangeDetectorRef);
   addEditForm!: FormGroup;
   readonly nzModalData: User & { role: Array<{ role: Role; roleId: string; userId: string }> } = inject(NZ_MODAL_DATA);
   roleOptions: OptionsInterface[] = [];
   isEdit = false;
   value?: string;
   roleOfUser = [];
+  officeOptions: OptionsInterface[] = [];
+  warehouseOptions: OptionsInterface[] = [];
   deptNodes: NzTreeNodeOptions[] = [];
   indeterminate = true;
   allChecked = false;
@@ -50,7 +65,66 @@ export class AccountModalComponent implements OnInit {
     if (!fnCheckForm(this.addEditForm)) {
       return of(false);
     }
-    return of(this.addEditForm.value);
+    let method = '';
+
+    // if (this.isEdit) {
+    //   method = 'patch';
+    //   if (method === '') return of(false);
+    //   const newParamRole: Array<{ id: string }> = [];
+    //   this.addEditForm.controls['role'].value.forEach((role: any) => {
+    //     if (typeof role === 'object' && role.value !== undefined) {
+    //       if (role.checked) {
+    //         newParamRole.push({ id: role.value });
+    //       }
+    //     }
+    //   });
+    // param.role = newParamRole;
+    // this.dataService[method](param.id, param)
+    //   .pipe(
+    //     finalize(() => {
+    //       this.tableLoading(false);
+    //     }),
+    //     takeUntilDestroyed(this.destroyRef)
+    //   )
+    //   .subscribe(() => {
+    //     this.getDataList();
+    //   });
+    // }
+    method = 'create';
+    const newParamRole: Array<{ id: string }> = [];
+
+    this.addEditForm.controls['role'].value.forEach((role: any) => {
+      if (typeof role === 'object' && role.value !== undefined) {
+        newParamRole.push({ id: role.value });
+      }
+    });
+    this.addEditForm.controls['role'].setValue(newParamRole);
+    this.addEditForm.controls['accountName'].setValue(this.addEditForm.controls['firstName'].value + ' ' + this.addEditForm.controls['lastName'].value);
+    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId;
+
+    this.dataService[method](this.addEditForm.value)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: res => {
+          if (res.statusCode === 201) {
+            this.msg.remove(id);
+            this.msg.success('Added succesfully');
+          } else {
+            this.msg.remove(id);
+            this.msg.error("There's an error!");
+          }
+        },
+        error: err => {
+          console.log(err);
+          this.msg.remove(id);
+        },
+        complete: () => {
+          console.log('completed');
+        }
+      });
+
+    return of(false);
+    // return of(this.addEditForm.value);
   }
 
   getRoleList(): Promise<void> {
@@ -66,6 +140,62 @@ export class AccountModalComponent implements OnInit {
         });
         resolve();
       });
+    });
+  }
+
+  getOfficeList(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.officeService
+        .list({ pagination: false })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: e => {
+            if (e.statusCode === 200) {
+              e.data.forEach(office => {
+                const obj: OptionsInterface = {
+                  label: office.officeName,
+                  value: office.id,
+                  checked: false
+                };
+                this.officeOptions.push(obj);
+              });
+            }
+          },
+          error: err => {
+            console.log(err);
+          },
+          complete: () => {
+            this.cdr.detectChanges();
+          }
+        });
+    });
+    this.cdr.detectChanges();
+  }
+
+  getWarehouseList(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.warehouseService
+        .list({ pagination: false })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: e => {
+            if (e.statusCode === 200) {
+              e.data.forEach(warehouse => {
+                const obj: OptionsInterface = {
+                  label: warehouse.whName + ' (' + warehouse.whAcro + ') ',
+                  value: warehouse.id
+                };
+                this.warehouseOptions.push(obj);
+              });
+            }
+          },
+          error: err => {
+            console.log(err);
+          },
+          complete: () => {
+            this.cdr.detectChanges();
+          }
+        });
     });
   }
 
@@ -86,20 +216,20 @@ export class AccountModalComponent implements OnInit {
     return this.roleOptions;
   }
 
-  updateAllChecked(): void {
-    this.indeterminate = false;
-    if (this.allChecked) {
-      this.roleOptions = this.roleOptions.map(item => ({
-        ...item,
-        checked: true
-      }));
-    } else {
-      this.roleOptions = this.roleOptions.map(item => ({
-        ...item,
-        checked: false
-      }));
-    }
-  }
+  // updateAllChecked(): void {
+  //   this.indeterminate = false;
+  //   if (this.allChecked) {
+  //     this.roleOptions = this.roleOptions.map(item => ({
+  //       ...item,
+  //       checked: true
+  //     }));
+  //   } else {
+  //     this.roleOptions = this.roleOptions.map(item => ({
+  //       ...item,
+  //       checked: false
+  //     }));
+  //   }
+  // }
 
   updateSingleChecked(): void {
     if (this.roleOptions.every(item => !item.checked)) {
@@ -116,6 +246,7 @@ export class AccountModalComponent implements OnInit {
   initForm(): void {
     this.addEditForm = this.fb.group({
       username: [null, [Validators.required]],
+      accountName: [null],
       firstName: [null, [Validators.required]],
       middleName: [null],
       lastName: [null, [Validators.required]],
@@ -125,14 +256,18 @@ export class AccountModalComponent implements OnInit {
       telephone: [null, [this.validatorsService.telephoneValidator()]],
       mobile: [null, [this.validatorsService.mobileValidator()]],
       email: [null, [this.validatorsService.emailValidator()]],
-      role: [this.roleOptions, [Validators.required]]
+      role: [null, [Validators.required]],
+      warehouseId: [null, [Validators.required]],
+      officeId: [null, [Validators.required]]
     });
   }
 
   async ngOnInit(): Promise<void> {
+    console.log(this.loginService.currentUserSignal());
     this.initForm();
     this.isEdit = !!this.nzModalData;
-    await Promise.all([this.getRoleList()]);
+
+    await Promise.all([this.getRoleList(), this.getOfficeList(), this.getWarehouseList()]);
     if (this.isEdit) {
       this.addEditForm.patchValue({ ...this.nzModalData, status: this.getStatusOfUser(this.nzModalData.status), role: this.getRolesForUser(this.nzModalData.role) });
       this.addEditForm.controls['password'].disable();

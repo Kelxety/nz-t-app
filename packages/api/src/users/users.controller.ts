@@ -41,7 +41,11 @@ export class UsersController {
   @Roles('SUPERADMIN')
   @ApiCreatedResponse({ type: UserEntity })
   async create(@Body() createUserDto: CreateUserDto) {
-    return new UserEntity(await this.usersService.create(createUserDto));
+    const resData = {
+      message: `Created user successfully`,
+      data: new UserEntity(await this.usersService.create(createUserDto)),
+    };
+    return resData;
   }
 
   @Get()

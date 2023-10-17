@@ -1,13 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ScmItemDtl } from "@prisma/client";
 import { Exclude } from "class-transformer";
+import { ItemEntity } from "../../item/entities/item.entity";
 import { ReceiveMode } from "../../receive-mode/entities/receive-mode.entity";
 import { UnitEntity } from "../../unit/entities/unit.entity";
 
 export class ItemDetailEntity implements ScmItemDtl {
-    constructor({ unitIds, rrMode, ...data }: Partial<ItemDetailEntity>) {
-        Object.assign(this, data);
-    }
 
     @ApiProperty()
     rrModeId: string;
@@ -87,5 +85,25 @@ export class ItemDetailEntity implements ScmItemDtl {
 
     @ApiProperty({ required: false, type: UnitEntity })
     unitIds?: UnitEntity;
+
+    @ApiProperty({ required: false, type: ItemEntity })
+    itemIds?: ItemEntity;
+
+    constructor(
+        { unitIds, itemIds, rrMode, ...data }: Partial<ItemDetailEntity>) {
+        Object.assign(this, data);
+
+        if (unitIds) {
+            this.unitIds = new UnitEntity(unitIds);
+        }
+
+        if (rrMode) {
+            this.rrMode = new ReceiveMode(rrMode);
+        }
+
+        if (itemIds) {
+            this.itemIds = new ItemEntity(itemIds);
+        }
+    }
 
 }

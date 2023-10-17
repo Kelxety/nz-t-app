@@ -16,4 +16,9 @@ export class CreateItemLocationDetailDto {
     @ApiProperty()
     @IsNumber()
     balanceQty: number
+
+    @ApiProperty()
+    @IsNumber()
+    @IsOptional()
+    qty: number;
 }

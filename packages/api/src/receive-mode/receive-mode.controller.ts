@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { Request as Req } from 'express';
+import { CustomGlobalDecorator } from '../lib/decorators/global.decorators';
 import { toBoolean } from '../lib/helper/cast.helper';
 import { QueryT, ResponseT } from '../lib/interface';
 import { CustomReceivingModeDecorator, CustomReceivingModeDecoratorFindAll, CustomRecevingModeDecoratorGet } from './decorators/receive-mode.decorator';
@@ -49,6 +51,40 @@ export class ReceiveModeController {
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        data: data[1],
+      };
+    }
+    return resData;
+  }
+
+  @Get('search')
+  @CustomGlobalDecorator(Prisma.ScmReceiveModeScalarFieldEnum, true, ReceiveMode)
+  async fulltextSearch(
+    @Query() query: QueryT,
+  ): Promise<ResponseT<ReceiveMode[]>> {
+    const data = await this.receiveModeService.fullTextSearch({
+      searchData: query.q,
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const resData = {
+      message: `List of data`,
+      data: data,
+    };
+    if (!query.pagination) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }

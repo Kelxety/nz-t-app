@@ -24,7 +24,7 @@ export const enum ModalBtnStatus {
 
 // 组件实例需要继承此类
 export abstract class BasicConfirmModalComponent {
-  protected constructor(protected modalRef: NzModalRef) {}
+  protected constructor(protected modalRef: NzModalRef) { }
 
   protected abstract getCurrentValue(): NzSafeAny;
 }

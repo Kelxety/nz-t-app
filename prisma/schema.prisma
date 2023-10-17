@@ -27,6 +27,10 @@ model User {
   departmentId  String?          @map("department_id")
   department    Department?      @relation(fields: [departmentId], references: [id])
   role          SystemUserRole[]
+  warehouseId   String?          @map("warehouse_id")
+  officeId      String?          @map("office_id")
+  warehouse     ScmWarehouse?    @relation(fields: [warehouseId], references: [id])
+  office        HospitalOffice?  @relation(fields: [officeId], references: [id])
 
   @@map("system_user")
 }
@@ -43,6 +47,7 @@ model HospitalOffice {
   updatedAt    DateTime      @updatedAt @map("updated_at") @db.DateTime(0)
   scmIssuances ScmIssuance[]
   scmRises     ScmRis[]
+  user         User[]
 
   @@map("hospital_office")
 }
@@ -407,6 +412,7 @@ model ScmItemLocation {
   scmItemLocationDtls ScmItemLocationDtl[]
 
   @@index([warehouseId], map: "warehouse_id")
+  @@fulltext([locName])
   @@map("scm_item_location")
 }
 
@@ -415,6 +421,7 @@ model ScmItemLocationDtl {
   itemdtlId             String?                @map("itemdtl_id") @db.VarChar(36)
   locationId            String                 @map("location_id") @db.VarChar(36)
   balanceQty            Int?                   @map("balance_qty")
+  qty                   Int?                   @map("qty")
   scmItemDtl            ScmItemDtl?            @relation(fields: [itemdtlId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   scmItemLocation       ScmItemLocation        @relation(fields: [locationId], references: [id], onUpdate: Restrict, map: "scm_item_location_dtl_ibfk_2")
   scmStockInventoryDtls ScmStockInventoryDtl[]
@@ -872,6 +879,7 @@ model ScmWarehouse {
   scmReturns                                       ScmReturn[]
   scmStockInventories                              ScmStockInventory[]
   scmStockLedgers                                  ScmStockLedger[]
+  user                                             User[]
 
   @@fulltext([whName, whAcro])
   @@map("scm_warehouse")

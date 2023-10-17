@@ -33,6 +33,11 @@ export class ItemDetailService {
         where: data,
         include: {
           scmUnit: true,
+          scmItem: {
+            include: {
+              scmItemCategory: true
+            }
+          }
         },
         orderBy: order,
       });
@@ -45,6 +50,11 @@ export class ItemDetailService {
         where: data,
         include: {
           scmUnit: true,
+          scmItem: {
+            include: {
+              scmItemCategory: true
+            }
+          }
         },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
@@ -96,6 +106,11 @@ export class ItemDetailService {
         },
         include: {
           scmUnit: true,
+          scmItem: {
+            include: {
+              scmItemCategory: true
+            }
+          }
         },
         orderBy: order,
       });
@@ -162,13 +177,18 @@ export class ItemDetailService {
         },
         include: {
           scmUnit: true,
+          scmItem: {
+            include: {
+              scmItemCategory: true
+            }
+          }
         },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
         orderBy: order,
       }),
     ]);
-    console.log(returnData)
+
     return returnData;
   }
 

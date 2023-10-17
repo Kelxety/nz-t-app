@@ -1,0 +1,26 @@
+<nz-card [nzBodyStyle]="{ padding: 0 }">
+  <h3 class="text-center font-bold pt-4 text-xl font-primary">Office List</h3>
+
+  <div class="p-8">
+    <nz-input-group nzSize="small" [nzSuffix]="suffixIcon">
+      <input type="text" ngModel nz-input nzSize="small" placeholder="Search" (ngModelChange)="changeSearch($event)" />
+    </nz-input-group>
+    <ng-template #suffixIcon>
+      <i nz-icon nzType="search"></i>
+    </ng-template>
+  </div>
+  <div class="p-8">
+    <div *ngIf="data.length === 0"></div>
+    <div *ngFor="let item of data">
+      <div
+        [ngClass]="{
+          'bg-blue-500 hover:bg-blue-400 text-white': item.id === selectedOffice().id
+        }"
+        class="border border-solid border-gray-500/20 rounded-sm w-full p-2 mt-2 space-y-4 hover:bg-gray-100 hover:scale-105 hover:border-blue-500"
+        (click)="selectedItem(item)"
+      >
+        {{ item.officeName }}
+      </div>
+    </div>
+  </div>
+</nz-card>

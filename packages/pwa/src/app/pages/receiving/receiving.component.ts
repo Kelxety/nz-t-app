@@ -173,84 +173,7 @@ export class ReceivingComponent {
     this.cd.detectChanges
   }
 
-  // private setupFormChangeListeners() {
-  //   this.validateFormDetail.get('cost').valueChanges.subscribe(() => {
-  //     this.computePriceOrMarkup();
-  //   });
 
-  //   this.validateFormDetail.get('price').valueChanges.subscribe(() => {
-  //     this.computeMarkupFromPrice();
-  //   });
-
-  //   this.validateFormDetail.get('markup').valueChanges.subscribe(() => {
-  //     this.computePriceFromMarkup();
-  //   });
-
-  //   this.validateFormDetail.get('qty').valueChanges.subscribe(() => {
-  //     this.computeCostFromQuantity()
-  //   })
-
-  // }
-
-
-  // private computePriceOrMarkup() {
-  //   const cost = this.validateFormDetail.get('cost').value;
-  //   const markup = this.validateFormDetail.get('markup').value;
-  //   const qty = this.validateFormDetail.get('qty').value;
-
-  //   if (cost !== null && markup !== null) {
-  //     const price = this.roundToTwoDecimals(cost + cost * (markup / 100));
-  //     this.totalCost.set(this.roundToTwoDecimals(cost * qty))
-  //     this.validateFormDetail.get('costAmount').setValue(this.totalCost(), { emitEvent: false });
-  //     this.validateFormDetail.get('price').setValue(price, { emitEvent: false });
-  //   } else {
-  //     this.totalCost.set(0)
-  //     this.validateFormDetail.get('price').setValue(0, { emitEvent: false });
-  //   }
-  // }
-
-  // private computeCostFromQuantity() {
-  //   const cost = this.validateFormDetail.get('cost').value;
-  //   const qty = this.validateFormDetail.get('qty').value;
-
-  //   if (cost !== null && qty !== null) {
-  //     // const price = this.roundToTwoDecimals(cost + cost * (markup / 100));
-  //     this.totalCost.set(this.roundToTwoDecimals(cost * qty))
-  //     this.validateFormDetail.get('costAmount').setValue(this.totalCost(), { emitEvent: false });
-  //   } else {
-  //     this.totalCost.set(0)
-  //     this.validateFormDetail.get('costAmount').setValue(0, { emitEvent: false });
-  //   }
-  // }
-
-  // private computePriceFromMarkup() {
-  //   const cost = this.validateFormDetail.get('cost').value;
-  //   const markup = this.validateFormDetail.get('markup').value;
-
-  //   if (cost !== null && markup !== null) {
-  //     const price = this.roundToTwoDecimals(cost + cost * (markup / 100));
-  //     this.validateFormDetail.get('price').setValue(price, { emitEvent: false });
-  //   } else {
-  //     this.validateFormDetail.get('price').setValue(0, { emitEvent: false });
-  //   }
-  // }
-
-  // private computeMarkupFromPrice() {
-  //   const cost = this.validateFormDetail.get('cost').value;
-  //   const price = this.validateFormDetail.get('price').value;
-
-  //   if (cost !== null && price !== null) {
-  //     const computedMarkup = ((price - cost) / cost) * 100;
-  //     const markup = this.roundToTwoDecimals(computedMarkup);
-  //     this.validateFormDetail.get('markup').setValue(markup, { emitEvent: false });
-  //   } else {
-  //     this.validateFormDetail.get('markup').setValue(0, { emitEvent: false });
-  //   }
-  // }
-
-  // private roundToTwoDecimals(value: number): number {
-  //   return Math.round(value * 100) / 100; // Round to two decimal places
-  // }
 
   loadUnitData() {
     this.unitServices.list({ pagination: false, state: 'Active' }).subscribe({
@@ -501,63 +424,6 @@ export class ReceivingComponent {
 
   }
 
-
-  // addItem() {
-  //   if (this.validateFormDetail.valid) {
-  //     this.itemDataList.mutate(data => {
-  //       const newItemDetail = this.validateFormDetail.value;
-  //       // Check for duplicates within the existing data
-  //       this.duplicated = data.some((item) => {
-  //         if (item.itemData?.id === newItemDetail?.selectedItem?.id) {
-  //           return item?.itemDetails.some(
-  //             (detail) =>
-  //               detail?.expirationDate === newItemDetail?.expirationDate &&
-  //               detail?.lotNo === newItemDetail?.lotNo && detail?.barcodeNo === newItemDetail?.barcodeNo
-  //           );
-  //         }
-  //         return false;
-  //       });
-
-  //       if (this.duplicated) {
-  //         this.msg.error('Same expiration date & lot No. cannot be added');
-  //       } else {
-  //         // Add the item to the appropriate group or create a new group
-  //         const existingGroupIndex = data.findIndex(
-  //           (item) => item?.itemData?.id === newItemDetail?.selectedItem?.id
-  //         );
-
-  //         if (existingGroupIndex !== -1) {
-  //           // Add to an existing group
-  //           data[existingGroupIndex]?.itemDetails.push(
-  //             this.validateFormDetail.value
-  //           );
-  //           this.footerTotalCost()
-  //           // this.selectElement.nativeElement.focus()
-  //           this.cd.detectChanges()
-
-  //         } else {
-  //           // Create a new group
-  //           this.itemDataList.set([...this.itemDataList(), { itemData: this.validateFormDetail.get('selectedItem').value, itemDetails: [this.validateFormDetail.value] }])
-
-  //         }
-  //       }
-  //       this.footerTotalCost()
-  //       // this.selectElement.nativeElement.focus()
-  //       this.cd.detectChanges()
-
-
-  //     })
-  //   } else {
-  //     Object.values(this.validateFormDetail.controls).forEach(control => {
-  //       if (control.invalid) {
-  //         control.markAsDirty();
-  //         control.updateValueAndValidity({ onlySelf: true });
-  //       }
-  //     });
-
-  //   }
-  // }
-
   removeFromHeaderList(data: any) {
     if (data.itemData === null) {
       this.itemDataList.update(list => {
@@ -664,7 +530,7 @@ export class ReceivingComponent {
         for (const res of data) {
           res.loadNow = true;
           this.cd.detectChanges();
-
+          console.log(res)
           for (const newRes of res.itemDetails) {
 
             model = {}
@@ -672,20 +538,20 @@ export class ReceivingComponent {
             model.barcode = newRes?.barcodeNo
             model.batchNo = newRes?.batchNo
             model.brandName = newRes?.brandName
-            model.cost = newRes?.cost
+            model.cost = newRes?.cost || 0
             model.expirationDate = newRes?.expirationDate
             model.entryDate = this.validateForm.get('rcvDate').value
             model.itemId = newRes?.selectedItem.id
             model.lotNo = newRes?.lotNo
-            model.markup = newRes?.markup
-            model.price = newRes?.price
+            model.markup = newRes?.markup || 0
+            model.price = newRes?.price || 0
             model.rrMode = this.validateForm.get('receivemodeId').value
             model.state = 'Active'
             model.subitemCode = newRes?.subitemCode
             model.subitemName = newRes?.subitemName
             model.unitId = newRes?.unitId
 
-            console.log(model, 'model')
+
 
             const itemDetailPromise = new Promise((resolve, reject) => {
               this.itemDetailServices.create(model).subscribe({
@@ -693,8 +559,6 @@ export class ReceivingComponent {
                   res.loadNow = false;
                   this.cd.detectChanges();
                   resolve(this.saveLocationDtl(val.data, newRes, rcvData.data.id,));
-
-                  // this.saveToRcvDetail(newRes, rcvData.data.id, val.data.id);
                 },
                 error: (error) => {
                   if (error) {
@@ -706,6 +570,7 @@ export class ReceivingComponent {
                     this.cd.detectChanges();
                   }
                   reject(error);
+                  return
                 },
               });
             });
@@ -720,7 +585,7 @@ export class ReceivingComponent {
       this.msg.remove(id);
       this.msg.success('Item saved successfully!');
       this.success()
-      this.resetForm()
+
     } catch (error) {
       console.error('An error occurred:', error);
       this.msg.remove(id);
@@ -754,8 +619,8 @@ export class ReceivingComponent {
       model = {}
       model.barcodeNo = resData?.barcodeNo
       model.batchNo = resData?.batchNo
-      model.cost = resData?.cost
-      model.costAmount = resData?.costAmount
+      model.cost = resData?.cost || 0
+      model.costAmount = resData?.costAmount || 0
       model.expirationDate = resData?.expirationDate
       model.itemdtlId = rcvDtlId
       model.lotNo = resData?.lotNo
@@ -788,7 +653,10 @@ export class ReceivingComponent {
       nzContent: this.refNo(),
       nzCentered: true,
       nzOkText: 'Print now',
-      nzOnOk: () => { console.log('print') },
+      nzOnOk: () => {
+        console.log('print')
+        this.resetForm()
+      },
 
 
     });
@@ -807,25 +675,10 @@ export class ReceivingComponent {
     this.router.navigate(['/default/receiving-transaction-list']);
   }
 
-  // onView(): void {
-  //   this.modalService
-  //     .show({ nzTitle: 'Receiving list' }, this.itemDataList())
-  //     .pipe(
-  //       takeUntilDestroyed(this.destroyRef)
-  //     )
-  //     .subscribe(res => {
-  //       if (!res || res.status === ModalBtnStatus.Cancel) {
-  //         return;
-  //       }
-  //       // this.tableLoading(true);
-  //       this.itemDataList.set(res)
-  //     });
-  // }
-
   viewTable(): void {
 
     this.modalService
-      .show({ nzTitle: 'Receiving list', nzMask: false, nzOkText: 'Ok' }, this.itemDataList())
+      .show({ nzTitle: 'Receiving list', nzMask: false, nzOkText: 'Ok' }, this.itemDataList(), null, true)
       .pipe(
         finalize(() => {
           // this.tableLoading(false);
@@ -849,7 +702,7 @@ export class ReceivingComponent {
   addNewItem(): void {
 
     this.modalService
-      .showItem({ nzTitle: 'New Item list', nzMask: false, nzWidth: '80%' }, this.itemDataList())
+      .showItem({ nzTitle: 'New Item list', nzMask: false, nzWidth: '80%' }, this.itemDataList(), null, true)
       .pipe(
         finalize(() => {
           // this.tableLoading(false);

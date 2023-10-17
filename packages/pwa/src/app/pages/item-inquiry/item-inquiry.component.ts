@@ -1,8 +1,11 @@
 import { ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Prisma } from '@prisma/client';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
-import { finalize } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
 import { SharedModule } from '../../shared';
+import { SearchParams } from '../../shared/interface';
 import { ModalBtnStatus } from '../../widget/base-modal';
 import { ItemDetailServices } from '../configuration/Services/item-detail/item-detail.service';
 import { ItemServices } from '../configuration/Services/item/item.service';
@@ -31,6 +34,9 @@ export class ItemInquiryComponent {
   itemCardData = signal<any>([])
   destroyRef = inject(DestroyRef);
 
+  searchChange$ = new BehaviorSubject('');
+  isLoading = false;
+
   dataGridList = false
   data: ItemData[] = [];
   gridList = [
@@ -48,7 +54,10 @@ export class ItemInquiryComponent {
   }
 
   ngOnInit(): void {
+
     this.loadData();
+
+
 
     this.loadDataList(1);
   }
@@ -63,22 +72,53 @@ export class ItemInquiryComponent {
         'We supply a series of design principles, practical patterns and high quality design resources ' +
         '(Sketch and Axure), to help people create their product prototypes beautifully and efficiently.'
     }));
+
+
+
+  }
+
+  onSearchFulltext(value: string): void {
+    this.isSpinning = true;
+    // if (value.length < 3) {
+    //   this.isSpinning = false;
+    //   return; // Don't trigger the search if it's less than four characters
+    // }
+    this.searchChange$.next(value);
+
+    const getList = (): Observable<any> =>
+      this.itemDetailServices.fulltextFilter({ q: this.search })
+        .pipe(
+          catchError(() => of({ results: [] })),
+          map((res: any) => res.data)
+        )
+    const optionList$: Observable<any[]> = this.searchChange$
+      .asObservable()
+      .pipe(debounceTime(500))
+      .pipe(switchMap(getList));
+    optionList$.subscribe(data => {
+      console.log(data)
+      this.itemCardData.set(data)
+      //   console.log(this.itemCardData())
+      // this.optionList = data;
+      this.isSpinning = false;
+    });
   }
 
   loadData() {
     this.isSpinning = true
 
-    let order: any = [
-      {
-        sortColumn: 'itemCode',
-        sortDirection: 'asc'
-      }
-    ];
-    this.itemDetailServices.list({ order: order, pagination: false }).subscribe({
+    const params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput> = {
+      orderBy: {
+        subitemName: 'asc'
+      },
+      pagination: false
+    };
+    this.itemDetailServices.list(params).subscribe({
       next: (res: any) => {
-        console.log(res.data)
+        // console.log(res.data)
         // const list = res.data
         this.itemCardData.set(res.data)
+        console.log(this.itemCardData())
         // model.list = list;
         // model.filteredList = list;
       },
@@ -93,40 +133,11 @@ export class ItemInquiryComponent {
     });
   }
 
-  onSearch() {
-    this.isSpinning = true
-    // let model: any = this.model;
-    // model.loading = true;
-    // this.model.filteredList = this.model.list.filter((d: any) => d.rcvRefno.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
-    // console.log('S', this.search);
-    this.itemDetailServices.fulltextFilter({ q: this.search }).subscribe({
-      next: (value) => {
-        console.log(value)
-        this.itemCardData.set(value.data)
-        // const list = value.data
-
-        // model.list = list;
-        // model.filteredList = list;
-      },
-      error: (err) => {
-
-      }, complete: () => {
-        this.isSpinning = false
-        // model.loading = false;
-        this.cd.detectChanges();
-      },
-    })
-    this.cd.detectChanges();
-  }
 
   onClick(data: any) {
     this.modalService
-      .show({ nzTitle: `${data?.brandName ? data.brandName + ' | ' : ''}${data.subitemName}`, nzMask: false, nzWrapClassName: 'fullscreen-modal' }, data)
+      .show({ nzTitle: `${data?.brandName ? data.brandName + ' | ' : ''}${data.subitemName}`, nzMask: false, nzWrapClassName: 'fullscreen-modal', nzWidth: '250' }, data, '', false)
       .pipe(
-        finalize(() => {
-          // this.tableLoading(false);
-
-        }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(res => {

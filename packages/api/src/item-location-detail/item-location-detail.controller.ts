@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request as Req } from 'express';
-import { ItemLocation } from '../item-location/entities/item-location.entity';
 import { toBoolean } from '../lib/helper/cast.helper';
 import { QueryT, ResponseT } from '../lib/interface';
 import {
@@ -116,7 +115,7 @@ export class ItemLocationDetailController {
     const data = await this.itemLocationDetailService.remove(id);
     return {
       message: `${id} Data deleted Succesfully`,
-      data: new ItemLocation(data),
+      data: new ItemLocationDetailEntity(data),
     };
   }
 }

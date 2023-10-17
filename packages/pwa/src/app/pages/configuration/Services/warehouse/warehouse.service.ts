@@ -10,12 +10,18 @@ import { ResType } from '@utils/types/return-types';
 })
 export class WarehouseServices {
     public baseUrl = '/api/warehouse';
+    public searchFulltext = '/api/warehouse/search';
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
     list(params: object = {}): Observable<ResType<ScmWarehouse[]>> {
         const parameters = this.httpParams.convert(params);
         return this.apiService.get(this.baseUrl, parameters);
+    }
+
+    fulltextFilter(params: object = {}): Observable<ResType<ScmWarehouse[]>> {
+        const parameters = this.httpParams.convert(params);
+        return this.apiService.get(this.searchFulltext, parameters);
     }
 
     get(id: string): Observable<ResType<ScmWarehouse>> {

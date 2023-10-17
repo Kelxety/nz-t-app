@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ScmItemLocationDtl } from "@prisma/client";
 import { ItemDetailEntity } from "../../item-detail/entities/item-detail.entity";
-import { ItemLocation } from "../../item-location/entities/item-location.entity";
+import { ItemLocationEntity } from "../../item-location/entities/item-location.entity";
 
 export class ItemLocationDetailEntity implements ScmItemLocationDtl {
     @ApiProperty()
@@ -13,11 +13,14 @@ export class ItemLocationDetailEntity implements ScmItemLocationDtl {
     @ApiProperty()
     locationId: string;
 
+    @ApiProperty()
+    qty: number;
+
     @ApiProperty({ required: false, type: ItemDetailEntity })
     itemDtls: ItemDetailEntity;
 
-    @ApiProperty({ required: false, type: ItemLocation })
-    locations: ItemLocation;
+    @ApiProperty({ required: false, type: ItemLocationEntity })
+    locations: ItemLocationEntity;
 
     @ApiProperty()
     balanceQty: number;
@@ -30,8 +33,9 @@ export class ItemLocationDetailEntity implements ScmItemLocationDtl {
         }
 
         if (locations) {
-            this.locations = new ItemLocation(locations);
+            this.locations = new ItemLocationEntity(locations);
         }
     }
+
 
 }

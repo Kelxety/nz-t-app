@@ -1,4 +1,4 @@
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -28,8 +28,20 @@ export class AccountService {
   constructor(private apiService: ApiTypeService, private httpParams: HttpParamsService) {}
 
   getAccountList(params: SearchParams<Prisma.UserWhereInput, Prisma.UserOrderByWithAggregationInput>): Observable<ResType<User[]>> {
-    const parameters = this.httpParams.convert(params);
-    return this.apiService.get<ResType<User[]>>(this.baseUrl, parameters);
+    const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
+    const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
+
+    let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
+
+    if (!filteredObject) {
+      p = p.delete('filteredObject');
+    }
+
+    if (!orderBy) {
+      p = p.delete('orderBy');
+    }
+    // const parameters = this.httpParams.convert(params);
+    return this.apiService.get<ResType<User[]>>(this.baseUrl, p);
   }
 
   getAccountDetail(id: string): Observable<ResType<User>> {

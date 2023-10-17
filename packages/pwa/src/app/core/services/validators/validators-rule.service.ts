@@ -13,27 +13,27 @@ export class ValidatorsRuleService {
     if (!value) {
       return null;
     }
-    return isMobile(value) ? null : { message: '请输入正确的手机号' };
+    return isMobile(value) ? null : { message: 'please enter a valid phone number' };
   }
 
   telPhoneRule(value: string): ValidationErrors | null {
     if (!value) {
       return null;
     }
-    return isTelPhone(value) ? null : { message: '请输入正确的电话号码' };
+    return isTelPhone(value) ? null : { message: 'Please enter the correct phone number' };
   }
 
   emailRule(value: string): ValidationErrors | null {
     if (!value) {
       return null;
     }
-    return isEmail(value) ? null : { message: '请输入正确的邮箱格式' };
+    return isEmail(value) ? null : { message: 'Please enter the correct email format' };
   }
 
   passwordRule(value: string): ValidationErrors | null {
     if (!value) {
       return null;
     }
-    return isPasswordPass(value) ? null : { message: '密码由6到20位大小写字母、数字或其他字符组成' };
+    return isPasswordPass(value) ? null : { message: 'Password consists of 6 to 20 uppercase and lowercase letters, numbers or other characters' };
   }
 }

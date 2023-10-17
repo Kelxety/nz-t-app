@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { BehaviorSubject, Observable, Subject, of, takeUntil } from 'rxjs';
+import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
 
 import { SpinService } from '../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../shared';
@@ -35,6 +35,8 @@ export class ItemComponent {
   isVisible = false;
   isConfirmLoading = false;
 
+  searchChange$ = new BehaviorSubject('');
+
   @ViewChild('tableContainer') private readonly _tableContainer!: ElementRef;
 
   checked = false;
@@ -42,6 +44,8 @@ export class ItemComponent {
   listOfCurrentPageData: readonly ItemData[] = [];
   listOfData: readonly ItemData[] = [];
   setOfCheckedId = new Set<string>();
+
+  Loading = false
 
   model: any = {
     list: [],
@@ -139,6 +143,36 @@ export class ItemComponent {
         model.loading = false;
         this.cd.detectChanges();
       }
+    });
+  }
+
+  onSearchFulltext(value: string): void {
+    let model: any = this.model;
+    model.loading = true;
+    this.Loading = true
+    // if (value.length < 3) {
+    //   this.isSpinning = false;
+    //   return; // Don't trigger the search if it's less than four characters
+    // }
+    this.searchChange$.next(value);
+
+    const getList = (): Observable<any> =>
+      this.itemServices.fulltextFilter({ q: this.search })
+        .pipe(
+          catchError(() => of({ results: [] })),
+          map((res: any) => res.data)
+        )
+    const optionList$: Observable<any[]> = this.searchChange$
+      .asObservable()
+      .pipe(debounceTime(500))
+      .pipe(switchMap(getList));
+    optionList$.subscribe(data => {
+      console.log(data)
+      model.list = data;
+      model.filteredList = data;
+      model.loading = false;
+      this.Loading = false
+      this.cd.detectChanges();
     });
   }
 

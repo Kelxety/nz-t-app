@@ -46,17 +46,22 @@
             <span nz-icon nzType="search"></span>
         </ng-template>
 
+        <ng-template #suffixIconLoading>
+            <span nz-icon nzType="loading"></span>
+        </ng-template>
+
         <ng-template #options>
             <div nz-space nzAlign="start">
-                <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch">
-                    <input type="text" nz-input placeholder="Search..." name="search" [ngModel]="search" />
+                <nz-input-group *nzSpaceItem [nzSuffix]="model.loading ? suffixIconLoading : suffixIconSearch">
+                    <input type="text" nz-input placeholder="Search..." name="search" [(ngModel)]="search"
+                        (keyup.enter)="onSearchFulltext(search)" />
                 </nz-input-group>
                 <nz-button-group *nzSpaceItem>
                     <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="add()"
                         nzTooltipTitle="Add " nzTooltipPlacement="topLeft" nz-tooltip>
                         <span nz-icon nzType="plus" nzTheme="outline"></span>
                     </button>
-                    <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px"
+                    <button class="pointer" nz-button style="padding-left: 8px; padding-right: 8px" (click)="loadData()"
                         nzTooltipTitle="Reload" nzTooltipPlacement="topLeft" nz-tooltip>
                         <span nz-icon nzType="reload" nzTheme="outline"></span>
                     </button>

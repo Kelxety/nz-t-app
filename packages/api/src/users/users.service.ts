@@ -28,10 +28,22 @@ export class UsersService {
       },
       where: { username: createUserDto.username },
     });
-    if (!user) {
+    if (user) {
       throw new ConflictException(
         `User with username of ${createUserDto.username}`,
       );
+    }
+
+    const roleStringOrArray: {
+      userId_roleId: { roleId: string; userId: string };
+    }[] = [];
+    if (typeof createUserDto.role === 'object') {
+      const roleArray = createUserDto.role?.map((str) => {
+        userId_roleId: {
+          roleId: str;
+          userId: user.id;
+        }
+      });
     }
     const password = await bcrypt.hash(createUserDto.password, roundsOfHashing);
     createUserDto.password = password;
@@ -39,13 +51,7 @@ export class UsersService {
       data: {
         ...createUserDto,
         role: {
-          create: {
-            role: {
-              create: {
-                roleName: 'SUPERADMIN',
-              },
-            },
-          },
+          connect: roleStringOrArray,
         },
       },
     });
@@ -65,6 +71,8 @@ export class UsersService {
       return this.prisma.user.findMany({
         include: {
           refresh_token: true,
+          office: true,
+          warehouse: true,
           role: {
             include: {
               role: {
@@ -94,6 +102,8 @@ export class UsersService {
         orderBy: order,
         include: {
           refresh_token: true,
+          office: true,
+          warehouse: true,
           role: {
             include: {
               role: {
@@ -117,6 +127,8 @@ export class UsersService {
     const data = await this.prisma.user.findUnique({
       include: {
         refresh_token: true,
+        office: true,
+        warehouse: true,
         role: {
           include: {
             role: {

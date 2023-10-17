@@ -20,13 +20,13 @@ import {
 } from './decorators/item-location.decorator';
 import { CreateItemLocationDto } from './dto/create-item-location.dto';
 import { UpdateItemLocationDto } from './dto/update-item-location.dto';
-import { ItemLocation } from './entities/item-location.entity';
+import { ItemLocationEntity } from './entities/item-location.entity';
 import { ItemLocationService } from './item-location.service';
 
 @Controller('item-location')
 @ApiTags('scm_item_location')
 export class ItemLocationController {
-  constructor(private readonly itemLocationService: ItemLocationService) {}
+  constructor(private readonly itemLocationService: ItemLocationService) { }
 
   @Post()
   @CustomItemLocationDecorator()
@@ -40,13 +40,13 @@ export class ItemLocationController {
     );
     return {
       message: `Successfully created`,
-      data: new ItemLocation(data),
+      data: new ItemLocationEntity(data),
     };
   }
 
   @Get()
   @CustomItemLocationDecoratorFindAll()
-  async findAll(@Query() query: QueryT): Promise<ResponseT<ItemLocation[]>> {
+  async findAll(@Query() query: QueryT): Promise<ResponseT<ItemLocationEntity[]>> {
     const data = await this.itemLocationService.findAll({
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
       page: Number(query.page),
@@ -56,7 +56,7 @@ export class ItemLocationController {
     });
     const resData = {
       message: `List of all data`,
-      data: data.map((res: Partial<ItemLocation>) => new ItemLocation(res)),
+      data: data.map((res: Partial<ItemLocationEntity>) => new ItemLocationEntity(res)),
     };
     if (!query.pagination) {
       return resData;
@@ -70,13 +70,47 @@ export class ItemLocationController {
     return resData;
   }
 
+  @Get('search')
+  @CustomItemLocationDecoratorFindAll()
+  async fulltextSearch(
+    @Query() query: QueryT,
+  ): Promise<ResponseT<ItemLocationEntity[]>> {
+    const data = await this.itemLocationService.fullTextSearch({
+      searchData: query.q,
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const resData = {
+      message: `List of data`,
+      data: data.map((res) => new ItemLocationEntity(res)),
+    };
+    if (!query.pagination) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    return resData;
+  }
+
   @Get(':id')
   @CustomItemLocationDecoratorGet()
   async findOne(@Param('id') id: string) {
     const data = await this.itemLocationService.findOne(id);
     return {
       message: `${id} detail fetched Succesfully`,
-      data: new ItemLocation(data),
+      data: new ItemLocationEntity(data),
     };
   }
 
@@ -94,7 +128,7 @@ export class ItemLocationController {
     );
     return {
       message: `${id} Data patched Succesfully`,
-      data: new ItemLocation(data),
+      data: new ItemLocationEntity(data),
     };
   }
 
@@ -104,7 +138,7 @@ export class ItemLocationController {
     const data = await this.itemLocationService.remove(id);
     return {
       message: `${id} Data deleted Succesfully`,
-      data: new ItemLocation(data),
+      data: new ItemLocationEntity(data),
     };
   }
 }
