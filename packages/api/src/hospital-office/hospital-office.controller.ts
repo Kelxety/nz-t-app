@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   Query,
+  Put,
 } from '@nestjs/common';
 import { HospitalOfficeService } from './hospital-office.service';
 import { CreateHospitalOfficeDto } from './dto/create-hospital-office.dto';
@@ -84,6 +85,24 @@ export class HospitalOfficeController {
     const data = await this.hospitalOfficeService.findOne(id);
     return {
       message: `Hospital Office with id of ${id} detail fetched Succesfully`,
+      data: data,
+    };
+  }
+
+  @Put(':id')
+  @CustomGlobalDecorator(null, false, HospitalOfficeEntity)
+  async set(
+    @Request() request: Req,
+    @Param('id') id: string,
+    @Body() updateHospitalOfficeDto: UpdateHospitalOfficeDto,
+  ) {
+    const data = await this.hospitalOfficeService.update(
+      id,
+      updateHospitalOfficeDto,
+      request?.headers?.authorization?.split('Bearer ')[1],
+    );
+    return {
+      message: `Put with id of ${id} detail updated Succesfully`,
       data: data,
     };
   }

@@ -66,11 +66,21 @@ export class OfficeComponent {
     }
   });
 
+  loadingZone = computed(() => {
+    try {
+      return this.tableConfig().loading;
+    } catch (e) {
+      this.errorMessage = typeof e === 'string' ? e : 'Error';
+      return [];
+    }
+  });
+
   // FUNCTIONS
   refresh() {
     this.$offices.refresh.update(r => !r);
-    this.tableConfig.mutate(t => (t.loading = false));
-    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.tableConfig.set({ ...this.tableConfig(), loading: false, total: this.$offices.totalItems() });
+    }, 500);
   }
 
   toDelete(id: string) {
@@ -116,6 +126,7 @@ export class OfficeComponent {
       .subscribe({
         next: res => {
           if (!res || res.status === ModalBtnStatus.Cancel) return;
+          this.tableConfig.set({ ...this.tableConfig(), loading: true });
           this.addEditData(res.modalValue, 'add');
         }
       });
@@ -140,6 +151,7 @@ export class OfficeComponent {
           if (!res || res.status === ModalBtnStatus.Cancel) {
             return;
           }
+          this.tableConfig.set({ ...this.tableConfig(), loading: true });
           this.addEditData(res.modalValue, 'edit');
         }
       });
@@ -177,7 +189,30 @@ export class OfficeComponent {
           }
         });
     } else {
-      this.$offices.updateOffice(param.id, param);
+      this.$offices
+        .updateOffice(param.id, param)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: res => {
+            if (res.statusCode === 200) {
+              this.msg.remove(id);
+              this.msg.success('Updated succesfully');
+            } else {
+              this.msg.remove(id);
+              this.msg.error(res.message);
+            }
+          },
+          error: err => {
+            if (err.code === 400) {
+              this.msg.remove(id);
+              this.msg.error('Unsuccessfully saved');
+            }
+          },
+          complete: () => {
+            this.refresh();
+          }
+        });
+      this.refresh();
     }
   }
 
@@ -194,15 +229,19 @@ export class OfficeComponent {
   }
 
   getDataList(e?: NzTableQueryParams): void {
-    this.tableConfig.mutate(t => (t.loading = true));
+    this.tableConfig.set({
+      ...this.tableConfig(),
+      loading: true
+    });
+    console.log(this.tableConfig());
 
     if (e?.pageIndex) {
-      this.tableConfig.mutate(t => (t.pageIndex = e.pageIndex));
+      this.tableConfig.set({ ...this.tableConfig(), pageIndex: e?.pageIndex });
     }
 
     this.params = {
       page: e?.pageIndex,
-      pageSize: e.pageSize,
+      pageSize: e?.pageSize,
       pagination: true,
       filteredObject: { state: this.officesState },
       orderBy: {
@@ -210,16 +249,16 @@ export class OfficeComponent {
       }
     };
     this.$offices.getParams.update(p => this.params);
-    this.tableConfig.mutate(t => {
-      t.total = this.$offices.totalItems();
+    this.tableConfig.set({
+      ...this.tableConfig(),
+      total: this.$offices.totalItems()
     });
-    this.cdr.detectChanges();
     this.refresh();
   }
 
   private initTable(): void {
-    this.tableConfig.mutate(t => {
-      t.headers = [
+    this.tableConfig.set({
+      headers: [
         {
           title: 'Office Name',
           field: 'officeName',
@@ -247,11 +286,11 @@ export class OfficeComponent {
           fixed: true,
           fixedDir: 'right'
         }
-      ];
-      t.total = this.$offices.totalItems();
-      t.loading = false;
-      t.pageSize = 10;
-      t.pageIndex = 1;
+      ],
+      total: this.$offices.totalItems(),
+      loading: false,
+      pageSize: 10,
+      pageIndex: 1
     });
   }
 
