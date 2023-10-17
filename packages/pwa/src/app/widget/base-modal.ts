@@ -24,7 +24,7 @@ export const enum ModalBtnStatus {
 
 // 组件实例需要继承此类
 export abstract class BasicConfirmModalComponent {
-  protected constructor(protected modalRef: NzModalRef) { }
+  protected constructor(protected modalRef: NzModalRef) {}
 
   protected abstract getCurrentValue(): NzSafeAny;
 }
@@ -75,8 +75,7 @@ export class ModalWrapService {
     return modalButtonOptions['modalRef'].destroy({ status: ModalBtnStatus.Cancel, value: null });
   }
 
-  private confirmCallback(modalButtonOptions: ModalButtonOptions, isclosed?: boolean): void {
-    
+  private confirmCallback(modalButtonOptions: ModalButtonOptions): void {
     (modalButtonOptions['modalRef'].componentInstance as NzSafeAny)
       .getCurrentValue()
       .pipe(
@@ -85,9 +84,7 @@ export class ModalWrapService {
           if (!modalValue) {
             return of(false);
           } else {
-            if (isclosed) {
-              return modalButtonOptions['modalRef'].destroy({ status: ModalBtnStatus.Ok, modalValue });
-            }
+            return modalButtonOptions['modalRef'].destroy({ status: ModalBtnStatus.Ok, modalValue });
           }
         }),
         takeUntilDestroyed(this.destroyRef)
