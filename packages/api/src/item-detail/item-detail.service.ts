@@ -188,7 +188,7 @@ export class ItemDetailService {
         orderBy: order,
       }),
     ]);
-    console.log(returnData)
+
     return returnData;
   }
 

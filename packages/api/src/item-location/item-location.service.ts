@@ -8,7 +8,7 @@ import { UpdateItemLocationDto } from './dto/update-item-location.dto';
 
 @Injectable()
 export class ItemLocationService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) { }
 
   async create(createItemLocationDto: CreateItemLocationDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
@@ -49,6 +49,109 @@ export class ItemLocationService {
           scmWarehouse: true,
         },
         where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
+  }
+
+  async fullTextSearch({
+    searchData,
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmItemLocationWhereInput,
+    Prisma.ScmItemLocationOrderByWithAggregationInput
+  >): Promise<ScmItemLocation[] | any> {
+    if (!pagination) {
+      return this.prisma.scmItemLocation.findMany({
+        include: {
+          scmWarehouse: true,
+        },
+        where: {
+          OR: [
+            {
+              locName: {
+                contains: searchData
+              }
+            },
+            {
+              scmWarehouse: {
+                whName: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmWarehouse: {
+                whAcro: {
+                  contains: searchData
+                }
+              }
+            }
+          ]
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmItemLocation.count({
+        where: {
+          OR: [
+            {
+              locName: {
+                contains: searchData
+              }
+            },
+            {
+              scmWarehouse: {
+                whName: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmWarehouse: {
+                whAcro: {
+                  contains: searchData
+                }
+              }
+            }
+          ]
+        },
+      }),
+      this.prisma.scmItemLocation.findMany({
+        include: {
+          scmWarehouse: true,
+        },
+        where: {
+          OR: [
+            {
+              locName: {
+                contains: searchData
+              }
+            },
+            {
+              scmWarehouse: {
+                whName: {
+                  contains: searchData
+                }
+              }
+            },
+            {
+              scmWarehouse: {
+                whAcro: {
+                  contains: searchData
+                }
+              }
+            }
+          ]
+        },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
         orderBy: order,

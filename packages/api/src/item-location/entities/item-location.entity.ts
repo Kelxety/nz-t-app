@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { ScmItemLocation } from "@prisma/client";
 import { WarehouseEntity } from "../../warehouse/entities/warehouse.entity";
 
-export class ItemLocation implements ScmItemLocation {
+export class ItemLocationEntity implements ScmItemLocation {
     @ApiProperty()
     id: string;
 
@@ -30,7 +30,7 @@ export class ItemLocation implements ScmItemLocation {
     @ApiProperty({ required: false, type: WarehouseEntity })
     warehouse: WarehouseEntity;
 
-    constructor({ warehouse, ...data }: Partial<ItemLocation>) {
+    constructor({ warehouse, ...data }: Partial<ItemLocationEntity>) {
         Object.assign(this, data);
 
         if (warehouse) {

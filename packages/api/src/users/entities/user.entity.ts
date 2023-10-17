@@ -1,14 +1,19 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { $Enums, Prisma, Role, User } from '@prisma/client';
-import { Exclude } from 'class-transformer';
-import { IsArray } from 'class-validator';
 import { RefreshTokenEntity } from '@api/auth/entity/refreshToken.entity';
 import { RoleEntity } from '@api/role/entities/role.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { $Enums, User } from '@prisma/client';
+import { Exclude } from 'class-transformer';
+import { IsArray } from 'class-validator';
 import { UserRole } from './user-role.entity';
 export class UserEntity implements User {
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);
   }
+  @ApiProperty()
+  warehouseId: string;
+
+  @ApiProperty()
+  officeId: string;
 
   @ApiProperty()
   id: string;

@@ -85,11 +85,17 @@
 <ng-template #suffixIconSearch>
     <span nz-icon nzType="search"></span>
 </ng-template>
+
+<ng-template #suffixIconLoad>
+    <span nz-icon nzType="loading"></span>
+</ng-template>
+
 <ng-template #options class="stick" #target>
     <div nz-space nzAlign="start" class="flex-row-reverse gap-x-2">
-        <nz-input-group *nzSpaceItem [nzSuffix]="suffixIconSearch" nzSearch [nzAddOnAfter]="suffixIconButton">
+        <nz-input-group *nzSpaceItem [nzSuffix]="this.isSpinning ? suffixIconLoad : suffixIconSearch" nzSearch
+            [nzAddOnAfter]="suffixIconButton">
             <input type="text" nz-input placeholder="Search..." name="search" [(ngModel)]="search"
-                (keyup.enter)="onSearch()" />
+                (keyup.enter)="onSearchFulltext(search)" />
         </nz-input-group>
         <ng-template #suffixIconButton>
             <button nz-button nzType="primary" (click)="onClear()"><span nz-icon nzType="clear" nz-tooltip="Clear"

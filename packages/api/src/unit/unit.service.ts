@@ -1,14 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, ScmUnit } from '@prisma/client';
 import { PaginateOptions } from '@api/lib/interface';
 import { PrismaService } from '@api/lib/prisma/prisma.service';
+import { RoleService } from '@api/role/role.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, ScmUnit } from '@prisma/client';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UpdateUnitDto } from './dto/update-unit.dto';
-import { RoleService } from '@api/role/role.service';
 
 @Injectable()
 export class UnitService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) { }
   async create(createUnitDto: CreateUnitDto) {
     return await this.prisma.scmUnit.create({ data: createUnitDto });
   }
@@ -35,6 +35,76 @@ export class UnitService {
       }),
       this.prisma.scmUnit.findMany({
         where: data,
+        take: pageSize || 10,
+        skip: (page - 1) * pageSize || 0,
+        orderBy: order,
+      }),
+    ]);
+    return returnData;
+  }
+
+  async fullTextSearch({
+    searchData,
+    data,
+    page,
+    pageSize,
+    pagination,
+    order,
+  }: PaginateOptions<
+    Prisma.ScmUnitWhereInput,
+    Prisma.ScmUnitOrderByWithAggregationInput
+  >): Promise<ScmUnit[] | any> {
+    if (!pagination) {
+      return await this.prisma.scmUnit.findMany({
+        where: {
+          OR: [
+            {
+              unitAcro: {
+                contains: searchData
+              }
+            },
+            {
+              unitName: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+        orderBy: order,
+      });
+    }
+    const returnData = await this.prisma.$transaction([
+      this.prisma.scmUnit.count({
+        where: {
+          OR: [
+            {
+              unitAcro: {
+                contains: searchData
+              }
+            },
+            {
+              unitName: {
+                contains: searchData
+              }
+            }
+          ]
+        },
+      }),
+      this.prisma.scmUnit.findMany({
+        where: {
+          OR: [
+            {
+              unitAcro: {
+                contains: searchData
+              }
+            },
+            {
+              unitName: {
+                contains: searchData
+              }
+            }
+          ]
+        },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
         orderBy: order,

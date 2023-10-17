@@ -825,7 +825,7 @@ export class ReceivingComponent {
   viewTable(): void {
 
     this.modalService
-      .show({ nzTitle: 'Receiving list', nzMask: false, nzOkText: 'Ok' }, this.itemDataList())
+      .show({ nzTitle: 'Receiving list', nzMask: false, nzOkText: 'Ok' }, this.itemDataList(), null, true)
       .pipe(
         finalize(() => {
           // this.tableLoading(false);
@@ -849,7 +849,7 @@ export class ReceivingComponent {
   addNewItem(): void {
 
     this.modalService
-      .showItem({ nzTitle: 'New Item list', nzMask: false, nzWidth: '80%' }, this.itemDataList())
+      .showItem({ nzTitle: 'New Item list', nzMask: false, nzWidth: '80%' }, this.itemDataList(), null, true)
       .pipe(
         finalize(() => {
           // this.tableLoading(false);

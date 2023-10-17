@@ -137,8 +137,9 @@ export class CreateEditModalComponent {
   }
 
   getData() {
+    console.log(this.data)
     this.validateForm.patchValue({
-      warehouseId: this.data?.warehouse.id,
+      warehouseId: this.data?.scmWarehouse.id,
       locName: this.data.locName,
       state: this.data.state
     })

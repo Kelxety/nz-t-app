@@ -16,7 +16,7 @@ export class ItemInquiryModalService {
     return ItemInquiryModalComponent;
   }
 
-  public show(modalOptions: ModalOptions = {}, modalData?: any): Observable<NzSafeAny> {
-    return this.modalWrapService.show(this.getContentComponent(), modalOptions, modalData);
+  public show(modalOptions: ModalOptions = {}, modalData?: any, labelConfirm?: string, confirmBtnShow?: boolean): Observable<NzSafeAny> {
+    return this.modalWrapService.show(this.getContentComponent(), modalOptions, modalData, labelConfirm, confirmBtnShow);
   }
 }

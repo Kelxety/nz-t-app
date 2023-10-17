@@ -1,33 +1,33 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Query,
-  Request,
-} from '@nestjs/common';
-import { UnitService } from './unit.service';
-import { CreateUnitDto } from './dto/create-unit.dto';
-import { UpdateUnitDto } from './dto/update-unit.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@api/auth/guard/jwt-auth.guard';
 import { RoleGuard } from '@api/auth/role/role.guard';
 import { Roles } from '@api/auth/roles/roles.decorator';
-import { UnitEntity } from './entities/unit.entity';
-import { toBoolean } from '@api/lib/helper/cast.helper';
 import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { toBoolean } from '@api/lib/helper/cast.helper';
+import { QueryT, ResponseT } from '@api/lib/interface';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { Request as Req } from 'express';
-import { QueryT } from '@api/lib/interface';
+import { CreateUnitDto } from './dto/create-unit.dto';
+import { UpdateUnitDto } from './dto/update-unit.dto';
+import { UnitEntity } from './entities/unit.entity';
+import { UnitService } from './unit.service';
 
 @Controller('unit')
 @ApiTags('smc_unit')
 export class UnitController {
-  constructor(private readonly unitService: UnitService) {}
+  constructor(private readonly unitService: UnitService) { }
 
   @Post()
   @ApiBearerAuth()
@@ -60,11 +60,50 @@ export class UnitController {
       data: data,
     };
     if (!query.pagination) {
-      return resData;
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
     }
     if (toBoolean(query.pagination)) {
       return {
         ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    return resData;
+  }
+
+  @Get('search')
+  @CustomGlobalDecorator(Prisma.ScmUnitScalarFieldEnum, true, UnitEntity)
+  async fulltextSearch(
+    @Query() query: QueryT,
+  ): Promise<ResponseT<UnitEntity[]>> {
+    const data = await this.unitService.fullTextSearch({
+      searchData: query.q,
+      data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
+      pagination: query.pagination ? toBoolean(query.pagination) : true,
+      order: query.orderBy ? JSON.parse(query.orderBy) : [],
+    });
+    const resData = {
+      message: `List of data`,
+      data: data,
+    };
+    if (!query.pagination) {
+      return {
+        ...resData,
+        totalItems: data[0],
+        data: data[1],
+      };
+    }
+    if (toBoolean(query.pagination)) {
+      return {
+        ...resData,
+        totalItems: data[0],
         data: data[1],
       };
     }
