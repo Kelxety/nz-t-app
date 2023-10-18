@@ -17,7 +17,7 @@ export class ItemDetailServices {
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
-    list(params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithAggregationInput>): Observable<ResType<ScmItemDtl[]>> {
+    list(params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput>): Observable<ResType<ScmItemDtl[]>> {
         const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
         const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
 

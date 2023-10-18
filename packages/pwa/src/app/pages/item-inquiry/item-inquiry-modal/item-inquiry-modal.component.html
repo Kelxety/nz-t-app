@@ -57,7 +57,7 @@
 
 <div class="mt-2" *ngIf="!model.loading; else isLoading">
     <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzShowPagination]="false"
-        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
+        [nzSize]="'default'">
         <thead>
             <tr>
                 <th nzWidth="210px">Warehouse</th>

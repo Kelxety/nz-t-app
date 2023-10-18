@@ -6,8 +6,11 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { BehaviorSubject, Observable, Subject, of, takeUntil } from 'rxjs';
 import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
 
+import { Prisma } from '@prisma/client';
+import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { SpinService } from '../../../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../../../shared';
+import { SearchParams } from '../../../../shared/interface';
 import { ItemServices } from '../../Services/item/item.service';
 
 interface ItemData {
@@ -45,13 +48,26 @@ export class ItemComponent {
   listOfData: readonly ItemData[] = [];
   setOfCheckedId = new Set<string>();
 
-  Loading = false
+  loading = true;
 
   model: any = {
     list: [],
     filteredList: [],
     isSubmitting: false,
-    loading: true
+    loading: true,
+    totalItems: 0
+  };
+
+  pageSize = 10;
+  pageIndex = 1;
+  total: 1;
+
+  dataParams: SearchParams<Prisma.ScmItemWhereInput, Prisma.ScmItemOrderByWithRelationAndSearchRelevanceInput> = {
+    orderBy: {
+      itemName: 'asc',
+    },
+    pageSize: this.pageSize,
+    page: this.pageIndex
   };
 
   listOfSelection = [];
@@ -68,7 +84,8 @@ export class ItemComponent {
   ) { }
 
   ngOnInit(): void {
-    this.loadData();
+
+    // this.loadData()
     this.spinService.setCurrentGlobalSpinStore(false);
   }
 
@@ -116,23 +133,41 @@ export class ItemComponent {
     this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
   }
 
-  loadData() {
+  onQueryParamsChange(params: NzTableQueryParams): void {
+
+
+    const { pageSize, pageIndex, sort, filter } = params;
+    const currentSort = sort.find(item => item.value !== null);
+    const sortField = (currentSort && currentSort.key) || null;
+    const sortOrder = (currentSort && currentSort.value) || null;
+    console.log(params)
+    this.dataParams = {
+      pageSize: pageSize,
+      page: pageIndex,
+
+      orderBy: [
+        {
+          itemName: 'asc'
+        },
+        {
+          itemCode: 'asc'
+        }
+      ]
+    };
+    this.loadData()
+    this.cd.detectChanges();
+  }
+
+  loadData(): void {
     let model: any = this.model;
     model.loading = true;
+    this.loading = true
 
-    let order: any = [
-      {
-        sortColumn: 'itemCode',
-        sortDirection: 'asc'
-      }
-    ];
-    this.itemServices.list({ order: order, pagination: false }).subscribe({
+    this.itemServices.list(this.dataParams).subscribe({
       next: (res: any) => {
         const list = res.data
-        // list.mutate(res => {
-        //   model.list.push(...res)
-        //   model.filteredList.push(...res)
-        // })
+        console.log(res)
+        model.totalItems = res.totalItems
         model.list = list;
         model.filteredList = list;
       },
@@ -140,16 +175,18 @@ export class ItemComponent {
         console.log(err);
       },
       complete: () => {
+        this.loading = false
         model.loading = false;
         this.cd.detectChanges();
       }
     });
   }
 
+
   onSearchFulltext(value: string): void {
     let model: any = this.model;
     model.loading = true;
-    this.Loading = true
+    // this.Loading = true
     // if (value.length < 3) {
     //   this.isSpinning = false;
     //   return; // Don't trigger the search if it's less than four characters
@@ -171,7 +208,7 @@ export class ItemComponent {
       model.list = data;
       model.filteredList = data;
       model.loading = false;
-      this.Loading = false
+      // this.Loading = false
       this.cd.detectChanges();
     });
   }

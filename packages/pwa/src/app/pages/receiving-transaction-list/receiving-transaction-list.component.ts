@@ -1,11 +1,13 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Prisma } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Subject, takeUntil } from 'rxjs';
 import { SpinService } from '../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../shared';
+import { SearchParams } from '../../shared/interface';
 import { StockReceivingPostingServices } from '../configuration/Services/stock-receiving/stock-receiving-posting.service';
 import { StockReceivingServices } from '../configuration/Services/stock-receiving/stock-receiving.service';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
@@ -99,17 +101,18 @@ export class ReceivingTransactionListComponent {
     let model: any = this.model;
     model.loading = true;
 
-    let order: any = [
-      {
-        sortColumn: 'itemCode',
-        sortDirection: 'asc'
-      }
-    ];
+    const params: SearchParams<Prisma.ScmReceiveWhereInput, Prisma.ScmReceiveOrderByWithAggregationInput> = {
+      filteredObject: { isPosted: true },
+      orderBy: {
+        rcvDate: 'desc'
+      },
+      pagination: false
+    };
     if (event === 1) {
       this.setOfCheckedId.has(null)
       this.switchValue = true
       this.cd.detectChanges()
-      this.stockReceivingServices.list({ order: order, pagination: false, filteredObject: JSON.stringify({ isPosted: false }) }).subscribe({
+      this.stockReceivingServices.list(params).subscribe({
         next: (res: any) => {
           const list = res.data
 
@@ -234,13 +237,14 @@ export class ReceivingTransactionListComponent {
     let model: any = this.model;
     model.loading = true;
 
-    let order: any = [
-      {
-        sortColumn: 'itemCode',
-        sortDirection: 'asc'
-      }
-    ];
-    this.stockReceivingServices.list({ order: order, pagination: false }).subscribe({
+    const params: SearchParams<Prisma.ScmReceiveWhereInput, Prisma.ScmReceiveOrderByWithAggregationInput> = {
+      orderBy: {
+        rcvDate: 'desc'
+      },
+      pagination: false
+    };
+
+    this.stockReceivingServices.list(params).subscribe({
       next: (res: any) => {
         const list = res.data
         // list.mutate(res => {

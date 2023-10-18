@@ -1,7 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { ChangeDetectorRef, Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
-import { ScmItem, ScmItemLocation, ScmWarehouse } from '@prisma/client';
+import { Prisma, ScmItem, ScmItemLocation, ScmWarehouse } from '@prisma/client';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
@@ -14,6 +14,7 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 import { Observable, of } from 'rxjs';
 import { SharedModule } from '../../../../shared';
+import { SearchParams } from '../../../../shared/interface';
 import { fnCheckForm } from '../../../../utils/tools';
 import { ItemLocationServices } from '../../../configuration/Services/item-location/item-location.service';
 import { ItemServices } from '../../../configuration/Services/item/item.service';
@@ -132,7 +133,15 @@ export class AddItemComponent {
   }
 
   loadItems() {
-    this.itemServices.list({ pagination: false, state: 'Active' }).subscribe({
+    const params: SearchParams<Prisma.ScmItemWhereInput, Prisma.ScmItemOrderByWithAggregationInput> = {
+      filteredObject: { state: 'Active' },
+      orderBy: {
+        itemCode: 'asc'
+
+      },
+      pagination: false
+    };
+    this.itemServices.list(params).subscribe({
       next: (res: any) => {
         const list = res.data;
         this.listOfItem = list;
