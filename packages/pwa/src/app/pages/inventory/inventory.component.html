@@ -1,1 +1,45 @@
-<p>inventory works!</p>
+<div class="fixed-content p-2">
+    <nz-card nzTitle="Inventory Period" [nzExtra]="itemsView" class="h-full w-full" [nzBodyStyle]="{'margin-top': '66px', padding: 0, position: 'absolute', bottom: '0px', top: 0, overflow: 'auto', width: '100%'}">
+      <nz-table
+      nzShowSizeChanger
+      #itemDetailTable
+      [nzData]="signals._list()"
+      [nzSize]="'small'"
+      [nzFrontPagination]="false"
+      [nzLoading]="signals._loading()"
+      [nzTotal]="signals._totalItems()"
+      [nzPageSize]="signals._pageSize()"
+      [nzPageIndex]="signals._page()"
+      (nzQueryParams)="onQueryParamsChange($event)"
+      [nzScroll]="{ x: '300px', y: 'calc(100vh - 340px)' }"
+      >
+      <thead>
+        <tr>
+          <th nzLeft nzWidth="70px">No.</th>
+          <th>Item Name</th>
+          <th nzRight nzWidth="100px" class="text-center">Status</th>
+          <th nzRight nzWidth="70px" class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of itemDetailTable.data">
+          <!-- <td nzLeft>{{ data.subitemCode }}</td>
+          <td>{{ data.subitemName }}</td>
+          <td nzRight class="text-center w-12">{{ data.expirationDate | date: 'MMM dd, yyyy'}}</td>
+          <td nzRight class="text-center" style="padding-top: 2px; padding-bottom: 2px">
+            <span class="cursor-pointer text-blue-500" nz-icon nzType="plus" nzTheme="outline" (click)="add(data.id)"></span>
+          </td> -->
+        </tr>
+      </tbody>
+    </nz-table>   
+    </nz-card>
+  </div>
+  
+  <ng-template #itemsView >
+      <nz-input-group [nzSuffix]="suffixIconSearch" class="w-60 mr-[-5px]">
+          <input type="text" nz-input placeholder="Search Item name, code, brand, description ..." (change)="search($event)"/>
+      </nz-input-group>
+      <ng-template #suffixIconSearch>
+          <span nz-icon nzType="search"></span>
+      </ng-template>
+  </ng-template>

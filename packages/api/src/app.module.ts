@@ -29,6 +29,7 @@ import { UnitModule } from './unit/unit.module';
 import { UsersModule } from './users/users.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
 import { HospitalOfficeModule } from './hospital-office/hospital-office.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { HospitalOfficeModule } from './hospital-office/hospital-office.module';
     StockLedgerCodeModule,
     IssuanceModule,
     HospitalOfficeModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

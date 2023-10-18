@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnIn
 import { SharedModule } from '@pwa/src/app/shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ItemDetailServices, ItemLocationDtlServices, ItemLocationServices } from '../../Services';
-import { ItemLocationModuleServices } from './item-location.service';
+import { ItemLocationSignals } from './item-location.signal';
 import { Subject } from 'rxjs';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { Prisma, ScmItemLocationDtl } from '@prisma/client';
@@ -37,24 +37,21 @@ export class ItemLocationComponent implements OnInit {
     balanceQty: 0
   };
 
-  searchParam: any = {
-
-  }
+  searchParam: any = {}
 
   stateItemDetail: _state;
   stateLocationHeader: _state;
   stateLocationDetail: _state;
 
-  constructor(
+  constructor (
     private cd: ChangeDetectorRef,
     private msg: NzMessageService,
-    public service: ItemLocationModuleServices,
+    public signals: ItemLocationSignals,
     private apiItemDetail: ItemDetailServices,
     private apiItemLocation: ItemLocationServices,
     private destroyRef: DestroyRef,
     private apiItemLocationDtl: ItemLocationDtlServices
-  ){
-  }
+  ){ }
 
   convertSort(d: string) {
     if (d === 'ascend') {
@@ -65,18 +62,17 @@ export class ItemLocationComponent implements OnInit {
   }
 
   loadItemDetail() {
-    this.service._loadingItemDetail.set(true);
+    this.signals._loadingItemDetail.set(true);
     this.searchParam = {
       state: 'Active',
-
     }
       
     const numberOfFilters = Object.keys(this.searchParam).length;
     const params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput> = {
-      pageSize: this.service._pageSizeItemDetails(),
-      page: this.service._pageItemDetails(),
+      pageSize: this.signals._pageSizeItemDetails(),
+      page: this.signals._pageItemDetails(),
       filteredObject: numberOfFilters > 0 ? this.searchParam : {},
-      q: this.service._search(),
+      q: this.signals._search(),
       orderBy: {
         subitemName: 'asc'
       },
@@ -85,14 +81,14 @@ export class ItemLocationComponent implements OnInit {
 
     this.apiItemDetail.find(params).subscribe({
       next: (res:any) => {
-        this.service._totalItemDetails.set(res.totalItems);
-        this.service._itemDetails.set(res.data);
+        this.signals._totalItemDetails.set(res.totalItems);
+        this.signals._itemDetails.set(res.data);
       },
       error: (err: any) => {
         this.msg.warning("Can't load sub-item list!")
       },
       complete: () => {
-        this.service._loadingItemDetail.set(false);
+        this.signals._loadingItemDetail.set(false);
         this.cd.detectChanges();
       }
     });
@@ -112,17 +108,17 @@ export class ItemLocationComponent implements OnInit {
     //   sortColumn: sortField,
     //   sortDirection: sortOrder,
     // }];
-    this.service._pageItemDetails.set(params.pageIndex);
-    this.service._pageSizeItemDetails.set(params.pageSize);
+    this.signals._pageItemDetails.set(params.pageIndex);
+    this.signals._pageSizeItemDetails.set(params.pageSize);
     this.loadItemDetail();
   }
 
   loadItemLocHdr() {
-    this.service._loadingItemLocations.set(true);
+    this.signals._loadingItemLocations.set(true);
     const numberOfFilters = Object.keys({state: 'Active'}).length;
     const params: SearchParams<Prisma.ScmItemLocationWhereInput, Prisma.ScmItemLocationOrderByWithRelationAndSearchRelevanceInput> = {
-      pageSize: this.service._pageSizeItemLocations(),
-      page: this.service._pageItemLocations(),
+      pageSize: this.signals._pageSizeItemLocations(),
+      page: this.signals._pageItemLocations(),
       // filteredObject: numberOfFilters > 0 ? this.searchParam : {},
       orderBy: {
         locName: 'asc'
@@ -133,33 +129,33 @@ export class ItemLocationComponent implements OnInit {
     // {pagination: true, orderBy: {locName: 'asc'}}
     this.apiItemLocation.list(params).subscribe({
       next: (res:any) => {
-        this.service._totalItemLocations.set(res.totalItems);
-        this.service._itemLocations.set(res.data);
-        console.log('SSSS', this.service._totalItemLocations());
-        if (this.service._totalItemLocations() > 0) {
-          this.model.locationId = this.service._itemLocations()[0].id;
+        this.signals._totalItemLocations.set(res.totalItems);
+        this.signals._itemLocations.set(res.data);
+        console.log('SSSS', this.signals._totalItemLocations());
+        if (this.signals._totalItemLocations() > 0) {
+          this.model.locationId = this.signals._itemLocations()[0].id;
         };
       },
       error: (err: any) => {
         this.msg.warning("Can't load transaction list!")
       },
       complete: () => {
-        this.service._loadingItemLocations.set(false);
+        this.signals._loadingItemLocations.set(false);
         this.cd.detectChanges();
       }
     });
   }
 
   loadItemLocDetail() {
-    this.service._loadingItemLocationDetails.set(true);
+    this.signals._loadingItemLocationDetails.set(true);
     this.searchParam = {
       locationId: this.model.locationId
     };
 
     const numberOfFilters = Object.keys(this.searchParam).length;
     const params: SearchParams<Prisma.ScmItemLocationDtlWhereInput, Prisma.ScmItemLocationDtlOrderByWithRelationAndSearchRelevanceInput> = {
-      pageSize: this.service._pageSizeItemLocationDetails(),
-      page: this.service._pageItemLocationDetails(),
+      pageSize: this.signals._pageSizeItemLocationDetails(),
+      page: this.signals._pageItemLocationDetails(),
       filteredObject: numberOfFilters > 0 ? this.searchParam : {},
       orderBy: {
         scmItemDtl:{subitemName: 'asc'}
@@ -169,21 +165,22 @@ export class ItemLocationComponent implements OnInit {
 
     this.apiItemLocationDtl.list({pagination: true, filteredObject:{locationId: this.model.locationId}, orderBy: {scmItemDtl:{subitemName: 'asc'}}}).subscribe({
       next: (res:any) => {
-        this.service._totalItemLocationDetails.set(res.totalItems);
-        this.service._itemLocationDetails.set(res.data);
+        this.signals._totalItemLocationDetails.set(res.totalItems);
+        this.signals._itemLocationDetails.set(res.data);
       },
       error: (err: any) => {
         this.msg.warning("Can't load transaction list!")
       },
       complete: () => {
-        this.service._loadingItemLocationDetails.set(false);
+        this.signals._loadingItemLocationDetails.set(false);
         this.cd.detectChanges();
       }
     });
   }
 
   search(e:any) {
-    this.service._search.set(e.target.value);
+    this.signals._search.set(e.target.value);
+    this.signals._pageItemDetails.set(1);
     this.loadItemDetail();
   }
 
@@ -201,7 +198,7 @@ export class ItemLocationComponent implements OnInit {
   }
 
   add(id: string) {
-    let list: any[] = this.service._itemLocationDetails();
+    let list: any[] = this.signals._itemLocationDetails();
     list = list.filter((d:any) => d.itemdtlId === id);
 
     if (list.length > 0) {
@@ -241,10 +238,10 @@ export class ItemLocationComponent implements OnInit {
           next: res => {
             console.log('ADDED', res);
             if (res.statusCode === 201) {
-              // this.service._itemLocationDetails.mutate(d => d.push(res.data))
+              // this.signals._itemLocationDetails.mutate(d => d.push(res.data))
 
-              let list: any = [...this.service._itemLocationDetails(), res.data];
-              this.service._itemLocationDetails.set(list);
+              let list: any = [...this.signals._itemLocationDetails(), res.data];
+              this.signals._itemLocationDetails.set(list);
               this.msg.success('Added succesfully');
             } else {
               this.msg.remove(id);
@@ -271,9 +268,9 @@ export class ItemLocationComponent implements OnInit {
     const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId
     this.apiItemLocationDtl.delete(data.id).subscribe({
       next: (res: any) => {
-        let list: any = this.service._itemLocationDetails();
+        let list: any = this.signals._itemLocationDetails();
         list = list.filter((d:any) => d.id !== data.id);
-        this.service._itemLocationDetails.set(list);
+        this.signals._itemLocationDetails.set(list);
         this.msg.remove(id);
         this.msg.success('Item removed successfully');
       },

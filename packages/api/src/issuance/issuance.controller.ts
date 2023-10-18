@@ -27,7 +27,6 @@ export class IssuanceController {
 
   @Post()
   @CustomGlobalDecorator(null, false, IssuanceEntity)
-  
   async create(
     @Request() request: Req,
     @Body() createIssuanceDto: CreateIssuanceDto,

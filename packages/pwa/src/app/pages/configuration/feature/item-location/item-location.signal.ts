@@ -5,7 +5,7 @@ import { Prisma, ScmItemDtl, ScmItemLocation } from '@prisma/client';
 @Injectable({
     providedIn: 'root'
 })
-export class ItemLocationModuleServices {
+export class ItemLocationSignals {
     public _search = signal<string>('%')
 
     public _selectedPlanogram = signal<string>('');
