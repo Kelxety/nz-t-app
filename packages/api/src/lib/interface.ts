@@ -25,6 +25,9 @@ export interface QueryT {
 }
 
 export interface ResponseT<T> {
+  page?: number;
+  hasNext?: boolean;
+  totalPage?: number;
   message: string;
   data: T;
   totalItems?: number;

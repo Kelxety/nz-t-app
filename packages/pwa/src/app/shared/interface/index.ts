@@ -1,5 +1,4 @@
-import { Prisma } from '@prisma/client';
-import { NzTableFilterFn, NzTableFilterList, NzTableFilterValue, NzTableQueryParams, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
+import { NzTableFilterFn, NzTableFilterList, NzTableQueryParams, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
 
 export interface QueryParams<T> extends NzTableQueryParams {
   page: number | null;
@@ -22,6 +21,8 @@ export interface SearchParams<T, K> {
   pagination?: boolean;
   orderBy?: K[] | K;
   filteredObject?: T;
+  hasNext?: boolean;
+  totalPage?: number;
 }
 
 export interface ColumnItem<T> {
