@@ -47,16 +47,31 @@ export class DatatableDataSource extends DataSource<any> {
         return Math.floor(index / this.$pageSize);
     }
 
-    private fetchPage(page: number): void {
+    fetchSearch(page: number, params: object = { page: page, pagination: true, pageSize: 30, q: '' }): void {
         if (this.fetchedPages.has(page)) {
             return;
         }
         this.fetchedPages.add(page);
 
         this.service
-            .list(
-                { page: page, pagination: true, pageSize: 30 }
-            )
+            .fulltextFilter(params)
+            .pipe(catchError(() => of({ results: [] })))
+            .subscribe((res) => {
+                console.log(res, 'res')
+                this.totalItem = res.totalItems
+                this.cachedData.splice(page * this.$pageSize, this.$pageSize, ...res.data);
+                this.dataStream.next(this.cachedData);
+            });
+    }
+
+    private fetchPage(page: number, params: object = { page: page, pagination: true, pageSize: 30 }): void {
+        if (this.fetchedPages.has(page)) {
+            return;
+        }
+        this.fetchedPages.add(page);
+
+        this.service
+            .list(params)
             .pipe(catchError(() => of({ results: [] })))
             .subscribe((res) => {
                 console.log(res, 'res')
