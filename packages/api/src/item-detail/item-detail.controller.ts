@@ -56,6 +56,7 @@ export class ItemDetailController {
       pagination: query.pagination ? toBoolean(query.pagination) : true,
       order: query.orderBy ? JSON.parse(query.orderBy) : [],
     });
+
     const resData = {
       message: 'List of all Item-details fetch Successfully',
       data: data,
@@ -72,8 +73,8 @@ export class ItemDetailController {
         ...resData,
         totalItems: data[0],
         data: data[1],
-        page: query.page,
-        hasNext: Math.ceil(data[0] / query.pageSize) === query.page ? false : true,
+        page: Number(query.page),
+        hasNext: Math.ceil(data[0] / query.pageSize) === Number(query.page) ? false : true,
         totalPage: Math.ceil(data[0] / query.pageSize)
       };
     }
@@ -109,6 +110,9 @@ export class ItemDetailController {
         ...resData,
         totalItems: data[0],
         data: data[1],
+        page: Number(query.page),
+        hasNext: Math.ceil(data[0] / query.pageSize) === Number(query.page) ? false : true,
+        totalPage: Math.ceil(data[0] / query.pageSize)
       };
     }
     return resData;
