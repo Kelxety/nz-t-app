@@ -67,7 +67,8 @@ export class ItemLocationComponent implements OnInit {
   loadItemDetail() {
     this.service._loadingItemDetail.set(true);
     this.searchParam = {
-      state: 'Active'
+      state: 'Active',
+
     }
       
     const numberOfFilters = Object.keys(this.searchParam).length;
@@ -76,7 +77,9 @@ export class ItemLocationComponent implements OnInit {
       page: this.service._pageItemDetails(),
       filteredObject: numberOfFilters > 0 ? this.searchParam : {},
       q: this.service._search(),
-      orderBy: {},
+      orderBy: {
+        subitemName: 'asc'
+      },
       pagination: true
     };
 
@@ -120,7 +123,7 @@ export class ItemLocationComponent implements OnInit {
     const params: SearchParams<Prisma.ScmItemLocationWhereInput, Prisma.ScmItemLocationOrderByWithRelationAndSearchRelevanceInput> = {
       pageSize: this.service._pageSizeItemLocations(),
       page: this.service._pageItemLocations(),
-      filteredObject: numberOfFilters > 0 ? this.searchParam : {},
+      // filteredObject: numberOfFilters > 0 ? this.searchParam : {},
       orderBy: {
         locName: 'asc'
       },

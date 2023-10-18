@@ -2,8 +2,10 @@ import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ApiService, HttpParamsService } from '@app/shared';
-import { ScmItemLocation } from '@prisma/client';
+import { Prisma, ScmItemLocation } from '@prisma/client';
 import { ResType } from '@utils/types/return-types';
+import { SearchParams } from '@pwa/src/app/shared/interface';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
@@ -15,9 +17,21 @@ export class ItemLocationServices {
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
-    list(params: object = {}): Observable<ResType<ScmItemLocation[]>> {
-        const parameters = this.httpParams.convert(params);
-        return this.apiService.get(this.baseUrl, parameters);
+    list(params: SearchParams<Prisma.ScmItemLocationWhereInput, Prisma.ScmItemLocationOrderByWithAggregationInput>): Observable<ResType<ScmItemLocation[]>> {
+        const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
+        const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
+
+        let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
+
+        if (!filteredObject) {
+            p = p.delete('filteredObject');
+        }
+
+        if (!orderBy) {
+            p = p.delete('orderBy');
+        }
+
+        return this.apiService.get(this.baseUrl, p);
     }
 
     fulltextFilter(params: object = {}): Observable<ResType<ScmItemLocation[]>> {

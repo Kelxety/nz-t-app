@@ -114,7 +114,7 @@ export class AddItemComponent {
   }
 
   loadLocationData() {
-    this.itemLocationServices.list({ pagination: false, state: 'Active' }).subscribe({
+    this.itemLocationServices.list({ pagination: false, filteredObject: {state: 'Active'} }).subscribe({
       next: (res: any) => {
         const list = res.data;
         this.listOfItemLocation = list;

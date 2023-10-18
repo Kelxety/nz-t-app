@@ -41,8 +41,6 @@ export class ItemDetailServices {
     }
 
     find(params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithAggregationInput>): Observable<ResType<ScmItemDtl[]>> {
-        console.log('SSSSSSSSSSSSSSs', params);
-        
         const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
         const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
 
