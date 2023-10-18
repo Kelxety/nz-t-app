@@ -41,6 +41,9 @@ export class TransformInterceptor<T>
         message: data.message,
         data: data.data,
         totalItems: data.totalItems,
+        page: data.page || undefined,
+        hasNext: data.hasNext || undefined,
+        totalPage: data.totalPage || undefined,
       })),
     );
   }
