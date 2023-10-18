@@ -100,9 +100,7 @@ export class ItemDetailService {
               }
             }
           ],
-          balanceQty: {
-            gt: 0
-          }
+          AND: data
         },
         include: {
           scmUnit: true,
@@ -140,9 +138,7 @@ export class ItemDetailService {
               }
             }
           ],
-          balanceQty: {
-            gt: 0
-          }
+          AND: data
         },
       }),
 
@@ -171,9 +167,7 @@ export class ItemDetailService {
               }
             }
           ],
-          balanceQty: {
-            gt: 0
-          }
+          AND: data
         },
         include: {
           scmUnit: true,

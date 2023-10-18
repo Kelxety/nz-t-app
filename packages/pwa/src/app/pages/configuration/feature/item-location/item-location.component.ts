@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { SharedModule } from '@pwa/src/app/shared';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ItemDetailServices, ItemLocationDtlServices, ItemLocationServices } from '../../Services';
@@ -8,6 +8,15 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { Prisma, ScmItemLocationDtl } from '@prisma/client';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchParams } from '@pwa/src/app/shared/interface';
+
+interface _state {
+  list: any[];
+  loading: boolean;
+  page: number;
+  pageSize: number;
+  totalItems: number;
+}
+
 @Component({
   selector: 'app-item-location',
   templateUrl: './item-location.component.html',
@@ -18,7 +27,7 @@ import { SearchParams } from '@pwa/src/app/shared/interface';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ItemLocationComponent {
+export class ItemLocationComponent implements OnInit {
   private ngUnsubscribe = new Subject();
   isVisibleEnterQuantity = false;
 
@@ -32,6 +41,10 @@ export class ItemLocationComponent {
 
   }
 
+  stateItemDetail: _state;
+  stateLocationHeader: _state;
+  stateLocationDetail: _state;
+
   constructor(
     private cd: ChangeDetectorRef,
     private msg: NzMessageService,
@@ -40,7 +53,8 @@ export class ItemLocationComponent {
     private apiItemLocation: ItemLocationServices,
     private destroyRef: DestroyRef,
     private apiItemLocationDtl: ItemLocationDtlServices
-  ){}
+  ){
+  }
 
   convertSort(d: string) {
     if (d === 'ascend') {
@@ -48,6 +62,37 @@ export class ItemLocationComponent {
     } else {
       return 'desc'
     }
+  }
+
+  loadItemDetail() {
+    this.service._loadingItemDetail.set(true);
+    this.searchParam = {
+      state: 'Active'
+    }
+      
+    const numberOfFilters = Object.keys(this.searchParam).length;
+    const params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput> = {
+      pageSize: this.service._pageSizeItemDetails(),
+      page: this.service._pageItemDetails(),
+      filteredObject: numberOfFilters > 0 ? this.searchParam : {},
+      q: this.service._search(),
+      orderBy: {},
+      pagination: true
+    };
+
+    this.apiItemDetail.find(params).subscribe({
+      next: (res:any) => {
+        this.service._totalItemDetails.set(res.totalItems);
+        this.service._itemDetails.set(res.data);
+      },
+      error: (err: any) => {
+        this.msg.warning("Can't load sub-item list!")
+      },
+      complete: () => {
+        this.service._loadingItemDetail.set(false);
+        this.cd.detectChanges();
+      }
+    });
   }
 
   onQueryParamsChange(params: NzTableQueryParams): void {
@@ -64,34 +109,27 @@ export class ItemLocationComponent {
     //   sortColumn: sortField,
     //   sortDirection: sortOrder,
     // }];
-    // this._state.page = params.pageIndex;
-    // this._state.pageSize = params.pageSize;
-
+    this.service._pageItemDetails.set(params.pageIndex);
+    this.service._pageSizeItemDetails.set(params.pageSize);
     this.loadItemDetail();
-  }
-
-  loadItemDetail() {
-    this.service._loadingItemDetail.set(true);
-    this.apiItemDetail.fulltextFilter({q: this.service._search(), pagination: true}).subscribe({
-      next: (res:any) => {
-        this.service._totalItemDetails.set(res.totalItems);
-        this.service._itemDetails.set(res.data);
-      },
-      error: (err: any) => {
-        this.msg.warning("Can't load transaction list!")
-      },
-      complete: () => {
-        this.service._loadingItemDetail.set(false);
-        this.cd.detectChanges();
-      }
-    });
   }
 
   loadItemLocHdr() {
     this.service._loadingItemLocations.set(true);
-    this.apiItemLocation.list({pagination: true}).subscribe({
+    const numberOfFilters = Object.keys({state: 'Active'}).length;
+    const params: SearchParams<Prisma.ScmItemLocationWhereInput, Prisma.ScmItemLocationOrderByWithRelationAndSearchRelevanceInput> = {
+      pageSize: this.service._pageSizeItemLocations(),
+      page: this.service._pageItemLocations(),
+      filteredObject: numberOfFilters > 0 ? this.searchParam : {},
+      orderBy: {
+        locName: 'asc'
+      },
+      pagination: true
+    };
+
+    // {pagination: true, orderBy: {locName: 'asc'}}
+    this.apiItemLocation.list(params).subscribe({
       next: (res:any) => {
-        console.log('RES', res);
         this.service._totalItemLocations.set(res.totalItems);
         this.service._itemLocations.set(res.data);
         console.log('SSSS', this.service._totalItemLocations());
@@ -126,7 +164,7 @@ export class ItemLocationComponent {
       pagination: true
     };
 
-    this.apiItemLocationDtl.list({pagination: true, filteredObject:{locationId: this.model.locationId}, orderBy: {scmItemDtl:{subitemName: 'desc'}}}).subscribe({
+    this.apiItemLocationDtl.list({pagination: true, filteredObject:{locationId: this.model.locationId}, orderBy: {scmItemDtl:{subitemName: 'asc'}}}).subscribe({
       next: (res:any) => {
         this.service._totalItemLocationDetails.set(res.totalItems);
         this.service._itemLocationDetails.set(res.data);
@@ -248,6 +286,17 @@ export class ItemLocationComponent {
 
 
   ngOnInit(): void {
+    // this.stateItemDetail.loading = true;
+    // this.stateItemDetail.list = [];
+    // this.stateItemDetail.page = 1;
+    // this.stateItemDetail.pageSize = 20;
+    // this.stateItemDetail.totalItems = 0;
+
+    // this.stateLocationHeader.loading = true;
+    // this.stateLocationHeader.list = [];
+    // this.stateLocationHeader.page = 1;
+    // this.stateLocationHeader.pageSize = 20;
+    // this.stateLocationHeader.totalItems = 0;
     this.loadItemLocHdr();
     this.loadItemLocDetail();
     this.loadItemDetail();

@@ -22,6 +22,7 @@ export interface SearchParams<T, K> {
   pagination?: boolean;
   orderBy?: K[] | K;
   filteredObject?: T;
+  q?: string
 }
 
 export interface ColumnItem<T> {

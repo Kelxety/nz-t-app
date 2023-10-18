@@ -40,6 +40,26 @@ export class ItemDetailServices {
         return this.apiService.get(this.searchFulltext, parameters);
     }
 
+    find(params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithAggregationInput>): Observable<ResType<ScmItemDtl[]>> {
+        console.log('SSSSSSSSSSSSSSs', params);
+        
+        const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
+        const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
+
+        let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
+
+        if (!filteredObject) {
+            p = p.delete('filteredObject');
+        }
+
+        if (!orderBy) {
+            p = p.delete('orderBy');
+        }
+
+        console.log('PARAMS', p);
+        return this.apiService.get(this.searchFulltext, p);
+    }
+
     get(id: string): Observable<ResType<ScmItemDtl>> {
         const url = `${this.baseUrl}/${id}`;
         return this.apiService.get(url);
