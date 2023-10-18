@@ -102,7 +102,7 @@ export class ItemInquiryComponent {
   onSearchFulltext(value: string): void {
     this.isSpinning = true;
     this.searchChange$.next(value);
-    if (!this.gridList) {
+    if (!this.dataGridList) {
       const getList = (): Observable<any> =>
         this.itemDetailServices.fulltextFilter({ q: this.search, pagination: false })
           .pipe(
@@ -121,7 +121,9 @@ export class ItemInquiryComponent {
         this.isSpinning = false;
       });
     } else {
-      this.ds.fetchSearch(0, { pageSize: 30, q: value })
+      console.log('list')
+      this.ds.fetchSearch({ q: value, pagination: false })
+      console.log(this.ds)
       this.isSpinning = false;
     }
 
