@@ -11,10 +11,11 @@
       </nz-breadcrumb>
     </nz-card>
     <nz-card class="m-4" nzTitle="Item List" [nzExtra]="options">
-      <div class="loc-content" *ngIf="!model.loading; else isLoading">
+      <div>
         <nz-table nzShowSizeChanger #fixedTable [nzData]="model.filteredList" [nzSize]="'default'"
-          [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }"
-          (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzPageSize]="10">
+          [nzFrontPagination]="false" [nzScroll]="{ x: '100%', y: 'calc(100vh - 330px)' }" [nzTotal]="model.totalItems"
+          [nzLoading]="loading" [nzPageIndex]="pageIndex" (nzQueryParams)="onQueryParamsChange($event)"
+          [nzPageSize]="pageSize">
           <thead>
             <tr>
               <th>Code</th>
@@ -57,7 +58,7 @@
 
     <ng-template #options>
       <div nz-space nzAlign="start">
-        <nz-input-group *nzSpaceItem [nzSuffix]="this.Loading ? suffixIconLoad : suffixIconSearch">
+        <nz-input-group *nzSpaceItem [nzSuffix]="model.loading ? suffixIconLoad : suffixIconSearch">
           <input type="text" nz-input placeholder="Search..." name="search" [(ngModel)]="search"
             (keyup.enter)="onSearchFulltext(search)" />
         </nz-input-group>

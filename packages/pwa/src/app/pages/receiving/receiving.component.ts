@@ -2,13 +2,14 @@ import { ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ScmItem, ScmItemLocation, ScmReceiveMode, ScmSupplier, ScmWarehouse } from '@prisma/client';
+import { Prisma, ScmItem, ScmItemLocation, ScmReceiveMode, ScmSupplier, ScmWarehouse } from '@prisma/client';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { of } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { SpinService } from '../../core/services/store/common-store/spin.service';
 import { SharedModule } from '../../shared';
+import { SearchParams } from '../../shared/interface';
 import { fnCheckForm } from '../../utils/tools';
 import { ModalBtnStatus } from '../../widget/base-modal';
 import { ItemCatergoryServices } from '../configuration/Services/item-category/item-category.service';
@@ -267,7 +268,15 @@ export class ReceivingComponent {
   }
 
   loadItems() {
-    this.itemServices.list({ pagination: false, state: 'Active' }).subscribe({
+    const params: SearchParams<Prisma.ScmItemWhereInput, Prisma.ScmItemOrderByWithAggregationInput> = {
+      filteredObject: { state: 'Active' },
+      orderBy: {
+        itemCode: 'asc'
+
+      },
+      pagination: false
+    };
+    this.itemServices.list(params).subscribe({
       next: (res: any) => {
         const list = res.data;
         this.listOfItem = list;

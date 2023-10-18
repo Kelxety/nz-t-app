@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, Component, DestroyRef, ElementRef, NO_ERRORS_SCHEMA, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Prisma } from '@prisma/client';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
@@ -22,7 +22,11 @@ interface ItemData {
   templateUrl: './item-inquiry.component.html',
   styleUrls: ['./item-inquiry.component.less'],
   standalone: true,
-  imports: [SharedModule, NzSegmentedModule]
+  imports: [SharedModule, NzSegmentedModule],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA,
+    NO_ERRORS_SCHEMA
+  ]
 })
 export class ItemInquiryComponent {
   fallback =
@@ -36,6 +40,24 @@ export class ItemInquiryComponent {
 
   searchChange$ = new BehaviorSubject('');
   isLoading = false;
+  total: number = 0
+  totalData: number = 0
+
+  dataParams: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput> = {
+    orderBy: [
+      { subitemName: 'asc' },
+    ],
+    pageSize: 100,
+    pagination: true
+  };
+
+  pageMode: any =
+    {
+      page: 0,
+      totalPage: 0,
+      hasNext: true
+    }
+
 
   dataGridList = false
   data: ItemData[] = [];
@@ -77,6 +99,11 @@ export class ItemInquiryComponent {
 
   }
 
+  handler(a) {
+    console.log('here: ', a);
+  }
+
+
   onSearchFulltext(value: string): void {
     this.isSpinning = true;
     // if (value.length < 3) {
@@ -104,20 +131,36 @@ export class ItemInquiryComponent {
     });
   }
 
+  onQueryParamsChange(): void {
+    if (!this.pageMode.hasNext) {
+      return;
+    }
+    const { pageSize, page } = this.pageMode;
+
+    this.dataParams = {
+      pageSize: pageSize,
+      page: page,
+      pagination: true
+    };
+    console.log(this.dataParams)
+    this.loadData()
+    this.cd.detectChanges();
+  }
+
+
   loadData() {
     this.isSpinning = true
 
-    const params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput> = {
-      orderBy: {
-        subitemName: 'asc'
-      },
-      pagination: false
-    };
-    this.itemDetailServices.list(params).subscribe({
+    this.itemDetailServices.list(this.dataParams).subscribe({
       next: (res: any) => {
-        // console.log(res.data)
+        console.log(res)
+        this.total = res.totalItems
+        this.pageMode.page = res.page
+        this.pageMode.totalPage = res.totalPage + 1
+        this.pageMode.hasNext = res.hasNext
         // const list = res.data
-        this.itemCardData.set(res.data)
+        this.totalData += res.data.length
+        this.itemCardData.set([this.itemCardData(), ...res.data])
         console.log(this.itemCardData())
         // model.list = list;
         // model.filteredList = list;

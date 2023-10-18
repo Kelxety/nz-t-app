@@ -62,6 +62,8 @@ export class ItemInquiryModalComponent {
   search: string = '';
   isLoading = false;
 
+  loadMoreLoading = false
+
   itemDtls: any
   selectedValue: any;
   listOfItem: ScmWarehouse[] = [];
@@ -218,6 +220,8 @@ export class ItemInquiryModalComponent {
     this.listOfCurrentPageData = $event;
     this.cd.detectChanges
   }
+
+
 
 
 }
