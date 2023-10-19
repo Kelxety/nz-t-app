@@ -1,0 +1,41 @@
+<nz-card [nzBodyStyle]="{ padding: 0 }">
+  <h3 class="text-center font-bold pt-4 text-xl font-primary">Warehouse List</h3>
+
+  <div class="p-8">
+    <nz-input-group nzSize="small" [nzSuffix]="suffixIcon">
+      <input type="text" ngModel nz-input nzSize="small" placeholder="Search" (ngModelChange)="changeSearch($event)" />
+    </nz-input-group>
+    <ng-template #suffixIcon>
+      <i nz-icon nzType="search"></i>
+    </ng-template>
+  </div>
+  <div *ngIf="selectedWarehouse()" class="w-full">
+    <button
+      class="w-full bg-transparent border-none hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 hover:border-transparent rounded"
+      type="button"
+      (click)="removeSelect()"
+      *ngIf="selectedWarehouse()"
+    >
+      <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+      Remove Selected Warehouse
+    </button>
+  </div>
+  <div class="p-8 h-[500px] overflow-y-auto">
+    <div *ngIf="data().length === 0"></div>
+    <div *ngIf="data().length > 0">
+      <div *ngFor="let item of data()">
+        <div
+          [ngClass]="{
+            'bg-blue-500 hover:bg-blue-400 text-white': item.id === selectedWarehouse()?.id,
+            'hover:bg-blue-500/80 hover:text-white': item.id !== selectedWarehouse()?.id
+          }"
+          class="border border-solid border-gray-500/20 rounded-sm w-full p-2 mt-2 space-y-4 hover:scale-105 relative"
+          (click)="selectedItem(item)"
+        >
+          {{ item.whName }} ( {{ item.whAcro }} )
+          <!-- <span *ngIf="item.id === selectedWarehouse().id" class="absolute right-2 text-white font-bold hover:cursor-pointer z-10" (click)="removeSelect(item)">x</span> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</nz-card>
