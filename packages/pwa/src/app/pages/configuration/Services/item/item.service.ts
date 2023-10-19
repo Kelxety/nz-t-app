@@ -1,9 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { HttpParams } from '@angular/common/http';
 import { ApiService, HttpParamsService } from '@app/shared';
-import { ScmItem, ScmItemDtl } from '@prisma/client';
+import { Prisma, ScmItem, ScmItemDtl } from '@prisma/client';
 import { ResType } from '@utils/types/return-types';
+import { SearchParams } from '../../../../shared/interface';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +18,22 @@ export class ItemServices {
 
   constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
-  list(params: object = {}): Observable<ResType<ScmItem[]>> {
-    const parameters = this.httpParams.convert(params);
-    return this.apiService.get(this.baseUrl, parameters);
+  list(params: SearchParams<Prisma.ScmItemWhereInput, Prisma.ScmItemOrderByWithRelationAndSearchRelevanceInput>): Observable<ResType<ScmItem[]>> {
+    const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
+    const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
+
+    let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
+
+    if (!filteredObject) {
+      p = p.delete('filteredObject');
+    }
+
+    if (!orderBy) {
+      p = p.delete('orderBy');
+    }
+    // const parameters = this.httpParams.convert(params);
+
+    return this.apiService.get(this.baseUrl, p);;
   }
 
   fulltextFilter(params: object = {}): Observable<ResType<ScmItem[]>> {

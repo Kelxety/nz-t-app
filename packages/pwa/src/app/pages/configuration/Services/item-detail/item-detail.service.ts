@@ -17,7 +17,7 @@ export class ItemDetailServices {
 
     constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
 
-    list(params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithAggregationInput>): Observable<ResType<ScmItemDtl[]>> {
+    list(params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput>): Observable<ResType<ScmItemDtl[]>> {
         const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
         const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
 
@@ -38,6 +38,24 @@ export class ItemDetailServices {
     fulltextFilter(params: object = {}): Observable<ResType<ScmItemDtl[]>> {
         const parameters = this.httpParams.convert(params);
         return this.apiService.get(this.searchFulltext, parameters);
+    }
+
+    find(params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithAggregationInput>): Observable<ResType<ScmItemDtl[]>> {
+        const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
+        const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
+
+        let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
+
+        if (!filteredObject) {
+            p = p.delete('filteredObject');
+        }
+
+        if (!orderBy) {
+            p = p.delete('orderBy');
+        }
+
+        console.log('PARAMS', p);
+        return this.apiService.get(this.searchFulltext, p);
     }
 
     get(id: string): Observable<ResType<ScmItemDtl>> {

@@ -1,28 +1,38 @@
-import { ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject, signal } from '@angular/core';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Prisma } from '@prisma/client';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
+import { catchError, debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 import { SharedModule } from '../../shared';
+import { DatatableDataSource } from '../../shared/components/datasource';
 import { SearchParams } from '../../shared/interface';
 import { ModalBtnStatus } from '../../widget/base-modal';
 import { ItemDetailServices } from '../configuration/Services/item-detail/item-detail.service';
 import { ItemServices } from '../configuration/Services/item/item.service';
 import { ItemInquiryModalService } from './item-inquiry-modal/item-inquiry-modal.service';
 interface ItemData {
-  href: string;
-  title: string;
-  avatar: string;
-  description: string;
-  content: string;
+  gender: string;
+  name: Name;
+  email: string;
 }
+
+interface Name {
+  title: string;
+  first: string;
+  last: string;
+}
+
+
 @Component({
   selector: 'app-item-inquiry',
   templateUrl: './item-inquiry.component.html',
   styleUrls: ['./item-inquiry.component.less'],
   standalone: true,
-  imports: [SharedModule, NzSegmentedModule]
+  imports: [SharedModule, NzSegmentedModule, ScrollingModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ItemInquiryComponent {
   fallback =
@@ -36,19 +46,41 @@ export class ItemInquiryComponent {
 
   searchChange$ = new BehaviorSubject('');
   isLoading = false;
+  total: number = 0
+  totalData: number = 0
+
+  dataParams: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput> = {
+    orderBy: [
+      { subitemName: 'asc' },
+    ],
+    page: 1,
+    pageSize: 100,
+    pagination: true,
+  };
+
+  pageMode: any = {
+    page: 1,
+    totalPage: 0,
+    hasNext: true
+  }
 
   dataGridList = false
-  data: ItemData[] = [];
+
   gridList = [
     { label: 'Grid', value: 'Grid', icon: 'appstore' },
     { label: 'List', value: 'List', icon: 'bars' },
   ];
+
+  ds = new DatatableDataSource(this.itemDetailServices);
+
+  private destroy$ = new Subject<boolean>();
 
   constructor(
     private cd: ChangeDetectorRef,
     private itemServices: ItemServices,
     private modalService: ItemInquiryModalService,
     private itemDetailServices: ItemDetailServices,
+    private nzMessage: NzMessageService,
   ) {
 
   }
@@ -56,69 +88,78 @@ export class ItemInquiryComponent {
   ngOnInit(): void {
 
     this.loadData();
-
-
-
-    this.loadDataList(1);
-  }
-
-  loadDataList(pi: number): void {
-    this.data = new Array(5).fill({}).map((_, index) => ({
-      href: 'http://ant.design',
-      title: `ant design part ${index} (page: ${pi})`,
-      avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      description: 'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-      content:
-        'We supply a series of design principles, practical patterns and high quality design resources ' +
-        '(Sketch and Axure), to help people create their product prototypes beautifully and efficiently.'
-    }));
-
-
+    console.log(this.ds)
+    this.ds
+      .completed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.nzMessage.warning('Infinite List loaded all');
+      });
 
   }
+
 
   onSearchFulltext(value: string): void {
     this.isSpinning = true;
-    // if (value.length < 3) {
-    //   this.isSpinning = false;
-    //   return; // Don't trigger the search if it's less than four characters
-    // }
     this.searchChange$.next(value);
-
-    const getList = (): Observable<any> =>
-      this.itemDetailServices.fulltextFilter({ q: this.search })
-        .pipe(
-          catchError(() => of({ results: [] })),
-          map((res: any) => res.data)
-        )
-    const optionList$: Observable<any[]> = this.searchChange$
-      .asObservable()
-      .pipe(debounceTime(500))
-      .pipe(switchMap(getList));
-    optionList$.subscribe(data => {
-      console.log(data)
-      this.itemCardData.set(data)
-      //   console.log(this.itemCardData())
-      // this.optionList = data;
+    if (!this.dataGridList) {
+      const getList = (): Observable<any> =>
+        this.itemDetailServices.fulltextFilter({ q: this.search, pagination: false })
+          .pipe(
+            catchError(() => of({ results: [] })),
+            map((res: any) => res.data)
+          )
+      const optionList$: Observable<any[]> = this.searchChange$
+        .asObservable()
+        .pipe(debounceTime(500))
+        .pipe(switchMap(getList));
+      optionList$.subscribe(data => {
+        this.total = data.length
+        this.pageMode.hasNext = false
+        this.totalData = data.length
+        this.itemCardData.set(data)
+        this.isSpinning = false;
+      });
+    } else {
+      console.log('list')
+      this.ds.fetchSearch({ q: value, pagination: false })
+      console.log(this.ds)
       this.isSpinning = false;
-    });
+    }
+
   }
+
+  onQueryParamsChange(): void {
+    if (!this.pageMode.hasNext) {
+      return;
+    }
+    const { page } = this.pageMode;
+
+    this.dataParams = {
+      pageSize: 100,
+      page: page,
+      pagination: true
+    };
+    console.log(this.dataParams)
+    this.loadData()
+    this.cd.detectChanges();
+  }
+
 
   loadData() {
     this.isSpinning = true
 
-    const params: SearchParams<Prisma.ScmItemDtlWhereInput, Prisma.ScmItemDtlOrderByWithRelationAndSearchRelevanceInput> = {
-      orderBy: {
-        subitemName: 'asc'
-      },
-      pagination: false
-    };
-    this.itemDetailServices.list(params).subscribe({
+    this.itemDetailServices.list(this.dataParams).subscribe({
       next: (res: any) => {
-        // console.log(res.data)
+        console.log(res)
+        this.total = res.totalItems
+        this.pageMode.page = res.page += 1
+        this.pageMode.totalPage = res.totalPage
+        this.pageMode.hasNext = res.hasNext
         // const list = res.data
-        this.itemCardData.set(res.data)
-        console.log(this.itemCardData())
+        this.totalData += res.data.length
+        this.itemCardData.set([...this.itemCardData(), ...res.data])
+        // console.log(this.itemCardData())
         // model.list = list;
         // model.filteredList = list;
       },
@@ -167,3 +208,5 @@ export class ItemInquiryComponent {
 
 
 }
+
+
