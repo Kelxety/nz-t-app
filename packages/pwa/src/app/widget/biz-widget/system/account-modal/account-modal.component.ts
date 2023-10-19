@@ -5,7 +5,7 @@ import { Observable, finalize, of } from 'rxjs';
 
 import { OptionsInterface } from '@core/services/types';
 import { ValidatorsService } from '@core/services/validators/validators.service';
-import { Role, User } from '@prisma/client';
+import { Prisma, Role, User } from '@prisma/client';
 import { DeptService } from '@services/system/dept.service';
 import { RoleService } from '@services/system/role.service';
 import { fnCheckForm } from '@utils/tools';
@@ -44,7 +44,7 @@ export class AccountModalComponent implements OnInit {
   private loginService = inject(LoginInOutService);
   private cdr = inject(ChangeDetectorRef);
   addEditForm!: FormGroup;
-  readonly nzModalData: User & { role: Array<{ role: Role; roleId: string; userId: string }> } = inject(NZ_MODAL_DATA);
+  readonly nzModalData: Prisma.UserGetPayload<{ include: { office: true; warehouse: true } }> & { role: Array<{ role: Role; roleId: string; userId: string }> } = inject(NZ_MODAL_DATA);
   roleOptions: OptionsInterface[] = [];
   isEdit = false;
   value?: string;
@@ -67,48 +67,28 @@ export class AccountModalComponent implements OnInit {
     }
     let method = '';
 
-    // if (this.isEdit) {
-    //   method = 'patch';
-    //   if (method === '') return of(false);
-    //   const newParamRole: Array<{ id: string }> = [];
-    //   this.addEditForm.controls['role'].value.forEach((role: any) => {
-    //     if (typeof role === 'object' && role.value !== undefined) {
-    //       if (role.checked) {
-    //         newParamRole.push({ id: role.value });
-    //       }
-    //     }
-    //   });
-    // param.role = newParamRole;
-    // this.dataService[method](param.id, param)
-    //   .pipe(
-    //     finalize(() => {
-    //       this.tableLoading(false);
-    //     }),
-    //     takeUntilDestroyed(this.destroyRef)
-    //   )
-    //   .subscribe(() => {
-    //     this.getDataList();
-    //   });
-    // }
-    method = 'create';
+    if (this.isEdit) {
+      method = 'patch';
+    } else {
+      method = 'create';
+    }
     const newParamRole: Array<{ id: string }> = [];
 
-    this.addEditForm.controls['role'].value.forEach((role: any) => {
-      if (typeof role === 'object' && role.value !== undefined) {
-        newParamRole.push({ id: role.value });
-      }
-    });
-    this.addEditForm.controls['role'].setValue(newParamRole);
     this.addEditForm.controls['accountName'].setValue(this.addEditForm.controls['firstName'].value + ' ' + this.addEditForm.controls['lastName'].value);
     const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId;
 
-    this.dataService[method](this.addEditForm.value)
+    this.dataService[method](this.addEditForm.controls['id']?.value, this.addEditForm.value)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {
-          if (res.statusCode === 201) {
-            this.msg.remove(id);
-            this.msg.success('Added succesfully');
+          if (res.statusCode === 201 || res.statusCode === 200) {
+            if (res.statusCode === 201) {
+              this.msg.remove(id);
+              this.msg.success('Added succesfully');
+            } else {
+              this.msg.remove(id);
+              this.msg.success('Updated succesfully');
+            }
           } else {
             this.msg.remove(id);
             this.msg.error("There's an error!");
@@ -119,27 +99,34 @@ export class AccountModalComponent implements OnInit {
           this.msg.remove(id);
         },
         complete: () => {
-          console.log('completed');
+          this.cdr.detectChanges();
         }
       });
 
-    return of(false);
-    // return of(this.addEditForm.value);
+    // return of(false);
+    return of(this.addEditForm.value);
   }
 
   getRoleList(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.roleService.getRoles({ page: 0, pageSize: 0, pagination: false }).subscribe(({ data }) => {
-        data.forEach(({ id, roleName }) => {
-          const obj: OptionsInterface = {
-            label: roleName,
-            value: id!,
-            checked: false
-          };
-          this.roleOptions.push(obj);
+      this.roleService
+        .getRoles({ page: 0, pageSize: 0, pagination: false })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: res => {
+            res.data.forEach(({ id, roleName }) => {
+              const obj: OptionsInterface = {
+                label: roleName,
+                value: id!,
+                checked: false
+              };
+              this.roleOptions.push(obj);
+            });
+          },
+          complete: () => {
+            resolve();
+          }
         });
-        resolve();
-      });
     });
   }
 
@@ -166,10 +153,10 @@ export class AccountModalComponent implements OnInit {
           },
           complete: () => {
             this.cdr.detectChanges();
+            resolve();
           }
         });
     });
-    this.cdr.detectChanges();
   }
 
   getWarehouseList(): Promise<void> {
@@ -194,6 +181,7 @@ export class AccountModalComponent implements OnInit {
           },
           complete: () => {
             this.cdr.detectChanges();
+            resolve();
           }
         });
     });
@@ -206,45 +194,20 @@ export class AccountModalComponent implements OnInit {
   }
 
   getRolesForUser(role: Array<{ roleId: string; userId: string; role: Role }>): OptionsInterface[] {
-    this.roleOptions.forEach((rolling, id) => {
+    const newRole = [];
+    this.roleOptions.forEach((userRole, id) => {
       role.forEach(role => {
-        if (rolling.value === role.role.id) {
-          this.roleOptions[id].checked = true;
+        if (userRole.value === role.role.id) {
+          newRole.push(userRole.value);
         }
       });
     });
-    return this.roleOptions;
-  }
-
-  // updateAllChecked(): void {
-  //   this.indeterminate = false;
-  //   if (this.allChecked) {
-  //     this.roleOptions = this.roleOptions.map(item => ({
-  //       ...item,
-  //       checked: true
-  //     }));
-  //   } else {
-  //     this.roleOptions = this.roleOptions.map(item => ({
-  //       ...item,
-  //       checked: false
-  //     }));
-  //   }
-  // }
-
-  updateSingleChecked(): void {
-    if (this.roleOptions.every(item => !item.checked)) {
-      this.allChecked = false;
-      this.indeterminate = false;
-    } else if (this.roleOptions.every(item => item.checked)) {
-      this.allChecked = true;
-      this.indeterminate = false;
-    } else {
-      this.indeterminate = true;
-    }
+    return newRole;
   }
 
   initForm(): void {
     this.addEditForm = this.fb.group({
+      id: [null],
       username: [null, [Validators.required]],
       accountName: [null],
       firstName: [null, [Validators.required]],
@@ -263,14 +226,21 @@ export class AccountModalComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    console.log(this.loginService.currentUserSignal());
     this.initForm();
     this.isEdit = !!this.nzModalData;
 
     await Promise.all([this.getRoleList(), this.getOfficeList(), this.getWarehouseList()]);
     if (this.isEdit) {
-      this.addEditForm.patchValue({ ...this.nzModalData, status: this.getStatusOfUser(this.nzModalData.status), role: this.getRolesForUser(this.nzModalData.role) });
+      this.addEditForm.patchValue({
+        ...this.nzModalData,
+        status: this.getStatusOfUser(this.nzModalData.status),
+        role: this.getRolesForUser(this.nzModalData.role),
+        warehouseId: this.nzModalData.warehouse?.id,
+        officeId: this.nzModalData.office?.id
+      });
       this.addEditForm.controls['password'].disable();
+      this.cdr.detectChanges();
     }
+    this.cdr.detectChanges();
   }
 }
