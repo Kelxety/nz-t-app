@@ -25,10 +25,13 @@
     </nz-form-control>
   </nz-form-item>
 
-  <nz-form-item *ngIf="menuType === 'C'">
-    <nz-form-label nzFor="fatherId" [nzSm]="6" [nzXs]="24">Father ID</nz-form-label>
+  <nz-form-item>
+    <nz-form-label nzFor="fatherId" [nzSm]="6" [nzXs]="24">Parent Menu</nz-form-label>
     <nz-form-control [nzSm]="14" [nzXs]="24">
-      <input id="fatherId" formControlName="fatherId" nz-input placeholder="Father ID" />
+      <!-- <input id="fatherId" formControlName="fatherId" nz-input placeholder="Parent Menu" /> -->
+      <nz-select formControlName="fatherId" nzPlaceHolder="Parent Menu">
+        <nz-option *ngFor="let option of parentMenuOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+      </nz-select>
     </nz-form-control>
   </nz-form-item>
 
@@ -81,7 +84,7 @@
     <nz-form-label nzFor="visible" nzRequired [nzSm]="6" [nzXs]="24">visible</nz-form-label>
     <nz-form-control [nzErrorTip]="combineTpl" [nzSm]="14" [nzXs]="24">
       <nz-radio-group formControlName="visible">
-        <label nz-radio [nzValue]="true">yes</label>
+        <label nz-radio [nzValue]="'1'">yes</label>
         <label nz-radio [nzValue]="false">no</label>
       </nz-radio-group>
     </nz-form-control>
