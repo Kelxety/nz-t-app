@@ -1,10 +1,10 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 
 import { Permission, PermissionStatus, Prisma } from '@prisma/client';
-import { MenuListObj } from '@pwa/src/app/core/services/http/system/menus.service';
+import { MenuListObj, PermissionService } from '@pwa/src/app/core/services/http/system/menus.service';
 import { RoleService } from '@pwa/src/app/core/services/http/system/role.service';
 import { OptionsInterface } from '@pwa/src/app/core/services/types';
 import { IconSelComponent } from '@shared/biz-components/icon-sel/icon-sel.component';
@@ -19,6 +19,8 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
 
 // c:url，f:button
 type menuType = 'C' | 'F' | string;
@@ -46,10 +48,14 @@ type Options = Array<{ label: string; value: string }>;
   ]
 })
 export class MenuModalComponent implements OnInit {
+  readonly nzModalData: MenuListObj = inject(NZ_MODAL_DATA);
+  private menuService = inject(PermissionService);
+  private destroyRef = inject(DestroyRef);
+
   validateForm!: FormGroup;
   selIconVisible = false;
-  readonly nzModalData: MenuListObj = inject(NZ_MODAL_DATA);
   // roleOptions: { label: string; value: string }[] = [];
+  parentMenuOptions: OptionsInterface[] = [];
   selectedRole = '';
   menuType: menuType = 'C';
   permissionStatusOptionsActive: PermissionStatus = 'Active';
@@ -116,8 +122,38 @@ export class MenuModalComponent implements OnInit {
     }
   }
 
+  getParentId() {
+    this.menuService
+      .getMenuList({
+        pagination: false
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res: ResType<Permission[]>) => {
+          if (res.statusCode === 200) {
+            res.data.forEach(menu => {
+              if (!this.nzModalData) {
+                this.parentMenuOptions.push({
+                  label: menu.menuName,
+                  value: menu.id
+                });
+              } else {
+                if (this.nzModalData.id !== menu.id) {
+                  this.parentMenuOptions.push({
+                    label: menu.menuName,
+                    value: menu.id
+                  });
+                }
+              }
+            });
+          }
+        }
+      });
+  }
+
   async ngOnInit(): Promise<void> {
     this.initForm();
+    this.getParentId();
     // await Promise.all([this.getRoleList()]);
     if (!!this.nzModalData) {
       this.changeMenuType(this.nzModalData.menuType);

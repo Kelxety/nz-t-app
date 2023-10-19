@@ -3,11 +3,10 @@ import { Component, OnInit, ChangeDetectionStrategy, ViewChild, TemplateRef, Cha
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 
 import { ActionCode } from '@app/config/actionCode';
 import { OptionsInterface, SearchCommonVO } from '@core/services/types';
-// import { MenuListObj, MenusService } from '@services/system/menus.service';
 import { AntTableConfig } from '@shared/components/ant-table/ant-table.component';
 import { CardTableWrapComponent } from '@shared/components/card-table-wrap/card-table-wrap.component';
 import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -15,7 +14,7 @@ import { TreeNodeInterface, TreeTableComponent } from '@shared/components/tree-t
 import { WaterMarkComponent } from '@shared/components/water-mark/water-mark.component';
 import { AuthDirective } from '@shared/directives/auth.directive';
 import { MapKeyType, MapPipe, MapSet } from '@shared/pipes/map.pipe';
-import { fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList } from '@utils/treeTableTools';
+import { fnAddTreeDataGradeAndLeaf, fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList, fnStringFlatDataHasParentToTree } from '@utils/treeTableTools';
 import { ModalBtnStatus } from '@widget/base-modal';
 import { MenuModalService } from '@pwa/src/app/widget/biz-widget/system/permission-modal/permission-modal.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -33,10 +32,13 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { PermissionService } from '@pwa/src/app/core/services/http/system/menus.service';
 import { $Enums, Permission, PermissionStatus, Prisma } from '@prisma/client';
+import { SearchParams } from '@pwa/src/app/shared/interface';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
+import { EMPTY, of } from 'rxjs';
 
 interface SearchParam {
-  menuName: number;
-  visible: boolean;
+  menuName: string;
+  status: Prisma.EnumPermissionStatusFilter;
 }
 
 @Component({
@@ -71,10 +73,12 @@ export class MenuComponent implements OnInit {
   @ViewChild('operationTpl', { static: true }) operationTpl!: TemplateRef<NzSafeAny>;
   @ViewChild('visibleTpl', { static: true }) visibleTpl!: TemplateRef<NzSafeAny>;
   @ViewChild('isNewLink', { static: true }) isNewLink!: TemplateRef<NzSafeAny>;
+  @ViewChild('statusTpl', { static: true }) statusTpl!: TemplateRef<NzSafeAny>;
 
   ActionCode = ActionCode;
   searchParam: Partial<SearchParam> = {};
-  destroyRef = inject(DestroyRef);
+  private msg = inject(NzMessageService);
+  private destroyRef = inject(DestroyRef);
   tableConfig!: AntTableConfig;
   pageHeaderInfo: Partial<PageHeaderType> = {
     title: 'Menu management. After adding a new menu, remember to add the newly added menu permissions to the corresponding role, otherwise it will not be displayed.',
@@ -110,10 +114,15 @@ export class MenuComponent implements OnInit {
 
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
-    const params: SearchCommonVO<any> = {
-      pageSize: e.pageSize,
-      page: e.pageIndex,
-      pagination: true
+    const params: SearchParams<Prisma.PermissionWhereInput, Prisma.PermissionOrderByWithAggregationInput> = {
+      pagination: false,
+      orderBy: {
+        orderNum: 'asc'
+      },
+      filteredObject: {
+        menuName: this.searchParam.menuName,
+        status: this.searchParam.status
+      }
     };
     this.dataService
       .getMenuList(params)
@@ -123,15 +132,14 @@ export class MenuComponent implements OnInit {
         }),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(menuList => {
-        if (!menuList.data) return;
-        this.dataList = menuList.data;
-        this.tableConfig.total = menuList.totalItems!;
-        // const target = fnFlatDataHasParentToTree(menuList.data, 'fatherId');
-        // console.log(target);
-        // this.dataList = fnFlattenTreeDataByDataList(target);
-        // console.log(this.dataList);
-        this.tableLoading(false);
+      .subscribe({
+        next: menuList => {
+          if (!menuList.data) return;
+          const target = fnStringFlatDataHasParentToTree(menuList.data, 'fatherId');
+          this.dataList = fnAddTreeDataGradeAndLeaf(target);
+          this.tableConfig.total = menuList.totalItems!;
+          this.tableLoading(false);
+        }
       });
   }
 
@@ -161,6 +169,7 @@ export class MenuComponent implements OnInit {
   }
 
   addEditData(param: string & Permission, methodName: 'editMenus' | 'addMenus'): void {
+    const id = this.msg.loading('Action in progress..', { nzAnimate: true }).messageId;
     if (methodName === 'addMenus') {
       if (param.status) {
         param.status = $Enums.PermissionStatus.Active;
@@ -180,6 +189,8 @@ export class MenuComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef)
         )
         .subscribe(() => {
+          this.msg.remove(id);
+          this.msg.success('Menu saved successfully!');
           this.getDataList();
         });
     } else {
@@ -191,6 +202,8 @@ export class MenuComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef)
         )
         .subscribe(() => {
+          this.msg.remove(id);
+          this.msg.success('Menu successfully updated!');
           this.getDataList();
         });
     }
@@ -223,30 +236,39 @@ export class MenuComponent implements OnInit {
   edit(id: string, fatherId: number): void {
     this.dataService
       .getMenuDetail(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(res => {
-        if (res.status) {
-          res.status = PermissionStatus.Active;
-        } else {
-          res.status = PermissionStatus.Inactive;
-        }
-        return this.menuModalService
-          .show({ nzTitle: 'Edit' }, res)
-          .pipe(
+      .pipe(
+        switchMap((res: ResType<Permission>) => {
+          // Handle the status transformation
+          const modifiedData = {
+            ...res.data,
+            status: res.data.status ? PermissionStatus.Active : PermissionStatus.Inactive
+          };
+          return of(modifiedData);
+        }),
+        switchMap(data => {
+          // Show the modal dialog and handle user interaction
+          return this.menuModalService.show({ nzTitle: 'Edit' }, data).pipe(
+            catchError(error => {
+              // Handle errors from the modal or other errors
+              console.error('Error while showing the modal:', error);
+              return EMPTY; // Return an empty observable to signal the error but not break the chain
+            }),
             finalize(() => {
               this.tableLoading(false);
             }),
             takeUntilDestroyed(this.destroyRef)
-          )
-          .subscribe(({ modalValue, status }) => {
-            if (status === ModalBtnStatus.Cancel) {
-              return;
-            }
-            modalValue.id = id;
-            modalValue.fatherId = fatherId;
-            this.tableLoading(true);
-            this.addEditData(modalValue, 'editMenus');
-          });
+          );
+        })
+      )
+      .subscribe(({ modalValue, status }) => {
+        if (status === ModalBtnStatus.Cancel) {
+          // User canceled the operation
+          return;
+        }
+
+        modalValue.id = id;
+        this.tableLoading(true);
+        this.addEditData(modalValue, 'editMenus');
       });
   }
 
@@ -293,6 +315,7 @@ export class MenuComponent implements OnInit {
           title: 'status',
           field: 'status',
           pipe: 'available',
+          tdTemplate: this.statusTpl,
           width: 100
         },
         {
@@ -333,6 +356,9 @@ export class MenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.initTable();
-    this.visibleOptions = [...MapPipe.transformMapToArray(MapSet.visible, MapKeyType.Boolean)];
+    this.visibleOptions = [
+      { value: PermissionStatus.Active, label: PermissionStatus.Active },
+      { value: PermissionStatus.Inactive, label: PermissionStatus.Inactive }
+    ];
   }
 }

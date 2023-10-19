@@ -55,8 +55,9 @@ export class AccountService {
   }
 
   update(id: string, data: object): Observable<ResType<User[]>> {
+    const parameters = this.httpParams.convert(data);
     const url = `${this.baseUrl}/${id}`;
-    return this.apiService.put(url, data);
+    return this.apiService.put(url, parameters);
   }
 
   patch(id: string, data: object): Observable<ResType<User[]>> {

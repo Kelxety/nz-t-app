@@ -1,5 +1,5 @@
-import { NgIf, NgFor } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, ViewChild, TemplateRef, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
+import { NgIf, NgFor, NgStyle, NgClass } from '@angular/common';
+import { Component, OnInit, ChangeDetectionStrategy, ViewChild, TemplateRef, ChangeDetectorRef, inject, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -39,6 +39,8 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { OffListComponent } from './off-list/off-list.component';
+import { EnumType } from 'typescript';
+import { WarehouseListComponent } from './warehouse-list/warehouse-list.component';
 
 @Component({
   selector: 'app-account',
@@ -64,14 +66,16 @@ import { OffListComponent } from './off-list/off-list.component';
     AuthDirective,
     NzSwitchModule,
     NzTagModule,
-    OffListComponent
+    OffListComponent,
+    NgStyle,
+    NgClass,
+    WarehouseListComponent
   ]
 })
 export class AccountComponent implements OnInit {
   @ViewChild('operationTpl', { static: true }) operationTpl!: TemplateRef<any>;
   @ViewChild('statusFlag', { static: true }) statusFlag!: TemplateRef<NzSafeAny>;
   @ViewChild('viewTpl', { static: true }) viewTpl!: TemplateRef<any>;
-  searchParam: Partial<UserType> = {};
   tableConfig!: AntTableConfig;
   pageHeaderInfo: Partial<PageHeaderType> = {
     title: 'Account management (database is restored from backup every 10 minutes)',
@@ -83,6 +87,25 @@ export class AccountComponent implements OnInit {
   isCollapse = true;
   statusOptions: OptionsInterface[] = [];
   destroyRef = inject(DestroyRef);
+  selectedMenu: 'Office' | 'Warehouse' = 'Office';
+  selectedQuery = signal<{ warehouseId: string | null; officeId: string | null }>({
+    warehouseId: null,
+    officeId: null
+  });
+  searchParam = signal<Partial<UserType>>({ warehouseId: this.selectedQuery().warehouseId, officeId: this.selectedQuery().officeId });
+  searchByUsername = '';
+  searchByAccountName = '';
+  params: SearchParams<Prisma.UserWhereInput, Prisma.UserOrderByWithAggregationInput> = {
+    pageSize: 10,
+    page: 1,
+    filteredObject: Object.keys(this.searchParam()).length > 0 ? this.searchParam() : null,
+    orderBy: [
+      {
+        firstName: 'asc'
+      }
+    ],
+    pagination: true
+  };
 
   constructor(
     private dataService: AccountService,
@@ -100,24 +123,43 @@ export class AccountComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.searchParam = {};
+    this.searchByUsername = '';
+    this.searchByAccountName = '';
+    this.params.filteredObject = {};
+    this.getDataList();
+  }
+
+  search() {
+    this.params.filteredObject = {
+      accountName: this.searchByAccountName,
+      username: this.searchByUsername
+    };
+    if (this.searchByAccountName === '' || this.searchByUsername === '') {
+      if (this.searchByAccountName === '' && this.searchByUsername === '') {
+        this.params.filteredObject = {};
+      } else if (this.searchByAccountName === '' && this.searchByUsername !== '') {
+        this.params.filteredObject = {
+          username: this.searchByUsername
+        };
+      } else {
+        this.params.filteredObject = {
+          accountName: this.searchByAccountName
+        };
+      }
+    }
     this.getDataList();
   }
 
   getDataList(e?: NzTableQueryParams): void {
     const numberOfFilters = Object.keys(this.searchParam).length;
     this.tableConfig.loading = true;
-    const params: SearchParams<Prisma.UserWhereInput, Prisma.UserOrderByWithAggregationInput> = {
-      pageSize: this.tableConfig.pageSize!,
-      page: this.tableConfig.pageIndex!,
-      filteredObject: numberOfFilters > 0 ? this.searchParam : null,
-      orderBy: {
-        accountName: 'asc'
-      },
-      pagination: true
-    };
+    if (e?.pageIndex) this.params.page = e?.pageIndex;
+    if (e?.pageSize) this.params.pageSize = e?.pageSize;
+    if (!this.params.filteredObject.warehouseId && !this.params.filteredObject.officeId && !this.params.filteredObject.accountName && !this.params.filteredObject.username) {
+      this.params.filteredObject = {};
+    }
     this.dataService
-      .getAccountList(params)
+      .getAccountList(this.params)
       .pipe(
         finalize(() => {
           this.tableLoading(false);
@@ -149,6 +191,10 @@ export class AccountComponent implements OnInit {
     this.tableChangeDectction();
   }
 
+  changeSelectedMenu(menu: 'Office' | 'Warehouse'): void {
+    this.selectedMenu = menu;
+  }
+
   add(): void {
     this.modalService
       .show({ nzTitle: 'New' })
@@ -163,7 +209,7 @@ export class AccountComponent implements OnInit {
           return;
         }
         this.tableLoading(true);
-        this.addEditData(res.modalValue, 'addAccount');
+        this.reloadTable();
       });
   }
 
@@ -192,7 +238,7 @@ export class AccountComponent implements OnInit {
             }
             modalValue.id = id;
             this.tableLoading(true);
-            this.addEditData(modalValue, 'editAccount');
+            this.reloadTable();
           });
       });
   }
@@ -212,36 +258,6 @@ export class AccountComponent implements OnInit {
         }
         const param = { ...res.modalValue };
         this.tableLoading(true);
-        // this.addEditData(param, 'addRoles');
-      });
-  }
-
-  addEditData(param: UserType & { role: Array<{ label: string; value: string; checked: boolean }> | Array<{ id: string }> | null }, methodName: 'editAccount' | 'addAccount'): void {
-    let method = '';
-    if (methodName === 'editAccount') {
-      method = 'patch';
-    } else {
-      method = 'post';
-    }
-    if (method === '') return;
-    const newParamRole: Array<{ id: string }> = [];
-    param?.role.forEach(role => {
-      if (typeof role === 'object' && role.value !== undefined) {
-        if (role.checked) {
-          newParamRole.push({ id: role.value });
-        }
-      }
-    });
-    param.role = newParamRole;
-    this.dataService[method](param.id, param)
-      .pipe(
-        finalize(() => {
-          this.tableLoading(false);
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        this.getDataList();
       });
   }
 
@@ -342,8 +358,8 @@ export class AccountComponent implements OnInit {
     this.initTable();
   }
 
-  getUserStatus(status: 'true' | 'false'): boolean {
-    if (status === 'true') return true;
+  getUserStatus(status: 'true' | 'Active' | 'false' | 'Inactive'): boolean {
+    if (status === 'true' || status === 'Active') return true;
     return false;
   }
 

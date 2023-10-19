@@ -12,7 +12,7 @@ import { UsersService } from '@api/users/users.service';
     PrismaModule,
     JwtModule.register({
       secret: process.env.ACCESS_TOKEN_SECRET,
-      signOptions: { expiresIn: '5m' },
+      signOptions: { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION },
     }),
   ],
 })

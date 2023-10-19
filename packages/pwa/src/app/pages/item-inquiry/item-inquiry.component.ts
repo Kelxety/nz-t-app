@@ -1,5 +1,4 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Prisma } from '@prisma/client';
@@ -82,7 +81,6 @@ export class ItemInquiryComponent {
     private modalService: ItemInquiryModalService,
     private itemDetailServices: ItemDetailServices,
     private nzMessage: NzMessageService,
-    private http: HttpClient,
   ) {
 
   }
@@ -90,7 +88,7 @@ export class ItemInquiryComponent {
   ngOnInit(): void {
 
     this.loadData();
-
+    console.log(this.ds)
     this.ds
       .completed()
       .pipe(takeUntil(this.destroy$))
@@ -101,32 +99,34 @@ export class ItemInquiryComponent {
   }
 
 
-  handler(a) {
-    console.log('here: ', a);
-  }
-
-
   onSearchFulltext(value: string): void {
     this.isSpinning = true;
     this.searchChange$.next(value);
-
-    const getList = (): Observable<any> =>
-      this.itemDetailServices.fulltextFilter({ q: this.search, pagination: false })
-        .pipe(
-          catchError(() => of({ results: [] })),
-          map((res: any) => res.data)
-        )
-    const optionList$: Observable<any[]> = this.searchChange$
-      .asObservable()
-      .pipe(debounceTime(500))
-      .pipe(switchMap(getList));
-    optionList$.subscribe(data => {
-      this.total = data.length
-      this.pageMode.hasNext = false
-      this.totalData = data.length
-      this.itemCardData.set(data)
+    if (!this.dataGridList) {
+      const getList = (): Observable<any> =>
+        this.itemDetailServices.fulltextFilter({ q: this.search, pagination: false })
+          .pipe(
+            catchError(() => of({ results: [] })),
+            map((res: any) => res.data)
+          )
+      const optionList$: Observable<any[]> = this.searchChange$
+        .asObservable()
+        .pipe(debounceTime(500))
+        .pipe(switchMap(getList));
+      optionList$.subscribe(data => {
+        this.total = data.length
+        this.pageMode.hasNext = false
+        this.totalData = data.length
+        this.itemCardData.set(data)
+        this.isSpinning = false;
+      });
+    } else {
+      console.log('list')
+      this.ds.fetchSearch({ q: value, pagination: false })
+      console.log(this.ds)
       this.isSpinning = false;
-    });
+    }
+
   }
 
   onQueryParamsChange(): void {

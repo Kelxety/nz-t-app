@@ -17,7 +17,7 @@
           <nz-form-item>
             <nz-form-label [nzFor]="">Status</nz-form-label>
             <nz-form-control>
-              <nz-select name="visible" nzAllowClear nzPlaceHolder="Drop down selection" [(ngModel)]="searchParam.visible">
+              <nz-select name="visible" nzAllowClear nzPlaceHolder="Drop down selection" [(ngModel)]="searchParam.status">
                 <nz-option *ngFor="let item of visibleOptions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
             </nz-form-control>
@@ -45,10 +45,11 @@
       <span class="operate-text" (click)="edit(id, fatherId)">Edit</span>
       <!-- *appAuth="ActionCode.MenuAddLowLevel" -->
       <ng-container>
+        <span class="p-1">|</span>
         <!-- <span *ngIf="menuType === 'C'" class="operate-text" (click)="add(id)">Add</span> -->
       </ng-container>
       <!-- *appAuth="ActionCode.MenuDel" -->
-      <span class="operate-text" (click)="del(id)">Delete</span>
+      <span class="operate-text text-red-500" (click)="del(id)">Delete</span>
     </ng-template>
   </app-card-table-wrap>
 </div>
@@ -73,6 +74,13 @@
     <ng-container *ngTemplateOutlet="visible ? yesTpl : notTpl"></ng-container>
   </ng-container>
 </ng-template>
+
+<ng-template #statusTpl let-status="status" let-visible="visible">
+  <ng-container *ngIf="status === 'Active'">
+    <ng-container *ngTemplateOutlet="visible ? activeTpl : inactiveTpl"></ng-container>
+  </ng-container>
+</ng-template>
+
 <ng-template #isNewLink let-menuType="menuType" let-isNewLink="isNewLink">
   <ng-container *ngIf="menuType === 'C'">
     <ng-container *ngTemplateOutlet="isNewLink ? yesTpl : notTpl"></ng-container>
@@ -83,4 +91,11 @@
 </ng-template>
 <ng-template #notTpl>
   <nz-tag [nzColor]="'magenta'">No</nz-tag>
+</ng-template>
+
+<ng-template #activeTpl>
+  <nz-tag [nzColor]="'green'">Active</nz-tag>
+</ng-template>
+<ng-template #inactiveTpl>
+  <nz-tag [nzColor]="'magenta'">Inactive</nz-tag>
 </ng-template>

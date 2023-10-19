@@ -39,15 +39,15 @@
                 </div>
                 <div class="p-4 flex space-x-2 items-center">
                     <button [hidden]="!this.pageMode.hasNext" nz-button nzType="primary" [nzShape]="'round'"
-                        (click)="onQueryParamsChange()"><span nz-icon nzType="download" nz-tooltip="Load more"
-                            nzTheme="outline"></span>Load more</button>
+                        (click)="onQueryParamsChange()"><span *ngIf="!isSpinning" nz-icon nzType="download"
+                            nz-tooltip="Load more" nzTheme="outline"></span><span *ngIf="isSpinning" nz-icon
+                            nzType="loading" nz-tooltip="Load more" nzTheme="outline"></span>Load more</button>
                     <p>{{totalData}} / {{total}}</p>
                 </div>
             </div>
 
             <div *ngIf="dataGridList">
-                <cdk-virtual-scroll-viewport itemSize="100" class="flex h-[calc(100vh-265px)]"
-                    (scrolledIndexChange)="handler($event)">
+                <cdk-virtual-scroll-viewport itemSize="100" class="flex h-[calc(100vh-210px)]">
                     <nz-list nzItemLayout="vertical" class="p-4">
                         <nz-list-item *cdkVirtualFor="let item of ds">
                             <nz-list-item-meta>
@@ -64,19 +64,7 @@
                         </nz-list-item>
                     </nz-list>
                 </cdk-virtual-scroll-viewport>
-                <!-- <cdk-virtual-scroll-viewport itemSize="2000" class="demo-infinite-container"
-                    (scrolledIndexChange)="handler($event)">
-                    <nz-list nzItemLayout="vertical">
-                        <nz-list-item *cdkVirtualFor="let item of itemCardData()" style="height: 150px;">
-                            <nz-skeleton *ngIf="!item" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-                            <nz-list-item-meta *ngIf="item.subitemName" [nzDescription]="item.subitemName">
-                                <nz-list-item-meta-title>
-                                    <a>{{ item.brandName | nzSafeNull:'-' }}</a>
-                                </nz-list-item-meta-title>
-                            </nz-list-item-meta>
-                        </nz-list-item>
-                    </nz-list>
-                </cdk-virtual-scroll-viewport> -->
+
             </div>
         </nz-spin>
     </nz-content>

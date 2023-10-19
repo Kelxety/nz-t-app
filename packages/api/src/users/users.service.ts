@@ -10,6 +10,7 @@ import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { PaginateOptions } from '@api/lib/interface';
 import { Prisma, User } from '@prisma/client';
+import { RoleService } from '@api/role/role.service';
 
 export const roundsOfHashing = 10;
 
@@ -178,10 +179,15 @@ export class UsersService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto & { role: string | null },
+    token?: string,
   ) {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist.`);
+    }
+
+    if (token) {
+      // const updatorName = await this.role.getRequesterName(token);
     }
 
     if (updateUserDto.password) {
@@ -222,7 +228,7 @@ export class UsersService {
           role: {
             deleteMany: {},
             create: JSON.parse(updateUserDto.role).map((t: { id: string }) => ({
-              role: { connect: { id: t.id } },
+              role: { connect: { id: t } },
             })),
           },
         },
