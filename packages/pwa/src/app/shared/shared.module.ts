@@ -47,6 +47,7 @@ import { FilterPipe } from './pipes/filter.pipe';
 import { NumberLoopPipe } from './pipes/number-loop.pipe';
 import { ItemComponent } from './ui/item/item.component';
 // import { NgxMaskModule } from 'ngx-mask'
+import {ScrollingModule} from '@angular/cdk/scrolling';
 
 const MODULES: any[] = [
   NzCardModule,
@@ -91,8 +92,8 @@ const MODULES: any[] = [
   NzPageHeaderModule,
   NzDescriptionsModule,
   NzLayoutModule,
-  NzCollapseModule
-
+  NzCollapseModule,
+  ScrollingModule
   // NgxMaskModule.forRoot()
 ];
 

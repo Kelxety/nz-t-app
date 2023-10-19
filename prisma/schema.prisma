@@ -719,7 +719,7 @@ model ScmRisDtl {
 model ScmStockInventory {
   id                    String                 @id @default(uuid())
   fyCode                Int?                   @map("fy_code")
-  invDate               DateTime?              @map("inv_date") @db.DateTime(0)
+  invDate               DateTime?              @map("inv_date") @db.Date
   invRefno              String?                @map("inv_refno") @db.VarChar(30)
   warehouseId           String?                @map("warehouse_id") @db.VarChar(36)
   description           String?                @db.VarChar(255)

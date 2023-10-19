@@ -286,21 +286,10 @@ export class ItemLocationComponent implements OnInit {
 
 
   ngOnInit(): void {
-    // this.stateItemDetail.loading = true;
-    // this.stateItemDetail.list = [];
-    // this.stateItemDetail.page = 1;
-    // this.stateItemDetail.pageSize = 20;
-    // this.stateItemDetail.totalItems = 0;
-
-    // this.stateLocationHeader.loading = true;
-    // this.stateLocationHeader.list = [];
-    // this.stateLocationHeader.page = 1;
-    // this.stateLocationHeader.pageSize = 20;
-    // this.stateLocationHeader.totalItems = 0;
     this.loadItemLocHdr();
     this.loadItemLocDetail();
     this.loadItemDetail();
-    // this.spinService.setCurrentGlobalSpinStore(false);
     this.cd.detectChanges();
+    // this.spinService.setCurrentGlobalSpinStore(false);
   }
 }
