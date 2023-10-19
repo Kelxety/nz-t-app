@@ -1,32 +1,24 @@
-# HMIS version 2
+# NZ-T-APP
 
-Hospital Monitoring Inventory System, inventory for all Hospitals in Palawan.
+# Angular - NgZorro - Fully Typesafe - Frontend to Backend
 
 ## Installation
 
-Install hmis_v2 client and backend
+Install nz-t-app client and backend
 
 Clone Repository
 
 ```bash
-  git clone https://github.com/PICTP/hmis_v2.git hmis_v2
+  git clone [https://github.com/Kelxety/nz-t-app.git](https://github.com/Kelxety/nz-t-app.git)
 ```
 
-Client Side:
+Client & Backend Side:
 
 ```bash
-  cd hmis_v2/pwa && npm install
-  npm start
-```
-
-Backend Side:
-
-```bash
-  cd hmis_v2/api
+  cd nz-t-app && pnpm i
   npx prisma db push
   npx prisma migrate dev
-  pnpm install
-  pnpm start
+  pnpm run dev
 ```
 
 Generate Routes in Backend
