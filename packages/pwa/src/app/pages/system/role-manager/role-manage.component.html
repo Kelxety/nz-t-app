@@ -33,6 +33,7 @@
       <!--Edit need appAuth <span *appAuth="ActionCode.AccountEdit" class="operate-text" (click)="edit(id)">Edit</span>
       <span *appAuth="ActionCode.AccountDel" class="operate-text" (click)="del(id)">Delete</span> -->
       <span class="operate-text" (click)="setRole(id)">Set Permissions</span>
+      <span>|{{ ' ' }}</span>
       <span class="operate-text" (click)="edit(id)">Edit</span>
       <span>|{{ ' ' }}</span>
       <span class="operate-text" (click)="del(id)"><span class="text-red-500">Delete</span></span>
