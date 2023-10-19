@@ -28,6 +28,7 @@ import { Roles } from '@api/auth/roles/roles.decorator';
 import { CustomRequest, QueryT, ResponseT } from '@api/lib/interface';
 import { toBoolean } from '@api/lib/helper/cast.helper';
 import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { Request as Req } from 'express';
 import { omit } from 'lodash';
 
 @Controller('users')
@@ -117,9 +118,21 @@ export class UsersController {
 
   @Patch(':id')
   @CustomGlobalDecorator(null, false, UserEntity)
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Request() request: Req,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     const updatedUserDto = omit(updateUserDto, 'username');
-    return new UserEntity(await this.usersService.update(id, updateUserDto));
+    const data = await this.usersService.update(
+      id,
+      updateUserDto,
+      request?.headers?.authorization?.split('Bearer ')[1],
+    );
+    return {
+      message: `Warehouse with id of ${id} detail patched Succesfully`,
+      data: data,
+    };
   }
 
   @Patch('changepass/:id')
