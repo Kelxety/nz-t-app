@@ -70,7 +70,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles/themes"]
             },
-            "scripts": ["../../node_modules/driver.js/dist/driver.min.js"],
+            "scripts": ["../../node_modules/driver.js/dist/driver.js.mjs"],
             "allowedCommonJsDependencies": [
               "crypto-js",
               "qs",

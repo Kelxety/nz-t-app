@@ -1,7 +1,7 @@
+import { inject } from '@angular/core';
 import { CanMatchFn } from '@angular/router';
+
 import { LoginInOutService } from '../services/common/login-in-out.service';
-import { Injectable, inject } from '@angular/core';
-import { Role } from '@prisma/client';
 
 export const authAdminGuard: CanMatchFn = (route, segments) => {
   const users = inject(LoginInOutService).currentUserSignal();

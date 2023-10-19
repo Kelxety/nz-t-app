@@ -1,13 +1,13 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Observable, catchError, map, shareReplay, switchMap, tap, throwError } from 'rxjs';
+
 import { HospitalOffice, Prisma } from '@prisma/client';
 import { HttpParamsService } from '@pwa/src/app/shared';
-import { AntTableConfig } from '@pwa/src/app/shared/components/ant-table/ant-table.component';
-import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
+import { SearchParams } from '@pwa/src/app/shared/interface';
 import { ApiTypeService } from '@pwa/src/app/shared/services/api-type.service';
 import { ResType } from '@pwa/src/app/utils/types/return-types';
-import { Observable, catchError, map, shareReplay, switchMap, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -87,7 +87,7 @@ export class HospitalOfficeService {
 
   offices = toSignal(this.offices$, { initialValue: [] });
 
-  officeSelected(id: string) {
+  officeSelected(id: string): void {
     const foundOffice = this.offices().find(v => v.id === id);
     this.selectedOffice.set(foundOffice);
   }

@@ -1,3 +1,4 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule, NgFor } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -8,6 +9,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -40,14 +42,9 @@ import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 import { NzTreeViewModule } from 'ng-zorro-antd/tree-view';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 
-
-import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-import { ItemSelectorComponent } from './feature/item-selector/item-selector.component';
 import { FilterPipe } from './pipes/filter.pipe';
 import { NumberLoopPipe } from './pipes/number-loop.pipe';
-import { ItemComponent } from './ui/item/item.component';
 // import { NgxMaskModule } from 'ngx-mask'
-import {ScrollingModule} from '@angular/cdk/scrolling';
 
 const MODULES: any[] = [
   NzCardModule,
@@ -97,10 +94,7 @@ const MODULES: any[] = [
   // NgxMaskModule.forRoot()
 ];
 
-const COMPONENTS: any[] = [
-  ItemComponent,
-  ItemSelectorComponent
-];
+const COMPONENTS: any[] = [];
 
 const COMPONENTS_DYNAMIC: any[] = [];
 const DIRECTIVES: any[] = [];
@@ -111,7 +105,7 @@ const PROVIDERS: any[] = [];
 @NgModule({
   imports: [...MODULES],
   exports: [...MODULES, ...COMPONENTS, ...DIRECTIVES, ...PIPES],
-  declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES, ItemSelectorComponent],
+  declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES],
   providers: [...PROVIDERS]
 })
-export class SharedModule { }
+export class SharedModule {}

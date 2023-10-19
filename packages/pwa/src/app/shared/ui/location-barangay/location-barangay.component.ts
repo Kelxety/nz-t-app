@@ -5,6 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './location-barangay.component.html',
   styleUrls: ['./location-barangay.component.less']
 })
-export class LocationBarangayComponent {
-
-}
+export class LocationBarangayComponent {}

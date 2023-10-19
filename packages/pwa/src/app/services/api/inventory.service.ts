@@ -1,78 +1,79 @@
+import { HttpParams } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ApiService, HttpParamsService } from '@app/shared';
 import { Prisma, ScmStockInventory } from '@prisma/client';
-import { ResType } from '@utils/types/return-types';
 import { SearchParams } from '@pwa/src/app/shared/interface';
-import { HttpParams } from '@angular/common/http';
+import { ResType } from '@utils/types/return-types';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class inventoryServices {
-    public baseUrl = '/api/inventory';
-    public baseUrlFullsearch = '/api/inventory/search';
+  public baseUrl = '/api/inventory';
+  public baseUrlFullsearch = '/api/inventory/search';
 
-    constructor(private apiService: ApiService, private httpParams: HttpParamsService) { }
+  constructor(
+    private apiService: ApiService,
+    private httpParams: HttpParamsService
+  ) {}
 
-    list(params: SearchParams<Prisma.ScmStockInventoryWhereInput, Prisma.ScmStockInventoryOrderByWithAggregationInput>): Observable<ResType<ScmStockInventory[]>> {
-        const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
-        const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
+  list(params: SearchParams<Prisma.ScmStockInventoryWhereInput, Prisma.ScmStockInventoryOrderByWithAggregationInput>): Observable<ResType<ScmStockInventory[]>> {
+    const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
+    const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
 
-        let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
+    let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
 
-        if (!filteredObject) {
-            p = p.delete('filteredObject');
-        }
-
-        if (!orderBy) {
-            p = p.delete('orderBy');
-        }
-
-        return this.apiService.get(this.baseUrl, p);
+    if (!filteredObject) {
+      p = p.delete('filteredObject');
     }
 
-    find(params: SearchParams<Prisma.ScmStockInventoryWhereInput, Prisma.ScmStockInventoryOrderByWithAggregationInput>): Observable<ResType<ScmStockInventory[]>> {
-        const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
-        const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
-
-        let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
-
-        if (!filteredObject) {
-            p = p.delete('filteredObject');
-        }
-
-        if (!orderBy) {
-            p = p.delete('orderBy');
-        }
-
-        return this.apiService.get(this.baseUrlFullsearch, p);
+    if (!orderBy) {
+      p = p.delete('orderBy');
     }
 
-    get(id: string): Observable<ResType<ScmStockInventory>> {
-        const url = `${this.baseUrl}/${id}`;
-        return this.apiService.get(url);
+    return this.apiService.get(this.baseUrl, p);
+  }
+
+  find(params: SearchParams<Prisma.ScmStockInventoryWhereInput, Prisma.ScmStockInventoryOrderByWithAggregationInput>): Observable<ResType<ScmStockInventory[]>> {
+    const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;
+    const orderBy = params.orderBy ? JSON.stringify(params.orderBy) : null;
+
+    let p: HttpParams = new HttpParams({ fromObject: { ...params, filteredObject, orderBy } });
+
+    if (!filteredObject) {
+      p = p.delete('filteredObject');
     }
 
-    create(data: ScmStockInventory): Observable<string> {
-        return this.apiService.post(this.baseUrl, data);
+    if (!orderBy) {
+      p = p.delete('orderBy');
     }
 
-    update(id: string, data: object): Observable<ResType<ScmStockInventory[]>> {
-        const url = `${this.baseUrl}/${id}`;
-        return this.apiService.put(url, data);
-    }
+    return this.apiService.get(this.baseUrlFullsearch, p);
+  }
 
-    patch(id: string, data: object): Observable<ResType<ScmStockInventory>> {
-        const url = `${this.baseUrl}/${id}`;
-        return this.apiService.patch(url, data);
-    }
+  get(id: string): Observable<ResType<ScmStockInventory>> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.get(url);
+  }
 
-    delete(id: string): Observable<ResType<ScmStockInventory[]>> {
-        const url = `${this.baseUrl}/${id}`;
-        return this.apiService.delete(url);
-    }
+  create(data: ScmStockInventory): Observable<string> {
+    return this.apiService.post(this.baseUrl, data);
+  }
 
+  update(id: string, data: object): Observable<ResType<ScmStockInventory[]>> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.put(url, data);
+  }
+
+  patch(id: string, data: object): Observable<ResType<ScmStockInventory>> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.patch(url, data);
+  }
+
+  delete(id: string): Observable<ResType<ScmStockInventory[]>> {
+    const url = `${this.baseUrl}/${id}`;
+    return this.apiService.delete(url);
+  }
 }
-

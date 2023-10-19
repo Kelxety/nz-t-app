@@ -19,8 +19,10 @@ import { Request as Req } from 'express';
 import { Prisma } from '@prisma/client';
 import { QueryT, ResponseT } from '@api/lib/interface';
 import { toBoolean } from '@api/lib/helper/cast.helper';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('permissions')
+@ApiTags('system_permissions')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 

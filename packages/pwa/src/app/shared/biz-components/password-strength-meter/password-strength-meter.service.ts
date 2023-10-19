@@ -1,12 +1,12 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 
 import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
-import zxcvbnEnPackage from '@zxcvbn-ts/language-en';
+import { translations } from '@zxcvbn-ts/language-en';
 
 import { PSMOptions, PSM_CONFIG } from './password-strength-meter.types';
 
 export const DEFAULT_CONFIG: PSMOptions = {
-  translations: zxcvbnEnPackage.translations
+  translations: translations
 };
 
 @Injectable({ providedIn: 'root' })

@@ -25,7 +25,10 @@ export class AccountService {
   users = this._user.asReadonly();
   public baseUrl = '/api/users';
 
-  constructor(private apiService: ApiTypeService, private httpParams: HttpParamsService) {}
+  constructor(
+    private apiService: ApiTypeService,
+    private httpParams: HttpParamsService
+  ) {}
 
   getAccountList(params: SearchParams<Prisma.UserWhereInput, Prisma.UserOrderByWithAggregationInput>): Observable<ResType<User[]>> {
     const filteredObject = params.filteredObject ? JSON.stringify(params.filteredObject) : null;

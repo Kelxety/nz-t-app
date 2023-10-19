@@ -1,9 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  HttpStatus,
-  ExceptionFilter,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
@@ -18,10 +13,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
     switch (exception.code) {
       case 'P2002': {
         const status = HttpStatus.CONFLICT;
-        // response.status(status).json({
-        //   statusCode: status,
-        //   message: message,
-        // });
         response.status(status).json({
           statusCode: status,
           error: 'Conflict Bad Request',
