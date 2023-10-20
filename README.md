@@ -9,7 +9,7 @@ Install nz-t-app client and backend
 Clone Repository
 
 ```bash
-  git clone [https://github.com/Kelxety/nz-t-app.git](https://github.com/Kelxety/nz-t-app.git)
+  git clone (https://github.com/Kelxety/nz-t-app.git)
 ```
 
 Client & Backend Side:
