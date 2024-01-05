@@ -23,7 +23,7 @@ import { WarehouseService } from './warehouse.service';
 @Controller('warehouse')
 @ApiTags('smc_warehouse')
 export class WarehouseController {
-  constructor(private readonly warehouseService: WarehouseService) { }
+  constructor(private readonly warehouseService: WarehouseService) {}
 
   @Post()
   @CustomGlobalDecorator(null, false, WarehouseEntity)
@@ -82,7 +82,11 @@ export class WarehouseController {
   }
 
   @Get('search')
-  @CustomGlobalDecorator(Prisma.ScmUnitScalarFieldEnum, true, WarehouseEntity)
+  @CustomGlobalDecorator(
+    Prisma.ScmWarehouseScalarFieldEnum,
+    true,
+    WarehouseEntity,
+  )
   async fulltextSearch(
     @Query() query: QueryT,
   ): Promise<ResponseT<WarehouseEntity[]>> {

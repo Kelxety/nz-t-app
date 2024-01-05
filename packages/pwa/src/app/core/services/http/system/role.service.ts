@@ -35,20 +35,23 @@ export class RoleService {
   private _roles = signal<Role[]>([]);
   roles = this._roles.asReadonly();
   public baseUrl = '/api/roles';
-  constructor(private apiService: ApiTypeService, private httpParams: HttpParamsService) {}
+  constructor(
+    private apiService: ApiTypeService,
+    private httpParams: HttpParamsService
+  ) {}
 
   public getRoles(param: SearchParams<Prisma.RoleWhereInput, Prisma.RoleOrderByWithAggregationInput>): Observable<ResType<Role[]>> {
     const parameters = this.httpParams.convert(param);
     return this.apiService.get<ResType<Role[]>>(this.baseUrl, parameters);
   }
 
-  public getRolesDetail(id: string): Observable<ResType<Role & { permission: { permissionId: string; roleId: string; permission: Permission }[] }>> {
+  public getRolesDetail(id: string): Observable<ResType<Role & { permission: Array<{ permissionId: string; roleId: string; permission: Permission }> }>> {
     const url = `${this.baseUrl}/${id}`;
     return this.apiService.get(url);
   }
 
   public addRoles(data: Role): Observable<ResType<Role>> {
-    this._roles.mutate(res => res.push(data));
+    this._roles.set([...this._roles(), data]);
     return this.apiService.post(this.baseUrl, data);
   }
 
