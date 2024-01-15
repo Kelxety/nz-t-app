@@ -44,6 +44,7 @@ export class StockLedgerController {
     @Request() request: Req,
     @Body() createStockLedgerDto: { data: AuditData[] },
   ) {
+    console.log(createStockLedgerDto);
     const data = await this.stockLedgerService.createMany(createStockLedgerDto);
     return {
       message: `successfully created`,
