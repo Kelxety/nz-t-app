@@ -29,6 +29,9 @@ export class StockLedgerService {
   }
 
   async createMany(createStockLedgerDto: { data: AuditData[] }) {
+    createStockLedgerDto.data.map((item) => {
+      item.newId = item.id;
+    });
     const data = await this.prisma.newaudit.createMany({
       data: createStockLedgerDto.data,
       skipDuplicates: true,
