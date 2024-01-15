@@ -6,10 +6,6 @@ import {
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { ExcludeNullInterceptor } from './lib/interceptor/null.interceptor';
 import { TransformInterceptor } from './lib/interceptor/transform.interceptor';
@@ -18,10 +14,7 @@ import { ValidationError } from 'class-validator';
 import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
+  const app = await NestFactory.create(AppModule);
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.setGlobalPrefix('api');
 
@@ -33,7 +26,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document, {
+  SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
