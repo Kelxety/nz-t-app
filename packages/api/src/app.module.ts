@@ -7,6 +7,7 @@ import { PermissionModule } from './permission/permission.module';
 import { RoleModule } from './role/role.module';
 import { UsersModule } from './users/users.module';
 import { WarehouseModule } from './warehouse/warehouse.module';
+import { StockLedgerModule } from './stock-ledger/stock-ledger.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { WarehouseModule } from './warehouse/warehouse.module';
     UsersModule,
     AuthModule,
     RoleModule,
+    StockLedgerModule,
     WarehouseModule,
     PermissionModule,
   ],

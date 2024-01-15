@@ -8,6 +8,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Cdb {
+  id              String   @id @default(uuid())
+  itemCode        String?  @unique @map("item_code") @db.VarChar(36)
+  barcode         String?  @db.VarChar(50)
+  itemName        String?  @unique @map("item_name") @db.VarChar(255)
+  itemDescription String?  @map("item_description") @db.VarChar(50)
+  itemcategoryId  String?  @map("itemcategory_id") @db.VarChar(36)
+  unitId          String?  @map("unit_id") @db.VarChar(36)
+  state           String?  @db.VarChar(20)
+  remarks         String?  @db.VarChar(255)
+  createdBy       String?  @map("created_by") @db.VarChar(50)
+  createdAt       DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedBy       String?  @map("updated_by") @db.VarChar(50)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+  itemImage       String?  @db.VarChar(120)
+
+  @@index([itemcategoryId], map: "itemcategory_id")
+  @@index([unitId], map: "unit_id")
+  @@fulltext([itemCode, barcode, itemName])
+  @@map("scm_item")
+}
+
+model Newaudit {
+  id        Int      @id
+  newId     Int      @unique
+  userid    String?
+  checktime DateTime
+}
+
 model User {
   id            String           @id @default(uuid())
   name          String?          @db.VarChar(255)
@@ -51,18 +80,40 @@ model HospitalOffice {
 }
 
 model ScmWarehouse {
-  id        String   @id @default(uuid())
-  whName    String   @map("wh_name") @db.VarChar(150)
-  whAcro    String   @unique() @map("wh_acro") @db.VarChar(50)
-  state     String?  @default("active") @db.VarChar(20)
-  createdBy String?  @map("created_by") @db.VarChar(50)
-  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
-  updatedBy String?  @map("updated_by") @db.VarChar(50)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.DateTime(0)
-  user      User[]
+  id             String           @id @default(uuid())
+  whName         String           @map("wh_name") @db.VarChar(150)
+  whAcro         String           @unique() @map("wh_acro") @db.VarChar(50)
+  state          String?          @default("active") @db.VarChar(20)
+  createdBy      String?          @map("created_by") @db.VarChar(50)
+  createdAt      DateTime         @default(now()) @map("created_at") @db.DateTime(0)
+  updatedBy      String?          @map("updated_by") @db.VarChar(50)
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.DateTime(0)
+  user           User[]
+  ScmStockLedger ScmStockLedger[]
 
   @@fulltext([whName, whAcro])
   @@map("scm_warehouse")
+}
+
+model ScmStockLedger {
+  id            String        @id @default(uuid())
+  fyCode        Int?          @map("fy_code")
+  entryDate     DateTime?     @map("entry_date") @db.Date
+  warehouseId   String?       @map("warehouse_id") @db.VarChar(36)
+  refno         String?       @db.VarChar(30)
+  refdate       DateTime?     @db.Date
+  qty           Int?
+  cost          Float?
+  price         Float?
+  postedBy      String?       @map("posted_by") @db.VarChar(50)
+  postedAt      DateTime?     @default(now()) @map("posted_at") @db.DateTime(0)
+  remarks       String?       @db.VarChar(30)
+  transactionId String?       @map("transaction_id") @db.VarChar(100)
+  scmWarehouse  ScmWarehouse? @relation(fields: [warehouseId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "scm_stock_ledger_ibfk_1")
+
+  @@index([warehouseId], map: "warehouse_id")
+  @@fulltext([refno, remarks])
+  @@map("scm_stock_ledger")
 }
 
 model RefreshToken {

@@ -12,7 +12,10 @@ import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
 
 @Injectable()
 export class WarehouseService {
-  constructor(private prisma: PrismaService, private role: RoleService) { }
+  constructor(
+    private prisma: PrismaService,
+    private role: RoleService,
+  ) {}
   async create(createWarehouseDto: CreateWarehouseDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Unathorized');
@@ -54,77 +57,6 @@ export class WarehouseService {
       }),
       this.prisma.scmWarehouse.findMany({
         where: data,
-        take: pageSize || 10,
-        skip: (page - 1) * pageSize || 0,
-        orderBy: order,
-      }),
-    ]);
-
-    return returnData;
-  }
-
-  async fullTextSearch({
-    searchData,
-    data,
-    page,
-    pageSize,
-    pagination,
-    order,
-  }: PaginateOptions<
-    Prisma.ScmWarehouseWhereInput,
-    Prisma.ScmWarehouseOrderByWithAggregationInput
-  >): Promise<ScmWarehouse[] | any> {
-    if (!pagination) {
-      return this.prisma.scmWarehouse.findMany({
-        where: {
-          OR: [
-            {
-              whAcro: {
-                contains: searchData
-              }
-            },
-            {
-              whName: {
-                contains: searchData
-              }
-            }
-          ]
-        },
-        orderBy: order,
-      });
-    }
-    const returnData = await this.prisma.$transaction([
-      this.prisma.scmWarehouse.count({
-        where: {
-          OR: [
-            {
-              whAcro: {
-                contains: searchData
-              }
-            },
-            {
-              whName: {
-                contains: searchData
-              }
-            }
-          ]
-        },
-      }),
-      this.prisma.scmWarehouse.findMany({
-        where: {
-          OR: [
-            {
-              whAcro: {
-                contains: searchData
-              }
-            },
-            {
-              whName: {
-                contains: searchData
-              }
-            }
-          ]
-        },
         take: pageSize || 10,
         skip: (page - 1) * pageSize || 0,
         orderBy: order,
