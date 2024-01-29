@@ -26,11 +26,14 @@
   </nz-form-item>
 
   <nz-form-item>
-    <nz-form-label nzFor="fatherId" [nzSm]="6" [nzXs]="24">Parent Menu</nz-form-label>
+    <nz-form-label nzFor="fatherId" [nzSm]="6" [nzXs]="24">
+      Parent Menu
+    </nz-form-label>
     <nz-form-control [nzSm]="14" [nzXs]="24">
       <!-- <input id="fatherId" formControlName="fatherId" nz-input placeholder="Parent Menu" /> -->
-      <nz-select formControlName="fatherId" nzPlaceHolder="Parent Menu">
-        <nz-option *ngFor="let option of parentMenuOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+      <nz-select formControlName="fatherId" nzPlaceHolder="Parent Menu" nzShowSearch>
+        <nz-option *ngFor="let option of parentMenuOptions" [nzLabel]="option.label"
+          [nzValue]="option.value"></nz-option>
       </nz-select>
     </nz-form-control>
   </nz-form-item>
