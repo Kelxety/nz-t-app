@@ -1,12 +1,14 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal, DestroyRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Observable, map, of } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { EMPTY, Observable, catchError, finalize, of } from 'rxjs';
 
-import { Permission, PermissionStatus, Prisma } from '@prisma/client';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Permission, PermissionStatus } from '@prisma/client';
 import { MenuListObj, PermissionService } from '@pwa/src/app/core/services/http/system/menus.service';
 import { RoleService } from '@pwa/src/app/core/services/http/system/role.service';
 import { OptionsInterface } from '@pwa/src/app/core/services/types';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { IconSelComponent } from '@shared/biz-components/icon-sel/icon-sel.component';
 import { fnCheckForm } from '@utils/tools';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -19,8 +21,6 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ResType } from '@pwa/src/app/utils/types/return-types';
 
 // c:url，f:button
 type menuType = 'C' | 'F' | string;
@@ -51,7 +51,7 @@ export class MenuModalComponent implements OnInit {
   readonly nzModalData: MenuListObj = inject(NZ_MODAL_DATA);
   private menuService = inject(PermissionService);
   private destroyRef = inject(DestroyRef);
-
+  private cdr = inject(ChangeDetectorRef);
   validateForm!: FormGroup;
   selIconVisible = false;
   // roleOptions: { label: string; value: string }[] = [];
@@ -60,7 +60,7 @@ export class MenuModalComponent implements OnInit {
   menuType: menuType = 'C';
   permissionStatusOptionsActive: PermissionStatus = 'Active';
   permissionStatusOptionsInactive: PermissionStatus = 'Inactive';
-  constructor(private modalRef: NzModalRef, private fb: FormBuilder, private roleService: RoleService) {}
+  constructor(private modalRef: NzModalRef, private fb: FormBuilder, private roleService: RoleService) { }
 
   protected getCurrentValue(): Observable<any> {
     if (!fnCheckForm(this.validateForm)) {
@@ -122,25 +122,39 @@ export class MenuModalComponent implements OnInit {
     }
   }
 
-  getParentId() {
+  getParentId(): void {
     this.menuService
       .getMenuList({
-        pagination: false
+        pagination: false,
+        q: '',
+        orderBy: {
+          orderNum: 'asc'
+        }
       })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        finalize(() => {
+          this.cdr.detectChanges();
+        }),
+        catchError(error => {
+          // Handle errors from the modal or other errors
+          console.error('Error while showing the modal:', error);
+          return EMPTY; // Return an empty observable to signal the error but not break the chain
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: (res: ResType<Permission[]>) => {
           if (res.statusCode === 200) {
             res.data.forEach(menu => {
               if (!this.nzModalData) {
                 this.parentMenuOptions.push({
-                  label: menu.menuName,
+                  label: `${menu.menuName} (${menu.path})`,
                   value: menu.id
                 });
               } else {
                 if (this.nzModalData.id !== menu.id) {
                   this.parentMenuOptions.push({
-                    label: menu.menuName,
+                    label: `${menu.menuName} (${menu.path})`,
                     value: menu.id
                   });
                 }

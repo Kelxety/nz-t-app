@@ -1,30 +1,30 @@
+import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { toBoolean } from '@api/lib/helper/cast.helper';
+import { QueryT, ResponseT } from '@api/lib/interface';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Request,
-  Query,
+  Get,
   NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
 } from '@nestjs/common';
-import { PermissionService } from './permission.service';
+import { ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
+import { Request as Req } from 'express';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
 import { PermissionEntity } from './entities/permission.entity';
-import { Request as Req } from 'express';
-import { Prisma } from '@prisma/client';
-import { QueryT, ResponseT } from '@api/lib/interface';
-import { toBoolean } from '@api/lib/helper/cast.helper';
-import { ApiTags } from '@nestjs/swagger';
+import { PermissionService } from './permission.service';
 
 @Controller('permissions')
 @ApiTags('system_permissions')
 export class PermissionController {
-  constructor(private readonly permissionService: PermissionService) {}
+  constructor(private readonly permissionService: PermissionService) { }
 
   @Post()
   @CustomGlobalDecorator(null, false, PermissionEntity)
@@ -52,6 +52,7 @@ export class PermissionController {
     @Query() query: QueryT,
   ): Promise<ResponseT<PermissionEntity[]>> {
     const data = await this.permissionService.findAll({
+      searchData: query.q,
       data: query.filteredObject ? JSON.parse(query.filteredObject) : {},
       page: Number(query.page),
       pageSize: Number(query.pageSize),
