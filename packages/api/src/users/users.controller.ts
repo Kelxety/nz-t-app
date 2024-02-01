@@ -1,19 +1,24 @@
+import { JwtAuthGuard } from '@api/auth/guard/jwt-auth.guard';
+import { RoleGuard } from '@api/auth/role/role.guard';
+import { Roles } from '@api/auth/roles/roles.decorator';
+import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
+import { toBoolean } from '@api/lib/helper/cast.helper';
+import { CustomRequest, QueryT, ResponseT } from '@api/lib/interface';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  ClassSerializerInterceptor,
+  Controller,
   Delete,
+  Get,
   NotFoundException,
-  UseGuards,
-  Request,
+  Param,
+  Patch,
+  Post,
   Query,
+  Request,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -21,20 +26,17 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserEntity } from './entities/user.entity';
-import { JwtAuthGuard } from '@api/auth/guard/jwt-auth.guard';
-import { RoleGuard } from '@api/auth/role/role.guard';
-import { Roles } from '@api/auth/roles/roles.decorator';
-import { CustomRequest, QueryT, ResponseT } from '@api/lib/interface';
-import { toBoolean } from '@api/lib/helper/cast.helper';
-import { CustomGlobalDecorator } from '@api/lib/decorators/global.decorators';
 import { Request as Req } from 'express';
 import { omit } from 'lodash';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
+import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('system_users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   @ApiBearerAuth()
@@ -55,6 +57,7 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOkResponse({ type: UserEntity, isArray: true })
+  @UseInterceptors(ClassSerializerInterceptor)
   async findAll(
     @Query()
     query: QueryT,
@@ -92,6 +95,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
+  @UseInterceptors(ClassSerializerInterceptor)
   async findMe(
     @Request() request: CustomRequest,
   ): Promise<Partial<UserEntity>> {
