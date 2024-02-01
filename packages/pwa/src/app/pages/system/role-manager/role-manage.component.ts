@@ -6,14 +6,13 @@ import { finalize } from 'rxjs/operators';
 
 import { ActionCode } from '@app/config/actionCode';
 import { MessageService } from '@core/services/common/message.service';
-import { SearchCommonVO } from '@core/services/types';
 import { Prisma, Role } from '@prisma/client';
 import { SharedModule } from '@pwa/src/app/shared';
-import { QueryParams, SearchParams } from '@pwa/src/app/shared/interface';
+import { SearchParams } from '@pwa/src/app/shared/interface';
 import { RoleService } from '@services/system/role.service';
-import { AntTableConfig, AntTableComponent } from '@shared/components/ant-table/ant-table.component';
+import { AntTableComponent, AntTableConfig } from '@shared/components/ant-table/ant-table.component';
 import { CardTableWrapComponent } from '@shared/components/card-table-wrap/card-table-wrap.component';
-import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { PageHeaderComponent, PageHeaderType } from '@shared/components/page-header/page-header.component';
 import { AuthDirective } from '@shared/directives/auth.directive';
 import { ModalBtnStatus } from '@widget/base-modal';
 import { RoleManageModalService } from '@widget/biz-widget/system/role-manage-modal/role-manage-modal.service';
@@ -26,7 +25,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { NzTableFilterValue, NzTableQueryParams, NzTableSortOrder } from 'ng-zorro-antd/table';
+import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 
 interface SearchParam {
@@ -78,7 +77,7 @@ export class RoleManageComponent implements OnInit {
     private modalService: RoleManageModalService,
     private router: Router,
     public message: NzMessageService
-  ) {}
+  ) { }
 
   selectedChecked(e: any): void {
     // @ts-ignore
@@ -93,6 +92,7 @@ export class RoleManageComponent implements OnInit {
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
     const params: SearchParams<Prisma.RoleWhereInput, Prisma.RoleOrderByWithAggregationInput> = {
+      q: '',
       pageSize: this.tableConfig.pageSize!,
       pagination: true,
       page: this.tableConfig.pageIndex!
@@ -230,7 +230,7 @@ export class RoleManageComponent implements OnInit {
     this.getDataList();
   }
 
-  allDel() {}
+  allDel() { }
 
   private initTable(): void {
     this.tableConfig = {
