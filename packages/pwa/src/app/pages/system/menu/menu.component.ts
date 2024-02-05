@@ -1,22 +1,25 @@
 import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, ViewChild, TemplateRef, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { catchError, finalize, map, switchMap } from 'rxjs/operators';
+import { catchError, finalize, switchMap } from 'rxjs/operators';
 
 import { ActionCode } from '@app/config/actionCode';
-import { OptionsInterface, SearchCommonVO } from '@core/services/types';
+import { OptionsInterface } from '@core/services/types';
+import { $Enums, Permission, PermissionStatus, Prisma } from '@prisma/client';
+import { PermissionService } from '@pwa/src/app/core/services/http/system/menus.service';
+import { SearchParams } from '@pwa/src/app/shared/interface';
+import { ResType } from '@pwa/src/app/utils/types/return-types';
+import { MenuModalService } from '@pwa/src/app/widget/biz-widget/system/permission-modal/permission-modal.service';
 import { AntTableConfig } from '@shared/components/ant-table/ant-table.component';
 import { CardTableWrapComponent } from '@shared/components/card-table-wrap/card-table-wrap.component';
-import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { PageHeaderComponent, PageHeaderType } from '@shared/components/page-header/page-header.component';
 import { TreeNodeInterface, TreeTableComponent } from '@shared/components/tree-table/tree-table.component';
 import { WaterMarkComponent } from '@shared/components/water-mark/water-mark.component';
 import { AuthDirective } from '@shared/directives/auth.directive';
-import { MapKeyType, MapPipe, MapSet } from '@shared/pipes/map.pipe';
-import { fnAddTreeDataGradeAndLeaf, fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList, fnStringFlatDataHasParentToTree } from '@utils/treeTableTools';
+import { fnAddTreeDataGradeAndLeaf, fnStringFlatDataHasParentToTree } from '@utils/treeTableTools';
 import { ModalBtnStatus } from '@widget/base-modal';
-import { MenuModalService } from '@pwa/src/app/widget/biz-widget/system/permission-modal/permission-modal.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
@@ -30,10 +33,6 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { PermissionService } from '@pwa/src/app/core/services/http/system/menus.service';
-import { $Enums, Permission, PermissionStatus, Prisma } from '@prisma/client';
-import { SearchParams } from '@pwa/src/app/shared/interface';
-import { ResType } from '@pwa/src/app/utils/types/return-types';
 import { EMPTY, of } from 'rxjs';
 
 interface SearchParam {
@@ -95,7 +94,7 @@ export class MenuComponent implements OnInit {
     public message: NzMessageService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   reloadTable(): void {
     this.message.info('Already refreshed');
@@ -162,7 +161,6 @@ export class MenuComponent implements OnInit {
           return;
         }
         const param = { ...res.modalValue };
-        param.fatherId = fatherId;
         this.tableLoading(true);
         this.addEditData(param, 'addMenus');
       });
