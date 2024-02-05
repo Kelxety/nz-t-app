@@ -23,7 +23,28 @@ import { AuthService } from '../http/auth/auth.service';
 })
 export class LoginInOutService {
   private ngUnsubscribe = new Subject<void>();
-  currentUserSignal = signal<Prisma.UserGetPayload<{ include: { role: { include: { role: true } } }; office: true; warehouse: true }>>(null);
+  currentUserSignal = signal<
+    Prisma.UserGetPayload<{
+      include: {
+        warehouse: true;
+        office: true;
+        role: {
+          include: {
+            role: {
+              include: {
+                permission: {
+                  include: {
+                    permission: true;
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    }>
+  >(null);
+
   constructor(
     private msg: NzMessageService,
     private activatedRoute: ActivatedRoute,

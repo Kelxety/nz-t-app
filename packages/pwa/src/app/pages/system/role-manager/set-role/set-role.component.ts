@@ -1,16 +1,17 @@
-import { NgFor, NgIf, NgTemplateOutlet, NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { concatMap } from 'rxjs/operators';
 
 import { Menu } from '@core/services/types';
+import { Permission } from '@prisma/client';
 import { PermissionService } from '@services/system/menus.service';
 import { PutPermissionParam, RoleService } from '@services/system/role.service';
 import { FooterSubmitComponent } from '@shared/components/footer-submit/footer-submit.component';
-import { PageHeaderType, PageHeaderComponent } from '@shared/components/page-header/page-header.component';
-import { fnAddTreeDataGradeAndLeaf, fnFlatDataHasParentToTree, fnFlattenTreeDataByDataList, fnStringFlatDataHasParentToTree } from '@utils/treeTableTools';
+import { PageHeaderComponent, PageHeaderType } from '@shared/components/page-header/page-header.component';
+import { fnAddTreeDataGradeAndLeaf, fnFlattenTreeDataByDataList, fnStringFlatDataHasParentToTree } from '@utils/treeTableTools';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -19,7 +20,6 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzResultModule } from 'ng-zorro-antd/result';
-import { Permission } from '@prisma/client';
 
 @Component({
   selector: 'app-set-role',
@@ -65,7 +65,7 @@ export class SetRoleComponent implements OnInit {
     private routeInfo: ActivatedRoute,
     private router: Router,
     public message: NzMessageService
-  ) {}
+  ) { }
 
   initPermission(): void {
     this.dataService
@@ -77,17 +77,26 @@ export class SetRoleComponent implements OnInit {
             tempArr.push(permission.permission.code);
           });
           this.authCodeArr = tempArr;
-          return this.menusService.getMenuList({ page: 0, pageSize: 0, pagination: false });
+          return this.menusService.getMenuList({
+            page: 0,
+            pageSize: 0,
+            pagination: false,
+            q: ''
+          });
         }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(response => {
-        const menuArray: Array<Permission & { isOpen?: boolean; checked?: boolean }> = response.data;
+        const menuArray: Array<
+          Permission & { isOpen?: boolean; checked?: boolean }
+        > = response.data;
         menuArray.forEach(item => {
           item.isOpen = false;
           item.checked = this.authCodeArr.includes(item.code!);
         });
-        this.permissionList = fnAddTreeDataGradeAndLeaf(fnStringFlatDataHasParentToTree(menuArray));
+        this.permissionList = fnAddTreeDataGradeAndLeaf(
+          fnStringFlatDataHasParentToTree(menuArray)
+        );
         this.cdr.markForCheck();
       });
   }
