@@ -1,15 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { PaginateOptions } from '@api/lib/interface';
 import { PrismaService } from '@api/lib/prisma/prisma.service';
 import { RoleService } from '@api/role/role.service';
-import { PaginateOptions } from '@api/lib/interface';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Permission, Prisma } from '@prisma/client';
-import { UpdateRoleDto } from '@api/role/dto/update-role.dto';
+import { CreatePermissionDto } from './dto/create-permission.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 @Injectable()
 export class PermissionService {
-  constructor(private prisma: PrismaService, private role: RoleService) {}
+  constructor(private prisma: PrismaService, private role: RoleService) { }
   async create(createPermissionDto: CreatePermissionDto, token: string) {
     const creatorName = await this.role.getRequesterName(token);
     if (!creatorName) throw new Error('Unathorized');
@@ -19,6 +18,7 @@ export class PermissionService {
   }
 
   async findAll({
+    searchData,
     data,
     page,
     pageSize,
@@ -30,7 +30,16 @@ export class PermissionService {
   >): Promise<Permission[] | any> {
     if (!pagination) {
       return this.prisma.permission.findMany({
-        where: data,
+        where: {
+          OR: [
+            {
+              menuName: {
+                contains: searchData,
+              },
+            },
+          ],
+          AND: data,
+        },
         include: {
           role: {
             include: {
@@ -43,10 +52,28 @@ export class PermissionService {
     }
     const returnData = await this.prisma.$transaction([
       this.prisma.permission.count({
-        where: data,
+        where: {
+          OR: [
+            {
+              menuName: {
+                contains: searchData,
+              },
+            },
+          ],
+          AND: data,
+        },
       }),
       this.prisma.permission.findMany({
-        where: data,
+        where: {
+          OR: [
+            {
+              menuName: {
+                contains: searchData,
+              },
+            },
+          ],
+          AND: data,
+        },
         include: {
           role: {
             include: {

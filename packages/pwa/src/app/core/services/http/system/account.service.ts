@@ -53,7 +53,7 @@ export class AccountService {
   }
 
   create(data: User): Observable<string> {
-    this._user.mutate(res => res.push(data));
+    this._user.set([...this._user(), data]);
     return this.apiService.post(this.baseUrl, data);
   }
 

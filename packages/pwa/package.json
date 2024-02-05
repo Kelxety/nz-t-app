@@ -12,5 +12,8 @@
     "lint": "ng lint",
     "lint:style": "npx stylelint \"src/**/*.less\" --fix"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "private": true
 }

@@ -114,6 +114,7 @@ export class MenuComponent implements OnInit {
   getDataList(e?: NzTableQueryParams): void {
     this.tableConfig.loading = true;
     const params: SearchParams<Prisma.PermissionWhereInput, Prisma.PermissionOrderByWithAggregationInput> = {
+      q: '',
       pagination: false,
       orderBy: {
         orderNum: 'asc'
