@@ -1,6 +1,6 @@
 # NZ-T-APP
 
-# Angular - NgZorro - Fully Typesafe - Frontend to Backend
+# Angular - NgZorro - NestJS - Fully Typesafe - Frontend to Backend
 
 ## Installation
 
